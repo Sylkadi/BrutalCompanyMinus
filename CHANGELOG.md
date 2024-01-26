@@ -7,6 +7,7 @@
   - Added config option to change event amount
   - Added config option to show events in chat
   - Fixed some stuff
+  - Buffed weather multipliers
   - Mod should now be much more stable with certain moon mods
 </details>
 <details>
