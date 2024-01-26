@@ -1,5 +1,14 @@
 # ChangeLog
 <details>
+  <summary>0.7.0</summary>
+  - Restructered Code
+  - Slighly lowered density values and made it more conisitent throughout maps
+  - Added config option to change event amount
+  - Added config option to show events in chat
+  - Fixed some stuff
+  - Mod should now be much more stable with certain moon mods
+</details>
+<details>
   <summary>0.6.5</summary>
 
   - Made weight setting more clear.
