@@ -3,7 +3,6 @@
 #### This mod is required on all clients
 #### Makes the game harder
 #### Current plan is to make more 'unique' events
-#### This mod might not work properly with certain moon mods, yet to fix fully.
 
 # Features
 <details>
