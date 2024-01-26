@@ -1,6 +1,7 @@
 # ChangeLog
 <details>
   <summary>0.7.0</summary>
+  
   - Restructered Code
   - Slighly lowered density values and made it more conisitent throughout maps
   - Added config option to change event amount
