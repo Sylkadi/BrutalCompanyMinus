@@ -104,12 +104,12 @@ namespace BrutalCompanyMinus
             }
 
             noneMultiplier = createWeatherSettings(new Weather(LevelWeatherType.None, 1.00f, 1.00f, 1.00f));
-            dustCloudMultiplier = createWeatherSettings(new Weather(LevelWeatherType.DustClouds, 1.05f, 1.00f, 1.00f));
-            rainyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Rainy, 1.05f, 1.00f, 1.00f));
-            stormyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Stormy, 1.25f, 1.00f, 1.00f));
-            foggyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Foggy, 1.15f, 1.00f, 1.00f));
-            floodedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Flooded, 1.2f, 1.00f, 1.00f));
-            eclipsedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Eclipsed, 1.4f, 1.00f, 1.00f));
+            dustCloudMultiplier = createWeatherSettings(new Weather(LevelWeatherType.DustClouds, 1.10f, 1.05f, 1.00f));
+            rainyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Rainy, 1.10f, 1.05f, 1.00f));
+            stormyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Stormy, 1.4f, 1.2f, 1.00f));
+            foggyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Foggy, 1.2f, 1.10f, 1.00f));
+            floodedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Flooded, 1.3f, 1.15f, 1.00f));
+            eclipsedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Eclipsed, 1.5f, 1.25f, 1.00f));
 
             // UI Key
             UIKey = config.Bind("_UI Options", "Toggle UI Key", "K");
