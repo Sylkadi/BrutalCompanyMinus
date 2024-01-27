@@ -44,7 +44,7 @@ namespace BrutalCompanyMinus
             config = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus.cfg", true);
 
             // Set event weights
-            foreach (MEvent e in Plugin.events)
+            foreach (MEvent e in EventManager.events)
             {
                 eventWeights.Add(config.Bind(e.Name(), "Custom Weight", e.Weight, "If you want to use custom weights change 'Use custom weights'? setting in '__Event Settings' to true."));
                 eventDescriptions.Add(config.Bind(e.Name(), "Description", e.Description));

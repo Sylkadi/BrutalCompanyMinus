@@ -12,7 +12,15 @@ namespace BrutalCompanyMinus.Minus
         public bool Enabled = true;
 
         public Dictionary<ScaleType, Scale> ScaleList = new Dictionary<ScaleType, Scale>();
+
+        /// <summary>
+        /// This will remove 'that' event from occurring.
+        /// </summary>
         public List<string> EventsToRemove = new List<string>();
+
+        /// <summary>
+        /// Will remove 'that' event from being picked, but 'that' event will execute and wont be displayed in chat or UI.
+        /// </summary>
         public List<string> EventsToSpawnWith = new List<string>();
 
         public enum EventType
@@ -72,8 +80,8 @@ namespace BrutalCompanyMinus.Minus
 
         internal static MEvent GetEvent(string name)
         {
-            int index = Plugin.events.FindIndex(x => x.Name() == name);
-            if (index != -1) return Plugin.events[index];
+            int index = EventManager.events.FindIndex(x => x.Name() == name);
+            if (index != -1) return EventManager.events[index];
 
             Log.LogError(string.Format("Event '{0}' dosen't exist, returning nothing event", name));
             return new Events.Nothing();

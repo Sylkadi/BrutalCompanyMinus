@@ -23,85 +23,6 @@ namespace BrutalCompanyMinus
         private const string VERSION = "0.7.0";
         private readonly Harmony harmony = new Harmony(GUID);
 
-        public static List<MEvent> events = new List<MEvent>() {
-            // Very Good
-            new Events.BigBonus(),
-            new Events.ScrapGalore(),
-            new Events.GoldenBars(),
-            new Events.BigDelivery(),
-            new Events.PlentyOutsideScrap(),
-            // Good
-            new Events.Bounty(),
-            new Events.Bonus(),
-            new Events.SmallerMap(),
-            new Events.MoreScrap(),
-            new Events.HigherScrapValue(),
-            new Events.GoldenFacility(),
-            new Events.Dentures(),
-            new Events.Pickles(),
-            new Events.Honk(),
-            new Events.TransmuteScrapSmall(),
-            new Events.SmallDeilvery(),
-            new Events.ScarceOutsideScrap(),
-            // Neutral
-            new Events.Nothing(),
-            new Events.Locusts(),
-            new Events.Birds(),
-            new Events.Trees(),
-            new Events.LeaflessBrownTrees(),
-            new Events.LeaflessTrees(),
-            // Bad
-            new Events.HoardingBugs(),
-            new Events.Bees(),
-            new Events.Landmines(),
-            new Events.Lizard(),
-            new Events.Slimes(),
-            new Events.Thumpers(),
-            new Events.Turrets(),
-            new Events.Spiders(),
-            new Events.SnareFleas(),
-            new Events.DoorGlitch(),
-            new Events.OutsideTurrets(),
-            new Events.OutsideLandmines(),
-            new Events.CursedGold(),
-            // Very Bad
-            new Events.Nutcracker(),
-            new Events.Arachnophobia(),
-            new Events.Bracken(),
-            new Events.Coilhead(),
-            new Events.BaboonHorde(),
-            new Events.Dogs(),
-            new Events.Jester(),
-            new Events.LittleGirl(),
-            new Events.AntiCoilhead(),
-            new Events.ChineseProduce(),
-            new Events.TransmuteScrapBig(),
-            new Events.Warzone(),
-            new Events.GypsyColony(),
-            new Events.ForestGiant(),
-            new Events.InsideBees(),
-            // NoEnemy
-            new Events.NoBaboons(),
-            new Events.NoBracken(),
-            new Events.NoCoilhead(),
-            new Events.NoDogs(),
-            new Events.NoGiants(),
-            new Events.NoHoardingBugs(),
-            new Events.NoJester(),
-            new Events.NoLittleGirl(),
-            new Events.NoLizards(),
-            new Events.NoNutcracker(),
-            new Events.NoSpiders(),
-            new Events.NoThumpers(),
-            new Events.NoSnareFleas(),
-            new Events.NoWorm(),
-            new Events.NoSlimes(),
-            new Events.NoMasks(),
-            new Events.NoTurrets(),
-            new Events.NoLandmines()
-        };
-        public static List<MEvent> disabledEvents = new List<MEvent>();
-
         void Awake()
         {
             // Logger
@@ -139,37 +60,37 @@ namespace BrutalCompanyMinus
             if(!Initalized)
             {
                 // Initalize Events
-                foreach (MEvent e in events) e.Initalize();
+                foreach (MEvent e in EventManager.events) e.Initalize();
 
                 // Config
                 Configuration.Initalize();
-                Manager.UpdateAllEventWeights();
+                EventManager.UpdateAllEventWeights();
 
                 // Use config settings
-                for (int i = 0; i != events.Count; i++)
+                for (int i = 0; i != EventManager.events.Count; i++)
                 {
-                    if (Configuration.useCustomWeights.Value) events[i].Weight = Configuration.eventWeights[i].Value;
-                    events[i].Description = Configuration.eventDescriptions[i].Value;
-                    events[i].ColorHex = Configuration.eventColorHexes[i].Value;
-                    events[i].Type = Configuration.eventTypes[i].Value;
-                    events[i].ScaleList = Configuration.eventScales[i];
-                    events[i].Enabled = Configuration.eventEnables[i].Value;
+                    if (Configuration.useCustomWeights.Value) EventManager.events[i].Weight = Configuration.eventWeights[i].Value;
+                    EventManager.events[i].Description = Configuration.eventDescriptions[i].Value;
+                    EventManager.events[i].ColorHex = Configuration.eventColorHexes[i].Value;
+                    EventManager.events[i].Type = Configuration.eventTypes[i].Value;
+                    EventManager.events[i].ScaleList = Configuration.eventScales[i];
+                    EventManager.events[i].Enabled = Configuration.eventEnables[i].Value;
                 }
 
                 // Create disabled events list and update
                 List<MEvent> newEvents = new List<MEvent>();
-                foreach (MEvent e in events)
+                foreach (MEvent e in EventManager.events)
                 {
                     if (!e.Enabled)
                     {
-                        disabledEvents.Add(e);
+                        EventManager.disabledEvents.Add(e);
                     }
                     else
                     {
                         newEvents.Add(e);
                     }
                 }
-                events = newEvents;
+                EventManager.events = newEvents;
 
                 Initalized = true;
             }
@@ -205,9 +126,9 @@ namespace BrutalCompanyMinus
 
             // Apply events
             List<MEvent> additionalEvents = new List<MEvent>();
-            List<MEvent> currentEvents = Manager.ChooseEvents(newLevel, events, out additionalEvents);
-            Manager.ApplyEvents(currentEvents);
-            Manager.ApplyEvents(additionalEvents);
+            List<MEvent> currentEvents = EventManager.ChooseEvents(newLevel, out additionalEvents);
+            EventManager.ApplyEvents(currentEvents);
+            EventManager.ApplyEvents(additionalEvents);
 
             if(Configuration.showEventsInChat.Value)
             {
