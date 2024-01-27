@@ -13,19 +13,19 @@ namespace BrutalCompanyMinus.Minus
 
         public float scrapValueMultiplier;
         public float scrapAmountMultiplier;
-        public float factorySizeMultiplier;
+        public float mapSizeMultiplier;
 
-        public Weather(LevelWeatherType weatherType, float scrapValueMultiplier, float scrapAmountMultiplier, float factorySizeMultiplier)
+        public Weather(LevelWeatherType weatherType, float scrapValueMultiplier, float scrapAmountMultiplier, float mapSizeMultiplier)
         {
             this.weatherType = weatherType;
             this.scrapValueMultiplier = scrapValueMultiplier;
             this.scrapAmountMultiplier = scrapAmountMultiplier;
-            this.factorySizeMultiplier = factorySizeMultiplier;
+            this.mapSizeMultiplier = mapSizeMultiplier;
         }
 
         public static Weather operator *(Weather left, Weather right)
         {
-            return new Weather(left.weatherType, left.scrapValueMultiplier * right.scrapValueMultiplier, left.scrapAmountMultiplier * right.scrapAmountMultiplier, left.factorySizeMultiplier * right.factorySizeMultiplier);
+            return new Weather(left.weatherType, left.scrapValueMultiplier * right.scrapValueMultiplier, left.scrapAmountMultiplier * right.scrapAmountMultiplier, left.mapSizeMultiplier * right.mapSizeMultiplier);
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -36,7 +36,7 @@ namespace BrutalCompanyMinus.Minus
                 reader.ReadValueSafe(out weatherType);
                 reader.ReadValueSafe(out scrapValueMultiplier);
                 reader.ReadValueSafe(out scrapAmountMultiplier);
-                reader.ReadValueSafe(out factorySizeMultiplier);
+                reader.ReadValueSafe(out mapSizeMultiplier);
             }
             else
             {
@@ -44,7 +44,7 @@ namespace BrutalCompanyMinus.Minus
                 writer.WriteValueSafe(weatherType);
                 writer.WriteValueSafe(scrapValueMultiplier);
                 writer.WriteValueSafe(scrapAmountMultiplier);
-                writer.WriteValueSafe(factorySizeMultiplier);
+                writer.WriteValueSafe(mapSizeMultiplier);
             }
         }
 
@@ -163,7 +163,7 @@ namespace BrutalCompanyMinus.Minus
                                     string multiplierText =
                                         " (x" + w.scrapValueMultiplier.ToString("F2") +
                                         ", x" + w.scrapAmountMultiplier.ToString("F2") +
-                                        ", x" + w.factorySizeMultiplier.ToString("F2") + ")";
+                                        ", x" + w.mapSizeMultiplier.ToString("F2") + ")";
                                     moonTextList[i] = moonTextList[i].Insert(moonTextList[i].Length, multiplierText);
                                 }
                             }
@@ -173,7 +173,7 @@ namespace BrutalCompanyMinus.Minus
                             string multiplierText =
                                 "x" + Net.Instance.currentWeatherMultipliers[0].scrapValueMultiplier.ToString("F2") +
                                 ", x" + Net.Instance.currentWeatherMultipliers[0].scrapAmountMultiplier.ToString("F2") +
-                                ", x" + Net.Instance.currentWeatherMultipliers[0].factorySizeMultiplier.ToString("F2");
+                                ", x" + Net.Instance.currentWeatherMultipliers[0].mapSizeMultiplier.ToString("F2");
                             moonTextList[i] = moonTextList[i].Insert(moonTextList[i].Length - 1, " (" + multiplierText + ")");
                         }
 

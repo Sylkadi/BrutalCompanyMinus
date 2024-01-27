@@ -76,9 +76,9 @@ namespace BrutalCompanyMinus
         }
 
         [ClientRpc]
-        public void SyncValuesClientRpc(float factorySizeMultiplier, float scrapValueMultiplier, float scrapAmountMultiplier)
+        public void SyncValuesClientRpc(float mapSizeMultiplier, float scrapValueMultiplier, float scrapAmountMultiplier)
         {
-            RoundManager.Instance.currentLevel.factorySizeMultiplier = factorySizeMultiplier;
+            RoundManager.Instance.mapSizeMultiplier = mapSizeMultiplier;
             RoundManager.Instance.scrapValueMultiplier = scrapValueMultiplier;
             RoundManager.Instance.scrapAmountMultiplier = scrapAmountMultiplier;
             RoundManager.Instance.currentLevel.minScrap = Manager.scrapMinAmount;

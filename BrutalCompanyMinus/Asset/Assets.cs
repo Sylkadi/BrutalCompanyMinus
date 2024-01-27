@@ -53,7 +53,7 @@ namespace BrutalCompanyMinus
         private static Dictionary<string, Item> ItemList = new Dictionary<string, Item>();
         private static Dictionary<string, GameObject> ObjectList = new Dictionary<string, GameObject>();
 
-        internal static List<float> factorySizeMultiplierList = new List<float>();
+        internal static List<float> mapSizeMultiplierList = new List<float>();
 
         internal static void Load()
         {
@@ -169,7 +169,7 @@ namespace BrutalCompanyMinus
 
 
                 // Generate FactorySize List
-                foreach (SelectableLevel level in StartOfRound.Instance.levels) factorySizeMultiplierList.Add(level.factorySizeMultiplier);
+                foreach (SelectableLevel level in StartOfRound.Instance.levels) mapSizeMultiplierList.Add(level.factorySizeMultiplier);
 
                 generatedList = true;
             }

@@ -46,7 +46,7 @@ namespace BrutalCompanyMinus
             // Set event weights
             foreach (MEvent e in Plugin.events)
             {
-                eventWeights.Add(config.Bind(e.Name(), "Custom Weight", e.Weight, "If you want to use custom weights change 'Use custom weights'? setting in '__Weight Settings' to true."));
+                eventWeights.Add(config.Bind(e.Name(), "Custom Weight", e.Weight, "If you want to use custom weights change 'Use custom weights'? setting in '__Event Settings' to true."));
                 eventDescriptions.Add(config.Bind(e.Name(), "Description", e.Description));
                 eventColorHexes.Add(config.Bind(e.Name(), "Color Hex", e.ColorHex));
                 eventTypes.Add(config.Bind(e.Name(), "Event Type", e.Type));
@@ -98,7 +98,7 @@ namespace BrutalCompanyMinus
 
                 float valueMultiplierSetting = config.Bind(configHeader, "Value Multiplier", weather.scrapValueMultiplier, "Multiply Scrap value for " + weather.weatherType.ToString()).Value;
                 float amountMultiplierSetting = config.Bind(configHeader, "Amount Multiplier", weather.scrapAmountMultiplier, "Multiply Scrap amount for " + weather.weatherType.ToString()).Value;
-                float sizeMultiplerSetting = config.Bind(configHeader, "Factory Size Multiplier", weather.factorySizeMultiplier, "Multiply Factory size for " + weather.weatherType.ToString()).Value;
+                float sizeMultiplerSetting = config.Bind(configHeader, "Factory Size Multiplier", weather.mapSizeMultiplier, "Multiply Factory size for " + weather.weatherType.ToString()).Value;
 
                 return new Weather(weather.weatherType, valueMultiplierSetting, amountMultiplierSetting, sizeMultiplerSetting);
             }

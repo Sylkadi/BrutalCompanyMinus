@@ -121,7 +121,6 @@ namespace BrutalCompanyMinus
                     }
                 }
             }
-
             // Load assets
             Assets.Load();
 
@@ -196,7 +195,7 @@ namespace BrutalCompanyMinus
                 {
                     Manager.scrapValueMultiplier *= e.scrapValueMultiplier;
                     Manager.scrapAmountMultiplier *= e.scrapAmountMultiplier;
-                    Manager.factorySizeMultiplier *= e.factorySizeMultiplier;
+                    Manager.mapSizeMultiplier *= e.mapSizeMultiplier;
                 }
             }
 
@@ -226,13 +225,13 @@ namespace BrutalCompanyMinus
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
 
             // Sync values to all clients
-            Net.Instance.SyncValuesClientRpc(Manager.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);
+            Net.Instance.SyncValuesClientRpc(Manager.mapSizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);
 
             // Apply UI
             UI.GenerateText(currentEvents);
 
             // Logging
-            Log.LogInfo("MapMultipliers = [scrapValueMultiplier: " + Manager.scrapValueMultiplier + ",     scrapAmountMultiplier: " + Manager.scrapAmountMultiplier + ",     factorySizeMultiplier:" + Manager.factorySizeMultiplier + "]");
+            Log.LogInfo("MapMultipliers = [scrapValueMultiplier: " + Manager.scrapValueMultiplier + ",     scrapAmountMultiplier: " + Manager.scrapAmountMultiplier + ",     mapSizeMultiplier:" + Manager.mapSizeMultiplier + "]");
             Log.LogInfo("IsAntiCoildHead = " + Net.Instance.isAntiCoilHead.Value);
         }
 
@@ -248,10 +247,10 @@ namespace BrutalCompanyMinus
             // Reset Multipliers
             try
             {
-                Manager.factorySizeMultiplier = Assets.factorySizeMultiplierList[newLevel.levelID];
+                Manager.mapSizeMultiplier = Assets.mapSizeMultiplierList[newLevel.levelID];
             } catch
             {
-                Manager.factorySizeMultiplier = 1f;
+                Manager.mapSizeMultiplier = 1f;
             }
             Manager.scrapAmountMultiplier = 1.0f;
             Manager.scrapValueMultiplier = 0.4f; // Default value is 0.4 not 1.0

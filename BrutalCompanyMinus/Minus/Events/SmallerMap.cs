@@ -24,7 +24,7 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override void Execute()
         {
-            Manager.factorySizeMultiplier *= Getf(ScaleType.FactorySize);
+            Manager.mapSizeMultiplier *= Getf(ScaleType.FactorySize);
         }
 
     }
