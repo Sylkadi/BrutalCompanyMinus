@@ -226,7 +226,7 @@ namespace BrutalCompanyMinus
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
 
             // Sync values to all clients
-            Net.Instance.SetMultipliersClientRpc(Manager.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);
+            Net.Instance.SyncValuesClientRpc(Manager.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);
 
             // Apply UI
             UI.GenerateText(currentEvents);

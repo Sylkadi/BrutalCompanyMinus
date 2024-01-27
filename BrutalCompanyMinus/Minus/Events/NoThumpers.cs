@@ -22,6 +22,8 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(Thumpers) };
         }
 
-        public override void Execute() => Manager.RemoveSpawn("Crawler");
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.Thumper]);
+
+        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.Thumper]);
     }
 }

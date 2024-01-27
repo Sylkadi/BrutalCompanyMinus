@@ -15,7 +15,7 @@ namespace BrutalCompanyMinus
         {
             Bracken, HoardingBug, CoilHead, Thumper, BunkerSpider, Jester, SnareFlea, Hygrodere, GhostGirl, SporeLizard, NutCracker, Masked, EyelessDog, ForestKeeper, EarthLeviathan, BaboonHawk, RoamingLocust, Manticoil, CircuitBee, Lasso
         }
-        private static Dictionary<EnemyName, string> EnemyNameList = new Dictionary<EnemyName, string>() { 
+        internal static Dictionary<EnemyName, string> EnemyNameList = new Dictionary<EnemyName, string>() { 
             { EnemyName.SnareFlea, "Centipede" }, { EnemyName.BunkerSpider, "SandSpider" }, { EnemyName.HoardingBug, "HoarderBug" }, { EnemyName.Bracken, "Flowerman" }, { EnemyName.Thumper, "Crawler" },
             { EnemyName.Hygrodere, "Blob" }, { EnemyName.GhostGirl, "DressGirl" }, { EnemyName.SporeLizard, "Puffer" }, { EnemyName.NutCracker, "Nutcracker" }, { EnemyName.EyelessDog, "MouthDog" },
             { EnemyName.ForestKeeper, "ForestGiant" }, { EnemyName.EarthLeviathan, "SandWorm" }, { EnemyName.CircuitBee, "RedLocustBees" }, { EnemyName.BaboonHawk, "BaboonHawk" }, { EnemyName.CoilHead, "SpringMan" },
@@ -26,7 +26,7 @@ namespace BrutalCompanyMinus
         {
             LargeAxle, V_TypeEngine, PlasticFish, MetalSheet, LaserPointer, BigBolt, Bottles, Ring, SteeringWheel, CookieMoldPan, EggBeater, JarOfPickles, DustPan, AirHorn, ClownHorn, CashRegister, Candy, GoldBar, YieldSign, HomemadeFlashbang, Gift, Flask, ToyCube, Remote, ToyRobot, MagnifyingGlass, StopSign, TeaKettle, Mug, RedSoda, OldPhone, HairDryer, Brush, Bell, WhoopieCushion, Comedy, Tragedy, RubberDucky, ChemicalJug, FancyLamp, GoldenCup, Painting, Toothpaste, PillBottle, PerfumeBottle, Teeth, Magic7Ball
         }
-        private static Dictionary<ItemName, string> ItemNameList = new Dictionary<ItemName, string>() {
+        internal static Dictionary<ItemName, string> ItemNameList = new Dictionary<ItemName, string>() {
             { ItemName.LargeAxle, "Cog1" }, { ItemName.V_TypeEngine, "EnginePart1"}, { ItemName.PlasticFish, "FishTestProp" }, { ItemName.MetalSheet, "MetalSheet" }, { ItemName.LaserPointer, "FlashLaserPointer" },
             { ItemName.BigBolt, "BigBolt" }, { ItemName.Bottles, "BottleBin" }, { ItemName.Ring, "Ring" }, { ItemName.SteeringWheel, "SteeringWheel" }, { ItemName.CookieMoldPan, "MoldPan" },
             { ItemName.EggBeater, "EggBeater" }, { ItemName.JarOfPickles, "PickleJar" }, { ItemName.DustPan, "DustPan" }, { ItemName.AirHorn, "Airhorn" }, { ItemName.ClownHorn, "ClownHorn" },
@@ -43,7 +43,7 @@ namespace BrutalCompanyMinus
         {
             LargeRock1, LargeRock2, LargeRock3, LargeRock4, TreeLeaflessBrown1, GiantPumkin, GreyRockGrouping2, GreyRockGrouping4, Tree, TreeLeafless2, TreeLeafless3, Landmine, Turret
         }
-        private static Dictionary<ObjectName, string> ObjectNameList = new Dictionary<ObjectName, string>() {
+        internal static Dictionary<ObjectName, string> ObjectNameList = new Dictionary<ObjectName, string>() {
             { ObjectName.LargeRock1, "LargeRock1" }, { ObjectName.LargeRock2, "LargeRock2" }, { ObjectName.LargeRock3, "LargeRock3" }, { ObjectName.LargeRock4, "LargeRock4" }, { ObjectName.GreyRockGrouping2, "GreyRockGrouping2" },
             { ObjectName.GreyRockGrouping4, "GreyRockGrouping4" }, { ObjectName.GiantPumkin, "GiantPumpkin" }, { ObjectName.Tree, "tree" }, { ObjectName.TreeLeaflessBrown1, "treeLeaflessBrown.001 Variant" }, { ObjectName.TreeLeafless2, "treeLeafless.002_LOD0" },
             { ObjectName.TreeLeafless3, "treeLeafless.003_LOD0" }, { ObjectName.Landmine, "Landmine" }, { ObjectName.Turret, "TurretContainer" }

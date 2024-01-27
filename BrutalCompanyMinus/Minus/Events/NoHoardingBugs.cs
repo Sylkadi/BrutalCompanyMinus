@@ -22,6 +22,8 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(HoardingBugs), nameof(GypsyColony) };
         }
 
-        public override void Execute() => Manager.RemoveSpawn("HoarderBug");
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.HoardingBug]);
+
+        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.HoardingBug]);
     }
 }

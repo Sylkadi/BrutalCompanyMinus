@@ -22,6 +22,8 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(ForestGiant) };
         }
 
-        public override void Execute() => Manager.RemoveSpawn("ForestGiant");
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.ForestKeeper]);
+
+        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.ForestKeeper]);
     }
 }

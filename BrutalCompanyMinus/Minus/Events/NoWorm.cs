@@ -20,6 +20,8 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.Remove;
         }
 
-        public override void Execute() => Manager.RemoveSpawn("SandWorm");
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.EarthLeviathan]);
+
+        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.EarthLeviathan]);
     }
 }

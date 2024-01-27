@@ -9,6 +9,7 @@ using HarmonyLib;
 using System.Collections;
 using GameNetcodeStuff;
 using TMPro;
+using System.Reflection.Emit;
 
 namespace BrutalCompanyMinus.Minus
 {
@@ -364,6 +365,14 @@ namespace BrutalCompanyMinus.Minus
                 removedEnemy = true;
             }
             if (!removedEnemy) Log.LogInfo(string.Format("Failed to remove '{0}' from enemy pool, either it dosen't exist on the map or wrong string used.", Name));
+        }
+
+        public static bool SpawnExists(string name)
+        {
+            if (RoundManager.Instance.currentLevel.Enemies.Exists(x => x.enemyType.name == name)) return true;
+            if (RoundManager.Instance.currentLevel.OutsideEnemies.Exists(x => x.enemyType.name == name)) return true;
+            if (RoundManager.Instance.currentLevel.DaytimeEnemies.Exists(x => x.enemyType.name == name)) return true;
+            return false;
         }
 
         internal static MEvent RandomWeightedEvent(List<MEvent> events)

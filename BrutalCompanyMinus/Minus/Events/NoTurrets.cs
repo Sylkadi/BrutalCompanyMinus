@@ -22,13 +22,15 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(Turrets), nameof(OutsideTurrets), nameof(Warzone) };
         }
 
+        public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.Turret]);
+
         public override void Execute()
         {
             AnimationCurve curve = new AnimationCurve(new Keyframe(0f, 0f));
 
             foreach (SpawnableMapObject obj in RoundManager.Instance.currentLevel.spawnableMapObjects)
             {
-                if (obj.prefabToSpawn.name == Assets.GetObject(Assets.ObjectName.Turret).name)
+                if (obj.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.Turret])
                 {
                     obj.numberToSpawn = curve;
                 }
