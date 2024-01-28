@@ -31,12 +31,12 @@
 | Weather    | Scrap value | Scrap amount | Factory Size |
 |------------|-------------|--------------|--------------|
 | None       | 1.00        | 1.00         | 1.00         |
-| DustClouds | 1.05        | 1.00         | 1.00         |
-| Rainy      | 1.05        | 1.00         | 1.00         |
-| Stormy     | 1.25        | 1.00         | 1.00         |
-| Foggy      | 1.15        | 1.00         | 1.00         |
-| Flooded    | 1.20        | 1.00         | 1.00         |
-| Eclipsed   | 1.40        | 1.00         | 1.00         |
+| DustClouds | 1.10        | 1.05         | 1.00         |
+| Rainy      | 1.10        | 1.05         | 1.00         |
+| Stormy     | 1.40        | 1.20         | 1.00         |
+| Foggy      | 1.20        | 1.10         | 1.00         |
+| Flooded    | 1.30        | 1.15         | 1.00         |
+| Eclipsed   | 1.50        | 1.25         | 1.00         |
 </details>
 
 <details>
