@@ -1,5 +1,10 @@
 # ChangeLog
 <details>
+  <summary>0.7.1</summary>
+  
+  - Horrible fix for scrap not being restored (Can't figure out which mod causes this)
+</details>
+<details>
   <summary>0.7.0</summary>
   
   - Restructered Code
