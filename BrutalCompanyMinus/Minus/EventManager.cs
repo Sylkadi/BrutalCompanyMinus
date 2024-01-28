@@ -47,7 +47,6 @@ namespace BrutalCompanyMinus.Minus
             new Events.DoorGlitch(),
             new Events.OutsideTurrets(),
             new Events.OutsideLandmines(),
-            new Events.CursedGold(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),
@@ -86,9 +85,6 @@ namespace BrutalCompanyMinus.Minus
         };
         internal static List<MEvent> disabledEvents = new List<MEvent>();
 
-        /// <summary>
-        /// Adds event(s) to event list
-        /// </summary>
         public static void AddEvents(params MEvent[] _event) => events.AddRange(_event);
 
         internal static MEvent RandomWeightedEvent(List<MEvent> _events)
@@ -117,7 +113,6 @@ namespace BrutalCompanyMinus.Minus
             for (int i = 0; i < Configuration.eventsToSpawn.Value; i++)
             {
                 MEvent newEvent = RandomWeightedEvent(eventsToChooseForm);
-                chosenEvents.Add(newEvent);
 
                 if (!newEvent.AddEventIfOnly()) // If event condition is false, remove event from eventsToChoosefrom and iterate again
                 {
@@ -125,6 +120,8 @@ namespace BrutalCompanyMinus.Minus
                     eventsToChooseForm.RemoveAll(x => x.Name() == newEvent.Name());
                     continue;
                 }
+
+                chosenEvents.Add(newEvent);
 
                 // Remove so no further accurrences
                 eventsToChooseForm.RemoveAll(x => x.Name() == newEvent.Name());

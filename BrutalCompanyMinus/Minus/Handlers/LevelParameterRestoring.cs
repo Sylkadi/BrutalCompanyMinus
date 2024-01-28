@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using HarmonyLib;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.Handlers
@@ -30,7 +32,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             outsideEnemies.Clear(); outsideEnemies.AddRange(currentLevel.OutsideEnemies);
             daytimeEnemies.Clear(); daytimeEnemies.AddRange(currentLevel.DaytimeEnemies);
         }
-        
+
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(RoundManager), "waitForScrapToSpawnToSync")]
@@ -43,9 +45,107 @@ namespace BrutalCompanyMinus.Minus.Handlers
             __instance.currentLevel.OutsideEnemies.Clear(); __instance.currentLevel.OutsideEnemies.AddRange(outsideEnemies);
             __instance.currentLevel.DaytimeEnemies.Clear(); __instance.currentLevel.DaytimeEnemies.AddRange(daytimeEnemies);
 
-            __instance.currentLevel.spawnableScrap.Clear(); __instance.currentLevel.spawnableScrap.AddRange(levelScrap);
+            __instance.currentLevel.spawnableScrap.Clear(); __instance.currentLevel.spawnableScrap.AddRange(levelScrap); // Unmodified
             __instance.currentLevel.minScrap = MinScrap;
             __instance.currentLevel.maxScrap = MaxScrap;
+        }
+
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnScrapInLevel))] // This is bad dont do this
+        static IEnumerable<CodeInstruction> OnUpdateIL(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+        {
+            var code = new List<CodeInstruction>(instructions);
+
+            Log.LogInfo("Ignore this error! Horrible decisions were made here.");
+            code.RemoveAll(x => x != null);
+            code.Insert(0, Transpilers.EmitDelegate(new Action(SpawnScrapInLevelCopy)));
+
+            return code.AsEnumerable();
+        }
+
+        private static void SpawnScrapInLevelCopy() // This fix is stupid(no other choice but to do this) but it works
+        {
+            RoundManager r = RoundManager.Instance;
+            int num = (int)((float)r.AnomalyRandom.Next(r.currentLevel.minScrap, r.currentLevel.maxScrap) * r.scrapAmountMultiplier);
+            if (StartOfRound.Instance.isChallengeFile)
+            {
+                int num2 = r.AnomalyRandom.Next(10, 30);
+                num += num2;
+                Debug.Log($"Anomaly random 0b: {num2}");
+            }
+            List<Item> ScrapToSpawn = new List<Item>();
+            List<int> list = new List<int>();
+            int num3 = 0;
+            List<int> list2 = new List<int>(r.currentLevel.spawnableScrap.Count);
+            for (int j = 0; j < r.currentLevel.spawnableScrap.Count; j++)
+            {
+                if (j == r.increasedScrapSpawnRateIndex)
+                {
+                    list2.Add(100);
+                }
+                else
+                {
+                    list2.Add(r.currentLevel.spawnableScrap[j].rarity);
+                }
+            }
+            int[] weights = list2.ToArray();
+            for (int k = 0; k < num; k++)
+            {
+                ScrapToSpawn.Add(r.currentLevel.spawnableScrap[r.GetRandomWeightedIndex(weights)].spawnableItem);
+            }
+            Debug.Log($"Number of scrap to spawn: {ScrapToSpawn.Count}. minTotalScrapValue: {r.currentLevel.minTotalScrapValue}. Total value of items: {num3}.");
+            RandomScrapSpawn randomScrapSpawn = null;
+            RandomScrapSpawn[] source = UnityEngine.Object.FindObjectsOfType<RandomScrapSpawn>();
+            List<NetworkObjectReference> list3 = new List<NetworkObjectReference>();
+            List<RandomScrapSpawn> usedSpawns = new List<RandomScrapSpawn>();
+            int i;
+            for (i = 0; i < ScrapToSpawn.Count; i++)
+            {
+                if (ScrapToSpawn[i] == null)
+                {
+                    Debug.Log("Error!!!!! Found null element in list ScrapToSpawn. Skipping it.");
+                    continue;
+                }
+                List<RandomScrapSpawn> list4 = ((ScrapToSpawn[i].spawnPositionTypes != null && ScrapToSpawn[i].spawnPositionTypes.Count != 0) ? source.Where((RandomScrapSpawn x) => ScrapToSpawn[i].spawnPositionTypes.Contains(x.spawnableItems) && !x.spawnUsed).ToList() : source.ToList());
+                if (list4.Count <= 0)
+                {
+                    Debug.Log("No tiles containing a scrap spawn with item type: " + ScrapToSpawn[i].itemName);
+                    continue;
+                }
+                if (usedSpawns.Count > 0 && list4.Contains(randomScrapSpawn))
+                {
+                    list4.RemoveAll((RandomScrapSpawn x) => usedSpawns.Contains(x));
+                    if (list4.Count <= 0)
+                    {
+                        usedSpawns.Clear();
+                        i--;
+                        continue;
+                    }
+                }
+                randomScrapSpawn = list4[r.AnomalyRandom.Next(0, list4.Count)];
+                usedSpawns.Add(randomScrapSpawn);
+                Vector3 position;
+                if (randomScrapSpawn.spawnedItemsCopyPosition)
+                {
+                    randomScrapSpawn.spawnUsed = true;
+                    position = randomScrapSpawn.transform.position;
+                }
+                else
+                {
+                    position = r.GetRandomNavMeshPositionInBoxPredictable(randomScrapSpawn.transform.position, randomScrapSpawn.itemSpawnRange, r.navHit, r.AnomalyRandom) + Vector3.up * ScrapToSpawn[i].verticalOffset;
+                }
+                GameObject obj = UnityEngine.Object.Instantiate(ScrapToSpawn[i].spawnPrefab, position, Quaternion.identity, r.spawnedScrapContainer);
+                GrabbableObject component = obj.GetComponent<GrabbableObject>();
+                component.transform.rotation = Quaternion.Euler(component.itemProperties.restingRotation);
+                component.fallTime = 0f;
+                list.Add((int)((float)r.AnomalyRandom.Next(ScrapToSpawn[i].minValue, ScrapToSpawn[i].maxValue) * r.scrapValueMultiplier));
+                num3 += list[list.Count - 1];
+                component.scrapValue = list[list.Count - 1];
+                NetworkObject component2 = obj.GetComponent<NetworkObject>();
+                component2.Spawn();
+                list3.Add(component2);
+            }
+            r.StartCoroutine(Manager.Spawn.waitForScrapToSpawnToSync(list3.ToArray(), list.ToArray()));
         }
     }
 }

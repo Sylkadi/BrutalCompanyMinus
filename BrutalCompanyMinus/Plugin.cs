@@ -2,14 +2,9 @@
 using HarmonyLib;
 using BepInEx;
 using UnityEngine;
-using BepInEx.Logging;
-using HarmonyLib.Tools;
 using System.Reflection;
 using BrutalCompanyMinus.Minus;
 using System.Collections.Generic;
-using TMPro;
-using Events = BrutalCompanyMinus.Minus.Events;
-using System.Collections;
 using BrutalCompanyMinus.Minus.Handlers;
 
 namespace BrutalCompanyMinus
@@ -20,7 +15,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.7.0";
+        private const string VERSION = "0.7.1";
         private readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -100,6 +95,7 @@ namespace BrutalCompanyMinus
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
         private static void ModifyLevel(ref SelectableLevel newLevel)
         {
+            Manager.currentLevel = newLevel;
             Manager.daysPassed++;
 
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
@@ -124,9 +120,12 @@ namespace BrutalCompanyMinus
             RoundManager.Instance.currentMaxInsidePower += Math.Min(Manager.daysPassed, 10) + Manager.daysPassed;
             RoundManager.Instance.currentMaxOutsidePower += Manager.daysPassed / 2;
 
-            // Apply events
+            // Choose any apply events
             List<MEvent> additionalEvents = new List<MEvent>();
             List<MEvent> currentEvents = EventManager.ChooseEvents(newLevel, out additionalEvents);
+
+            foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name()); // Log Chosen events
+
             EventManager.ApplyEvents(currentEvents);
             EventManager.ApplyEvents(additionalEvents);
 
@@ -139,11 +138,10 @@ namespace BrutalCompanyMinus
                 }
             }
 
-            // Log Chosen events
-            foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name());
 
             // Spawn outside scrap
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
+
 
             // Sync values to all clients
             Net.Instance.SyncValuesClientRpc(Manager.mapSizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);

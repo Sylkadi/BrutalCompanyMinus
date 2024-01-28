@@ -20,7 +20,7 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            EventsToRemove = new List<string>() { nameof(TransmuteScrapSmall), nameof(Dentures), nameof(Pickles), nameof(GoldenFacility), nameof(Honk), nameof(GoldenBars), nameof(CursedGold) };
+            EventsToRemove = new List<string>() { nameof(TransmuteScrapSmall), nameof(Dentures), nameof(Pickles), nameof(GoldenFacility), nameof(Honk), nameof(GoldenBars)};
 
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.08f, 0.0015f));
         }

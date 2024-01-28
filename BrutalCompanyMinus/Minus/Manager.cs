@@ -19,6 +19,7 @@ namespace BrutalCompanyMinus.Minus
 
         public static int daysPassed = -1;
         public static int paycut = 0;
+        public static SelectableLevel currentLevel;
 
         internal static float terrainArea = 0.0f;
         internal static string terrainTag = "";
@@ -109,19 +110,8 @@ namespace BrutalCompanyMinus.Minus
                 }
             }
 
-            /// <summary>
-            /// Will spawn enemies outside safely.
-            /// </summary>
             public static void OutsideEnemies(EnemyType enemy, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(enemy.enemyPrefab, count));
-
-            /// <summary>
-            /// Will spawn enemies inside safely.
-            /// </summary>
             public static void InsideEnemies(EnemyType enemy, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(enemy.enemyPrefab, count, 0.0f, radius));
-
-            /// <summary>
-            /// Will spawn outside scrap safely.
-            /// </summary>
             public static void ScrapOutside(int Amount) => randomItemsToSpawnOutsideCount += Amount;
 
             internal static void DoSpawnOutsideEnemies()
@@ -227,9 +217,9 @@ namespace BrutalCompanyMinus.Minus
                 r.StartCoroutine(waitForScrapToSpawnToSync(ScrapSpawnsNet.ToArray(), ScrapValues.ToArray()));
             }
 
-            private static IEnumerator waitForScrapToSpawnToSync(NetworkObjectReference[] spawnedScrap, int[] scrapValues)
+            internal static IEnumerator waitForScrapToSpawnToSync(NetworkObjectReference[] spawnedScrap, int[] scrapValues)
             {
-                yield return new WaitForSeconds(10.0f);
+                yield return new WaitForSeconds(11.0f);
                 RoundManager.Instance.SyncScrapValuesClientRpc(spawnedScrap, scrapValues);
             }
         }
@@ -476,6 +466,18 @@ namespace BrutalCompanyMinus.Minus
                 this.density = density;
                 this.radius = radius;
                 this.count = count;
+            }
+        }
+
+        public struct ItemWithRarity
+        {
+            public int rarity;
+            public Item item;
+
+            public ItemWithRarity(Item item, int rarity)
+            {
+                this.item = item;
+                this.rarity = rarity;
             }
         }
     }
