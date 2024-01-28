@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.Handlers
 {
-    [HarmonyAfter]
+    [HarmonyPatch]
     internal class LevelParameterRestoring
     {
         internal static List<SpawnableItemWithRarity> levelScrap = new List<SpawnableItemWithRarity>();
