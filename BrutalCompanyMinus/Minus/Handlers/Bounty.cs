@@ -7,11 +7,12 @@ namespace BrutalCompanyMinus.Minus.Handlers
     internal class Bounty
     {
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(EnemyAI.KillEnemyServerRpc))]
-        static void OnKillEnemyServerRpc()
+        [HarmonyPatch(nameof(EnemyAI.KillEnemyOnOwnerClient))]
+        static void PayOnkill()
         {
             if (!Manager.BountyActive) return;
-            Manager.paycut += UnityEngine.Random.Range(5 + (Manager.daysPassed / 7), 20 + (Manager.daysPassed / 5));
+            MEvent bountEvent = MEvent.GetEvent(nameof(Events.Bounty));
+            Manager.PayCredits(UnityEngine.Random.Range(bountEvent.Get(MEvent.ScaleType.MinValue), bountEvent.Get(MEvent.ScaleType.MaxValue) + 1));
         }
     }
 }

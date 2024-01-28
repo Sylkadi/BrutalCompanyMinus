@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.Handlers
 {
-    [HarmonyPatch]
+    [HarmonyAfter]
     internal class LevelParameterRestoring
     {
         internal static List<SpawnableItemWithRarity> levelScrap = new List<SpawnableItemWithRarity>();
@@ -36,7 +36,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(RoundManager), "waitForScrapToSpawnToSync")]
-        private static void OnwaitForScrapToSpawnToSync(ref RoundManager __instance)
+        public static void OnwaitForScrapToSpawnToSync(ref RoundManager __instance)
         {
             Log.LogInfo(string.Format("Restoring un-modified level paramaters on level:{0}", __instance.currentLevel.name));
 
@@ -49,10 +49,14 @@ namespace BrutalCompanyMinus.Minus.Handlers
             __instance.currentLevel.minScrap = MinScrap;
             __instance.currentLevel.maxScrap = MaxScrap;
         }
+    }
 
+    internal class _LevelParameterRestoring
+    {
         [HarmonyTranspiler]
+        [HarmonyPriority(0)]
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnScrapInLevel))] // This is bad dont do this
-        static IEnumerable<CodeInstruction> OnUpdateIL(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+        public IEnumerable<CodeInstruction> OnUpdateIL(IEnumerable<CodeInstruction> instructions, ILGenerator il)
         {
             var code = new List<CodeInstruction>(instructions);
 
@@ -147,5 +151,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
             r.StartCoroutine(Manager.Spawn.waitForScrapToSpawnToSync(list3.ToArray(), list.ToArray()));
         }
+
     }
 }

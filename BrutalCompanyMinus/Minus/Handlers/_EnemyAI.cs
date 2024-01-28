@@ -23,8 +23,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(EnemyAI.Start))]
-        private static void OnStart(EnemyAI __instance) // Set isOutside
+        [HarmonyPatch("Start")]
+        private static void OnStart(ref EnemyAI __instance) // Set isOutside
         {
             try
             {

@@ -23,9 +23,6 @@ namespace BrutalCompanyMinus.Minus.Events
             ScaleList.Add(ScaleType.MaxCash, new Scale(120.0f, 1.5f));
         }
 
-        public override void Execute()
-        {
-            Manager.paycut += UnityEngine.Random.Range(Get(ScaleType.MinCash), Get(ScaleType.MaxCash) + 1);
-        }
+        public override void Execute() => Manager.PayCredits(UnityEngine.Random.Range(Get(ScaleType.MinCash), Get(ScaleType.MaxCash) + 1));
     }
 }

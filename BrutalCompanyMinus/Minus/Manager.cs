@@ -18,8 +18,8 @@ namespace BrutalCompanyMinus.Minus
     {
 
         public static int daysPassed = -1;
-        public static int paycut = 0;
         public static SelectableLevel currentLevel;
+        public static Terminal currentTerminal;
 
         internal static float terrainArea = 0.0f;
         internal static string terrainTag = "";
@@ -365,6 +365,14 @@ namespace BrutalCompanyMinus.Minus
             return false;
         }
 
+        public static void PayCredits(int amount)
+        {
+            currentTerminal.groupCredits += amount;
+            currentTerminal.SyncGroupCreditsServerRpc(currentTerminal.groupCredits, currentTerminal.numberOfItemsInDropship);
+
+            HUDManager.Instance.AddTextToChatOnServer(string.Format("<color=green>{0}{1} credits</color>", (amount >= 0) ? "+" : "", amount));
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(RoundManager), "FinishGeneratingLevel")]
         private static void ObjectSpawnHandling()
@@ -396,23 +404,6 @@ namespace BrutalCompanyMinus.Minus
             {
                 Spawn.DoSpawnInsideEnemies();
                 Spawn.DoSpawnOutsideEnemies();
-            }
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(RoundManager), "Update")]
-        private static void OnUpdate()
-        {
-            if (paycut > 0)
-            {
-                Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
-
-                terminal.groupCredits += paycut;
-                terminal.SyncGroupCreditsServerRpc(terminal.groupCredits, terminal.numberOfItemsInDropship);
-
-                HUDManager.Instance.AddTextToChatOnServer("<color=green>+" + paycut + "$</color>");
-
-                paycut = 0;
             }
         }
 
@@ -466,18 +457,6 @@ namespace BrutalCompanyMinus.Minus
                 this.density = density;
                 this.radius = radius;
                 this.count = count;
-            }
-        }
-
-        public struct ItemWithRarity
-        {
-            public int rarity;
-            public Item item;
-
-            public ItemWithRarity(Item item, int rarity)
-            {
-                this.item = item;
-                this.rarity = rarity;
             }
         }
     }

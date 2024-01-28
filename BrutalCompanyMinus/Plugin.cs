@@ -15,7 +15,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.7.1";
+        private const string VERSION = "0.7.2";
         private readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -42,6 +42,7 @@ namespace BrutalCompanyMinus
 
             // Patch all
             harmony.PatchAll();
+            harmony.PatchAll(typeof(_LevelParameterRestoring));
 
             Log.LogInfo(NAME + " " + VERSION + " " + "is done patching.");
         }
@@ -56,6 +57,8 @@ namespace BrutalCompanyMinus
             {
                 // Initalize Events
                 foreach (MEvent e in EventManager.events) e.Initalize();
+
+                Manager.currentTerminal = FindObjectOfType<Terminal>();
 
                 // Config
                 Configuration.Initalize();
@@ -96,6 +99,7 @@ namespace BrutalCompanyMinus
         private static void ModifyLevel(ref SelectableLevel newLevel)
         {
             Manager.currentLevel = newLevel;
+            Manager.currentTerminal = FindObjectOfType<Terminal>();
             Manager.daysPassed++;
 
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
