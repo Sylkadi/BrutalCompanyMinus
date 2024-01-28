@@ -1,5 +1,12 @@
 # ChangeLog
 <details>
+  <summary>0.7.2</summary>
+  
+  - Made horrible transpiler run last
+  - Updated how paying works
+  - Bounty pay amount is now configurable
+</details>
+<details>
   <summary>0.7.1</summary>
   
   - Horrible fix for scrap not being restored (Can't figure out which mod causes this)
