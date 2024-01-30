@@ -1,4 +1,12 @@
 # ChangeLog
+# ChangeLog
+<details>
+  <summary>0.7.4</summary>
+  
+  - Added config option to disabled terminal text
+  - Fixed eventType weights not updating properly with disabled events.
+  - Moved enemy spawn restoring to 'ShipLeave' instead of on scrapSpawn(I am monkey).
+</details>
 <details>
   <summary>0.7.2</summary>
   
