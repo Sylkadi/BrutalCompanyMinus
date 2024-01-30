@@ -69,10 +69,10 @@ namespace BrutalCompanyMinus
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        private static bool generatedEnemyList = false, generatedOtherLists = false;
+        private static bool generatedList = false;
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if(!generatedEnemyList && Resources.FindObjectsOfTypeAll<EnemyType>().Concat(GameObject.FindObjectsByType<EnemyType>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray().Length != 0)
+            if(!generatedList && StartOfRound.Instance != null)
             {
                 // Generate Enemy List
                 Log.LogInfo("Generating 'EnemyList'");
@@ -128,10 +128,6 @@ namespace BrutalCompanyMinus
 
                 Log.LogInfo(string.Format("Finished generating 'ItemList', Count:{0}", ItemList.Count));
 
-                generatedEnemyList = true;
-            }
-            if(!generatedOtherLists && StartOfRound.Instance != null)
-            {
                 // Generate Object List
                 Log.LogInfo("Generating 'ObjectList'");
 
@@ -173,12 +169,12 @@ namespace BrutalCompanyMinus
 
                 Log.LogInfo(string.Format("Finished generating 'ObjectList', Count:{0}", ObjectList.Count));
 
-
                 // Generate FactorySize List
                 foreach (SelectableLevel level in StartOfRound.Instance.levels) mapSizeMultiplierList.Add(level.factorySizeMultiplier);
 
-                generatedOtherLists = true;
+                generatedList = true;
             }
+
         }
 
         public static EnemyType GetEnemy(EnemyName name) => EnemyList[EnemyNameList[name]];
