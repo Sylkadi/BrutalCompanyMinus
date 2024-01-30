@@ -28,7 +28,7 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<bool> useCustomWeights, showEventsInChat;
         public static ConfigEntry<int> eventsToSpawn;
 
-        public static ConfigEntry<bool> useWeatherMultipliers, randomizeWeatherMultipliers;
+        public static ConfigEntry<bool> useWeatherMultipliers, randomizeWeatherMultipliers, enableTerminalText;
 
         public static ConfigEntry<int> veryGoodWeight, goodWeight, neutralWeight, badWeight, veryBadWeight, removeEnemyWeight;
         public static ConfigEntry<float> weatherRandomRandomMinInclusive, weatherRandomRandomMaxInclusive;
@@ -86,6 +86,7 @@ namespace BrutalCompanyMinus
             // Weather settings
             useWeatherMultipliers = config.Bind("__Weather Settings", "Enable weather multipliers?", true, "'false'= Disable all weather multipliers     'true'= Enable weather multipliers");
             randomizeWeatherMultipliers = config.Bind("__Weather Settings", "Weather multiplier randomness?", false, "'false'= disable     'true'= enable");
+            enableTerminalText = config.Bind("__Weather Settings", "Enable terminal text?", true);
 
             // Weather Random settings
             weatherRandomRandomMinInclusive = config.Bind("_Weather Random Value", "Min Inclusive", 0.9f, "Lower bound of random value");

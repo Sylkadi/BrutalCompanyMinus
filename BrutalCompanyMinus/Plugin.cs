@@ -15,7 +15,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.7.3";
+        private const string VERSION = "0.7.5";
         private readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -40,13 +40,15 @@ namespace BrutalCompanyMinus
             // Load assets
             Assets.Load();
 
+            var obj = new Assets();
+            
+
             // Patch all
             harmony.PatchAll();
             harmony.PatchAll(typeof(_LevelParameterRestoring));
 
             Log.LogInfo(NAME + " " + VERSION + " " + "is done patching.");
         }
-
 
         private static bool Initalized = false;
         [HarmonyPrefix]
@@ -62,12 +64,11 @@ namespace BrutalCompanyMinus
 
                 // Config
                 Configuration.Initalize();
-                EventManager.UpdateAllEventWeights();
 
                 // Use config settings
                 for (int i = 0; i != EventManager.events.Count; i++)
                 {
-                    if (Configuration.useCustomWeights.Value) EventManager.events[i].Weight = Configuration.eventWeights[i].Value;
+                    EventManager.events[i].Weight = Configuration.eventWeights[i].Value;
                     EventManager.events[i].Description = Configuration.eventDescriptions[i].Value;
                     EventManager.events[i].ColorHex = Configuration.eventColorHexes[i].Value;
                     EventManager.events[i].Type = Configuration.eventTypes[i].Value;
@@ -89,6 +90,8 @@ namespace BrutalCompanyMinus
                     }
                 }
                 EventManager.events = newEvents;
+
+                if (!Configuration.useCustomWeights.Value) EventManager.UpdateAllEventWeights();
 
                 Initalized = true;
             }
@@ -126,7 +129,7 @@ namespace BrutalCompanyMinus
 
             // Choose any apply events
             List<MEvent> additionalEvents = new List<MEvent>();
-            List<MEvent> currentEvents = EventManager.ChooseEvents(newLevel, out additionalEvents);
+            List<MEvent> currentEvents = EventManager.ChooseEvents(out additionalEvents);
 
             foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name()); // Log Chosen events
 
@@ -142,10 +145,8 @@ namespace BrutalCompanyMinus
                 }
             }
 
-
             // Spawn outside scrap
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
-
 
             // Sync values to all clients
             Net.Instance.SyncValuesClientRpc(Manager.mapSizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);

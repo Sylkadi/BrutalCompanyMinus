@@ -113,7 +113,7 @@ namespace BrutalCompanyMinus.Minus
         [HarmonyPatch("TextPostProcess")]
         public static void OnLoadNewNode(ref string __result)
         {
-            if (Configuration.useWeatherMultipliers.Value)
+            if (Configuration.useWeatherMultipliers.Value && Configuration.enableTerminalText.Value)
             {
                 string s = __result;
 

@@ -49,6 +49,9 @@
     <Reference Include="UnityEngine.AIModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AIModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>

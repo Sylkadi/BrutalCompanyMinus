@@ -41,14 +41,21 @@ namespace BrutalCompanyMinus.Minus.Handlers
             Log.LogInfo(string.Format("Restoring un-modified level paramaters on level:{0}", __instance.currentLevel.name));
 
             // Restore paramaters
-            __instance.currentLevel.Enemies.Clear(); __instance.currentLevel.Enemies.AddRange(insideEnemies);
-            __instance.currentLevel.OutsideEnemies.Clear(); __instance.currentLevel.OutsideEnemies.AddRange(outsideEnemies);
-            __instance.currentLevel.DaytimeEnemies.Clear(); __instance.currentLevel.DaytimeEnemies.AddRange(daytimeEnemies);
-
             __instance.currentLevel.spawnableScrap.Clear(); __instance.currentLevel.spawnableScrap.AddRange(levelScrap); // Unmodified
             __instance.currentLevel.minScrap = MinScrap;
             __instance.currentLevel.maxScrap = MaxScrap;
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StartOfRound), "ShipLeave")]
+        public static void OnShipLeave()
+        {
+            // Restore parameters
+            RoundManager.Instance.currentLevel.Enemies.Clear(); RoundManager.Instance.currentLevel.Enemies.AddRange(insideEnemies);
+            RoundManager.Instance.currentLevel.OutsideEnemies.Clear(); RoundManager.Instance.currentLevel.OutsideEnemies.AddRange(outsideEnemies);
+            RoundManager.Instance.currentLevel.DaytimeEnemies.Clear(); RoundManager.Instance.currentLevel.DaytimeEnemies.AddRange(daytimeEnemies);
+        }
+
     }
 
     internal class _LevelParameterRestoring
@@ -56,7 +63,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyTranspiler]
         [HarmonyPriority(0)]
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnScrapInLevel))] // This is bad dont do this
-        public IEnumerable<CodeInstruction> OnUpdateIL(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+        private static IEnumerable<CodeInstruction> OnUpdateIL(IEnumerable<CodeInstruction> instructions, ILGenerator il)
         {
             var code = new List<CodeInstruction>(instructions);
 

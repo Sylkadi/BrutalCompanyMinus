@@ -1,9 +1,14 @@
-﻿using System;
+﻿using BrutalCompanyMinus.Minus;
+using DunGen;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using HarmonyLib;
+using Unity.Netcode;
+using BrutalCompanyMinus.Minus.Events;
 
 namespace BrutalCompanyMinus
 {
@@ -61,14 +66,13 @@ namespace BrutalCompanyMinus
             {
                 bundle = AssetBundle.LoadFromStream(stream);
             }
-
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        private static bool generatedList = false;
+        private static bool generatedEnemyList = false, generatedOtherLists = false;
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if(!generatedList && StartOfRound.Instance != null)
+            if(!generatedEnemyList && Resources.FindObjectsOfTypeAll<EnemyType>().Concat(GameObject.FindObjectsByType<EnemyType>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray().Length != 0)
             {
                 // Generate Enemy List
                 Log.LogInfo("Generating 'EnemyList'");
@@ -124,8 +128,10 @@ namespace BrutalCompanyMinus
 
                 Log.LogInfo(string.Format("Finished generating 'ItemList', Count:{0}", ItemList.Count));
 
-
-
+                generatedEnemyList = true;
+            }
+            if(!generatedOtherLists && StartOfRound.Instance != null)
+            {
                 // Generate Object List
                 Log.LogInfo("Generating 'ObjectList'");
 
@@ -171,7 +177,7 @@ namespace BrutalCompanyMinus
                 // Generate FactorySize List
                 foreach (SelectableLevel level in StartOfRound.Instance.levels) mapSizeMultiplierList.Add(level.factorySizeMultiplier);
 
-                generatedList = true;
+                generatedOtherLists = true;
             }
         }
 

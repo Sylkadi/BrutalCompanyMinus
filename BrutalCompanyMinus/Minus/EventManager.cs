@@ -104,7 +104,7 @@ namespace BrutalCompanyMinus.Minus
             return _events[_events.Count - 1];
         }
 
-        internal static List<MEvent> ChooseEvents(SelectableLevel newLevel, out List<MEvent> additionalEvents)
+        internal static List<MEvent> ChooseEvents(out List<MEvent> additionalEvents)
         {
             List<MEvent> chosenEvents = new List<MEvent>();
             List<MEvent> eventsToChooseForm = new List<MEvent>();
@@ -224,6 +224,8 @@ namespace BrutalCompanyMinus.Minus
 
             float VeryGoodWeight = (Sum / VeryGoodCount) * veryGoodProbability, GoodWeight = (Sum / GoodCount) * goodProbablity, NeutralWeight = (Sum / NeutralCount) * neutralProbability,
                   RemoveWeight = (Sum / RemoveCount) * removeEnemyProbability, BadWeight = (Sum / BadCount) * badProbability, VeryBadWeight = (Sum / VeryBadCount) * veryBadProbability;
+
+            Log.LogInfo(string.Format("VeryGood:{0}, Good:{1}, Neutral:{2}, Remove:{3}, Bad:{4}, VeryBad:{5}", VeryGoodWeight, GoodWeight, NeutralWeight, RemoveWeight, BadWeight, VeryBadWeight));
 
             foreach (MEvent e in events)
             {
