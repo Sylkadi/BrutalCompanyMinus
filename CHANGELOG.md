@@ -1,5 +1,9 @@
 # ChangeLog
-# ChangeLog
+<details>
+  <summary>0.7.5</summary>
+  
+  - Changed shitty code so game wont break
+</details>
 <details>
   <summary>0.7.4</summary>
   
