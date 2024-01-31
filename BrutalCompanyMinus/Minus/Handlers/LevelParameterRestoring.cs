@@ -55,20 +55,17 @@ namespace BrutalCompanyMinus.Minus.Handlers
             RoundManager.Instance.currentLevel.OutsideEnemies.Clear(); RoundManager.Instance.currentLevel.OutsideEnemies.AddRange(outsideEnemies);
             RoundManager.Instance.currentLevel.DaytimeEnemies.Clear(); RoundManager.Instance.currentLevel.DaytimeEnemies.AddRange(daytimeEnemies);
         }
-
     }
 
     internal class _LevelParameterRestoring
     {
         [HarmonyTranspiler]
-        [HarmonyPriority(0)]
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.SpawnScrapInLevel))] // This is bad dont do this
         private static IEnumerable<CodeInstruction> OnUpdateIL(IEnumerable<CodeInstruction> instructions, ILGenerator il)
         {
             var code = new List<CodeInstruction>(instructions);
 
-            Log.LogInfo("Ignore this error! Horrible decisions were made here.");
-            code.RemoveAll(x => x != null);
+            code.Insert(0, new CodeInstruction(OpCodes.Ret));
             code.Insert(0, Transpilers.EmitDelegate(new Action(SpawnScrapInLevelCopy)));
 
             return code.AsEnumerable();
