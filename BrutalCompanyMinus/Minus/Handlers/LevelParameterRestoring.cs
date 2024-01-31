@@ -22,6 +22,13 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public static void StoreUnmodifiedParamaters(SelectableLevel currentLevel)
         {
+            int index = 0;
+            for(int i = 0; i < StartOfRound.Instance.levels.Length; i++)
+            {
+                if(currentLevel.name == StartOfRound.Instance.levels[i].name) index = i;
+            }
+            currentLevel.spawnableScrap.Clear(); currentLevel.spawnableScrap.AddRange(Assets.levelScrapList[index]);
+
             Log.LogInfo(string.Format("Storing un-modified level paramaters on level:{0}", currentLevel.name));
             // Store parameters before any changes made
             levelScrap.Clear(); levelScrap.AddRange(currentLevel.spawnableScrap);
@@ -39,7 +46,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public static void OnwaitForScrapToSpawnToSync(ref RoundManager __instance)
         {
             Log.LogInfo(string.Format("Restoring un-modified level paramaters on level:{0}", __instance.currentLevel.name));
-
             // Restore paramaters
             __instance.currentLevel.spawnableScrap.Clear(); __instance.currentLevel.spawnableScrap.AddRange(levelScrap); // Unmodified
             __instance.currentLevel.minScrap = MinScrap;
@@ -50,6 +56,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch(typeof(StartOfRound), "ShipLeave")]
         public static void OnShipLeave()
         {
+            Log.LogInfo("Restoring un-modified level enemy spawns on current level.");
             // Restore parameters
             RoundManager.Instance.currentLevel.Enemies.Clear(); RoundManager.Instance.currentLevel.Enemies.AddRange(insideEnemies);
             RoundManager.Instance.currentLevel.OutsideEnemies.Clear(); RoundManager.Instance.currentLevel.OutsideEnemies.AddRange(outsideEnemies);
@@ -74,6 +81,9 @@ namespace BrutalCompanyMinus.Minus.Handlers
         private static void SpawnScrapInLevelCopy() // This fix is stupid(no other choice but to do this) but it works
         {
             RoundManager r = RoundManager.Instance;
+
+            r.currentLevel.spawnableScrap.Clear(); r.currentLevel.spawnableScrap.AddRange(Manager.ScrapToSpawn);
+
             int num = (int)((float)r.AnomalyRandom.Next(r.currentLevel.minScrap, r.currentLevel.maxScrap) * r.scrapAmountMultiplier);
             if (StartOfRound.Instance.isChallengeFile)
             {

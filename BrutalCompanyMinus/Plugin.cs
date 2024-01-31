@@ -15,8 +15,8 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.7.4";
-        private readonly Harmony harmony = new Harmony(GUID);
+        private const string VERSION = "0.7.5";
+        private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
         {
@@ -144,6 +144,8 @@ namespace BrutalCompanyMinus
                     HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
                 }
             }
+
+            Manager.ScrapToSpawn.Clear(); Manager.ScrapToSpawn.AddRange(newLevel.spawnableScrap);
 
             // Spawn outside scrap
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);

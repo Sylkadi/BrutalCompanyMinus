@@ -60,6 +60,8 @@ namespace BrutalCompanyMinus
 
         internal static List<float> mapSizeMultiplierList = new List<float>();
 
+        internal static List<List<SpawnableItemWithRarity>> levelScrapList = new List<List<SpawnableItemWithRarity>>();
+
         internal static void Load()
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.asset"))
@@ -169,8 +171,15 @@ namespace BrutalCompanyMinus
 
                 Log.LogInfo(string.Format("Finished generating 'ObjectList', Count:{0}", ObjectList.Count));
 
-                // Generate FactorySize List
-                foreach (SelectableLevel level in StartOfRound.Instance.levels) mapSizeMultiplierList.Add(level.factorySizeMultiplier);
+                // Generate FactorySize List and scrap List
+                foreach (SelectableLevel level in StartOfRound.Instance.levels) {
+                    mapSizeMultiplierList.Add(level.factorySizeMultiplier);
+                    List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
+                    items.AddRange(level.spawnableScrap);
+                    levelScrapList.Add(items);
+                }
+
+                Log.LogInfo(string.Format("Map Count:{0}", mapSizeMultiplierList.Count));
 
                 generatedList = true;
             }

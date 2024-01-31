@@ -46,6 +46,7 @@ namespace BrutalCompanyMinus.Minus
         internal static bool DoorGlitchActive = false;
 
         internal static int randomItemsToSpawnOutsideCount = 0;
+        internal static List<SpawnableItemWithRarity> ScrapToSpawn = new List<SpawnableItemWithRarity>();
 
         public static class Spawn
         {

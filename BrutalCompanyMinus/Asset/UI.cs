@@ -113,7 +113,7 @@ namespace BrutalCompanyMinus
                 float ScrapValueMultiplier = RoundManager.Instance.scrapValueMultiplier;
                 if (Configuration.NormaliseScrapValueDisplay.Value) ScrapValueMultiplier *= 2.5f;
                 text += string.Format("<br>Map:<br> Scrap:<br>  -Value: x{0}<br>  -Amount: x{1}<br><br> Factory:<br>  -Size: x{2}",
-                    ScrapValueMultiplier.ToString("F2"), RoundManager.Instance.scrapAmountMultiplier.ToString("F2"), (RoundManager.Instance.currentLevel.factorySizeMultiplier * RoundManager.Instance.mapSizeMultiplier).ToString("F2"));
+                    ScrapValueMultiplier.ToString("F2"), RoundManager.Instance.scrapAmountMultiplier.ToString("F2"), RoundManager.Instance.currentLevel.factorySizeMultiplier.ToString("F2"));
             }
 
             Net.Instance.textUI.Value = new FixedString4096Bytes(text);
