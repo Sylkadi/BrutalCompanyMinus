@@ -1,5 +1,12 @@
 # ChangeLog
 <details>
+  <summary>0.7.6</summary>
+  
+  - Game wont outright break when loading any of the zingar moon mod's
+  - AntiCoilHead is now a seperate enemy(audio is doubling yet to fix)
+  - Reverted rm.mapSizeMultiplier to rm.currentLevel.factorySizeMultilier
+</details>
+<details>
   <summary>0.7.5</summary>
   
   - Changed shitty code so game wont break
