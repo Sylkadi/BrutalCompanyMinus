@@ -36,7 +36,7 @@ namespace BrutalCompanyMinus.Minus
         internal static List<ObjectInfo> enemiesToSpawnOutside = new List<ObjectInfo>();
         internal static List<ObjectInfo> insideObjectsToSpawnOutside = new List<ObjectInfo>();
 
-        internal static float mapSizeMultiplier = 1f;
+        internal static float factorySizeMultiplier = 1f;
         internal static float scrapValueMultiplier = 0.4f;
         internal static float scrapAmountMultiplier = 1f;
         internal static int scrapMinAmount = 0;

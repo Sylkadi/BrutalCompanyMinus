@@ -12,9 +12,11 @@ using BrutalCompanyMinus.Minus.Events;
 
 namespace BrutalCompanyMinus
 {
+
+    [HarmonyPatch]
     public class Assets
     {
-        internal static AssetBundle bundle;
+        internal static AssetBundle bundle, customAssetBundle;
 
         public enum EnemyName
         {
@@ -58,15 +60,31 @@ namespace BrutalCompanyMinus
         private static Dictionary<string, Item> ItemList = new Dictionary<string, Item>();
         private static Dictionary<string, GameObject> ObjectList = new Dictionary<string, GameObject>();
 
-        internal static List<float> mapSizeMultiplierList = new List<float>();
+        internal static List<float> factorySizeMultiplierList = new List<float>();
 
         internal static List<List<SpawnableItemWithRarity>> levelScrapList = new List<List<SpawnableItemWithRarity>>();
+
+        // Custom Assets
+        internal static EnemyType antiCoilHead;
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(GameNetworkManager), "Start")]
+        private static void GenerateCustom()
+        {
+            antiCoilHead = (EnemyType)customAssetBundle.LoadAsset("AntiSpringManType");
+
+            NetworkManager.Singleton.AddNetworkPrefab(antiCoilHead.enemyPrefab);
+        }
 
         internal static void Load()
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.asset"))
             {
                 bundle = AssetBundle.LoadFromStream(stream);
+            }
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.customenemies"))
+            {
+                customAssetBundle = AssetBundle.LoadFromStream(stream);
             }
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -171,19 +189,29 @@ namespace BrutalCompanyMinus
 
                 Log.LogInfo(string.Format("Finished generating 'ObjectList', Count:{0}", ObjectList.Count));
 
-                // Generate FactorySize List and scrap List
-                foreach (SelectableLevel level in StartOfRound.Instance.levels) {
-                    mapSizeMultiplierList.Add(level.factorySizeMultiplier);
-                    List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
-                    items.AddRange(level.spawnableScrap);
-                    levelScrapList.Add(items);
-                }
+                generateLevelScrapLists();
 
-                Log.LogInfo(string.Format("Map Count:{0}", mapSizeMultiplierList.Count));
+                Log.LogInfo(string.Format("Map Count:{0}", factorySizeMultiplierList.Count));
 
                 generatedList = true;
             }
 
+        }
+
+        internal static void generateLevelScrapLists()
+        {
+            factorySizeMultiplierList.Clear();
+            levelScrapList.Clear();
+
+            // Generate FactorySize List and scrap List
+            foreach (SelectableLevel level in StartOfRound.Instance.levels)
+            {
+                factorySizeMultiplierList.Add(level.factorySizeMultiplier);
+                List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
+                items.AddRange(level.spawnableScrap);
+
+                levelScrapList.Add(items);
+            }
         }
 
         public static EnemyType GetEnemy(EnemyName name) => EnemyList[EnemyNameList[name]];

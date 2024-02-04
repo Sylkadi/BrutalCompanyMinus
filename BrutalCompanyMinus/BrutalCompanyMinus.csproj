@@ -11,10 +11,12 @@
 
   <ItemGroup>
     <None Remove="Asset\asset" />
+    <None Remove="Asset\customenemies" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Asset\asset" />
+    <EmbeddedResource Include="Asset\customenemies" />
   </ItemGroup>
 
   <ItemGroup>

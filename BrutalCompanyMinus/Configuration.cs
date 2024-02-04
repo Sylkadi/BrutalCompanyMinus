@@ -99,7 +99,7 @@ namespace BrutalCompanyMinus
 
                 float valueMultiplierSetting = config.Bind(configHeader, "Value Multiplier", weather.scrapValueMultiplier, "Multiply Scrap value for " + weather.weatherType.ToString()).Value;
                 float amountMultiplierSetting = config.Bind(configHeader, "Amount Multiplier", weather.scrapAmountMultiplier, "Multiply Scrap amount for " + weather.weatherType.ToString()).Value;
-                float sizeMultiplerSetting = config.Bind(configHeader, "Factory Size Multiplier", weather.mapSizeMultiplier, "Multiply Factory size for " + weather.weatherType.ToString()).Value;
+                float sizeMultiplerSetting = config.Bind(configHeader, "Factory Size Multiplier", weather.factorySizeMultiplier, "Multiply Factory size for " + weather.weatherType.ToString()).Value;
 
                 return new Weather(weather.weatherType, valueMultiplierSetting, amountMultiplierSetting, sizeMultiplerSetting);
             }

@@ -23,6 +23,11 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public static void StoreUnmodifiedParamaters(SelectableLevel currentLevel)
         {
             int index = 0;
+            if(StartOfRound.Instance.levels.Length > Assets.levelScrapList.Count)
+            {
+                // Regenerate List
+                Assets.generateLevelScrapLists(); // If event makes map smaller, this will make map permamently smaller...
+            }
             for(int i = 0; i < StartOfRound.Instance.levels.Length; i++)
             {
                 if(currentLevel.name == StartOfRound.Instance.levels[i].name) index = i;

@@ -15,7 +15,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.7.5";
+        private const string VERSION = "0.7.6";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -97,7 +97,7 @@ namespace BrutalCompanyMinus
             }
         }
 
-        [HarmonyPrefix]
+            [HarmonyPrefix]
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
         private static void ModifyLevel(ref SelectableLevel newLevel)
         {
@@ -119,7 +119,7 @@ namespace BrutalCompanyMinus
                 {
                     Manager.scrapValueMultiplier *= e.scrapValueMultiplier;
                     Manager.scrapAmountMultiplier *= e.scrapAmountMultiplier;
-                    Manager.mapSizeMultiplier *= e.mapSizeMultiplier;
+                    Manager.currentLevel.factorySizeMultiplier *= e.factorySizeMultiplier;
                 }
             }
 
@@ -151,16 +151,15 @@ namespace BrutalCompanyMinus
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
 
             // Sync values to all clients
-            Net.Instance.SyncValuesClientRpc(Manager.mapSizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);
+            Net.Instance.SyncValuesClientRpc(Manager.currentLevel.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);
 
             // Apply UI
             UI.GenerateText(currentEvents);
 
             // Logging
-            Log.LogInfo("MapMultipliers = [scrapValueMultiplier: " + Manager.scrapValueMultiplier + ",     scrapAmountMultiplier: " + Manager.scrapAmountMultiplier + ",     mapSizeMultiplier:" + Manager.mapSizeMultiplier + "]");
-            Log.LogInfo("IsAntiCoildHead = " + Net.Instance.isAntiCoilHead.Value);
+            Log.LogInfo("MapMultipliers = [scrapValueMultiplier: " + Manager.scrapValueMultiplier + ",     scrapAmountMultiplier: " + Manager.scrapAmountMultiplier + ",     currentLevel.factorySizeMultiplier:" + Manager.currentLevel.factorySizeMultiplier + "]");
         }
-
+        
         private static void ResetValues(SelectableLevel newLevel)
         {
             foreach (SpawnableMapObject obj in newLevel.spawnableMapObjects)
@@ -168,15 +167,15 @@ namespace BrutalCompanyMinus
                 if (obj.prefabToSpawn.name == "Landmine") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
                 if (obj.prefabToSpawn.name == "TurretContainer") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
             }
-            Manager.BountyActive = false; Manager.DoorGlitchActive = false; Net.Instance.isAntiCoilHead.Value = false;
+            Manager.BountyActive = false; Manager.DoorGlitchActive = false;
 
             // Reset Multipliers
             try
             {
-                Manager.mapSizeMultiplier = Assets.mapSizeMultiplierList[newLevel.levelID];
+                Manager.currentLevel.factorySizeMultiplier = Assets.factorySizeMultiplierList[newLevel.levelID];
             } catch
             {
-                Manager.mapSizeMultiplier = 1f;
+                Manager.currentLevel.factorySizeMultiplier = 1f;
             }
             Manager.scrapAmountMultiplier = 1.0f;
             Manager.scrapValueMultiplier = 0.4f; // Default value is 0.4 not 1.0

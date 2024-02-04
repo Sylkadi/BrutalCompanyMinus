@@ -19,19 +19,24 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
+            EventsToRemove = new List<string>() { nameof(Coilhead), nameof(LeaflessBrownTrees) };
+            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees) };
+
             ScaleList.Add(ScaleType.EnemyRarity, new Scale(30.0f, 0.5f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.05f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(1.0f, 0.08f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.08f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(1.0f, 0.1f));
+            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(1.0f, 0.08f));
+            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(1.0f, 0.1f));
         }
 
         public override void Execute()
         {
-            EnemyType Coilhead = Assets.GetEnemy(Assets.EnemyName.CoilHead);
+            EnemyType AntiCoilHead = Assets.antiCoilHead;
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Coilhead, Get(ScaleType.EnemyRarity));
-            Manager.Spawn.InsideEnemies(Coilhead, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-
-            Net.Instance.isAntiCoilHead.Value = true;
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, AntiCoilHead, Get(ScaleType.EnemyRarity));
+            Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.CoilHead]);
+            Manager.Spawn.InsideEnemies(AntiCoilHead, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
+            Manager.Spawn.OutsideEnemies(AntiCoilHead, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
         }
     }
 }

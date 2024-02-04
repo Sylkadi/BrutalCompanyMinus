@@ -18,8 +18,6 @@ namespace BrutalCompanyMinus
         public NetworkList<Weather> currentWeatherMultipliers;
         public NetworkList<OutsideObjectsToSpawn> outsideObjectsToSpawn;
 
-        public NetworkVariable<bool> isAntiCoilHead = new NetworkVariable<bool>();
-
         public NetworkVariable<FixedString4096Bytes> textUI = new NetworkVariable<FixedString4096Bytes>();
 
         void Awake()
@@ -37,7 +35,6 @@ namespace BrutalCompanyMinus
 
             if (IsServer) // Only call on server
             { 
-                isAntiCoilHead.Value = false;
                 InitalizeCurrentWeatherMultipliersServerRpc();
             }
 
@@ -76,9 +73,9 @@ namespace BrutalCompanyMinus
         }
 
         [ClientRpc]
-        public void SyncValuesClientRpc(float mapSizeMultiplier, float scrapValueMultiplier, float scrapAmountMultiplier)
+        public void SyncValuesClientRpc(float factorySizeMultiplier, float scrapValueMultiplier, float scrapAmountMultiplier)
         {
-            RoundManager.Instance.mapSizeMultiplier = mapSizeMultiplier;
+            RoundManager.Instance.currentLevel.factorySizeMultiplier = factorySizeMultiplier;
             RoundManager.Instance.scrapValueMultiplier = scrapValueMultiplier;
             RoundManager.Instance.scrapAmountMultiplier = scrapAmountMultiplier;
             RoundManager.Instance.currentLevel.minScrap = Manager.scrapMinAmount;
