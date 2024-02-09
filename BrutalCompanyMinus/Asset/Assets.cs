@@ -56,33 +56,56 @@ namespace BrutalCompanyMinus
             { ObjectName.TreeLeafless3, "treeLeafless.003_LOD0" }, { ObjectName.Landmine, "Landmine" }, { ObjectName.Turret, "TurretContainer" }
         };
 
+        public enum AtmosphereName
+        {
+            RollingGroundFog, Rainy, Stormy, Foggy, Flooded, Exclipsed
+        }
+        public static Dictionary<AtmosphereName, string> AtmosphereNameList = new Dictionary<AtmosphereName, string>()
+        {
+            { AtmosphereName.RollingGroundFog, "rolling ground fog" }, { AtmosphereName.Rainy, "rainy" }, { AtmosphereName.Stormy, "stormy" }, { AtmosphereName.Foggy, "foggy" }, { AtmosphereName.Flooded, "flooded" },
+            { AtmosphereName.Exclipsed, "eclipsed" }
+        };
+        
+
         private static Dictionary<string, EnemyType> EnemyList = new Dictionary<string, EnemyType>();
         private static Dictionary<string, Item> ItemList = new Dictionary<string, Item>();
         private static Dictionary<string, GameObject> ObjectList = new Dictionary<string, GameObject>();
+        private static Dictionary<string, WeatherEffect> AtmosphereList = new Dictionary<string, WeatherEffect>();
 
         internal static List<float> factorySizeMultiplierList = new List<float>();
 
         internal static List<List<SpawnableItemWithRarity>> levelScrapList = new List<List<SpawnableItemWithRarity>>();
+        internal static List<float> averageScrapValueList = new List<float>();
 
         // Custom Assets
-        internal static EnemyType antiCoilHead;
+        internal static EnemyType antiCoilHead, nutSlayer;
+        internal static Item slayerShotgun, grabbableTurret, grabbableLandmine;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
         private static void GenerateCustom()
         {
-            antiCoilHead = (EnemyType)customAssetBundle.LoadAsset("AntiSpringManType");
+            antiCoilHead = (EnemyType)customAssetBundle.LoadAsset("AntiCoilHead");
+            nutSlayer = (EnemyType)customAssetBundle.LoadAsset("NutSlayer");
+
+            slayerShotgun = (Item)customAssetBundle.LoadAsset("SlayerShotgun");
+            grabbableTurret = (Item)customAssetBundle.LoadAsset("GrabbableTurret");
+            grabbableLandmine = (Item)customAssetBundle.LoadAsset("GrabbableLandmine");
 
             NetworkManager.Singleton.AddNetworkPrefab(antiCoilHead.enemyPrefab);
+            NetworkManager.Singleton.AddNetworkPrefab(nutSlayer.enemyPrefab);
+            NetworkManager.Singleton.AddNetworkPrefab(slayerShotgun.spawnPrefab);
+            NetworkManager.Singleton.AddNetworkPrefab(grabbableTurret.spawnPrefab);
+            NetworkManager.Singleton.AddNetworkPrefab(grabbableLandmine.spawnPrefab);
         }
-
+        
         internal static void Load()
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.asset"))
             {
                 bundle = AssetBundle.LoadFromStream(stream);
             }
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.customenemies"))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.customassets"))
             {
                 customAssetBundle = AssetBundle.LoadFromStream(stream);
             }
@@ -148,6 +171,8 @@ namespace BrutalCompanyMinus
 
                 Log.LogInfo(string.Format("Finished generating 'ItemList', Count:{0}", ItemList.Count));
 
+
+
                 // Generate Object List
                 Log.LogInfo("Generating 'ObjectList'");
 
@@ -189,28 +214,44 @@ namespace BrutalCompanyMinus
 
                 Log.LogInfo(string.Format("Finished generating 'ObjectList', Count:{0}", ObjectList.Count));
 
-                generateLevelScrapLists();
-
                 Log.LogInfo(string.Format("Map Count:{0}", factorySizeMultiplierList.Count));
 
                 generatedList = true;
             }
-
         }
 
+        private static bool generatedLevelScrapLists = false;
         internal static void generateLevelScrapLists()
         {
-            factorySizeMultiplierList.Clear();
-            levelScrapList.Clear();
-
-            // Generate FactorySize List and scrap List
-            foreach (SelectableLevel level in StartOfRound.Instance.levels)
+            if(!generatedLevelScrapLists)
             {
-                factorySizeMultiplierList.Add(level.factorySizeMultiplier);
-                List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
-                items.AddRange(level.spawnableScrap);
+                // Generate FactorySize List and scrap List
+                foreach (SelectableLevel level in StartOfRound.Instance.levels)
+                {
+                    factorySizeMultiplierList.Add(level.factorySizeMultiplier);
+                    List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
 
-                levelScrapList.Add(items);
+                    items.AddRange(level.spawnableScrap);
+
+                    levelScrapList.Add(items);
+
+                    float scrapValueSum = 0.0f;
+                    float scrapWeightSum = 0.0f;
+                    foreach (SpawnableItemWithRarity item in items)
+                    {
+                        scrapValueSum += (item.spawnableItem.minValue + item.spawnableItem.maxValue) * item.rarity;
+                        scrapWeightSum += item.rarity;
+                    }
+                    if (scrapWeightSum != 0.0f)
+                    {
+                        averageScrapValueList.Add(scrapValueSum / (scrapWeightSum * 2.0f));
+                    }
+                    else {
+                        averageScrapValueList.Add(80);
+                    }
+                }
+
+                generatedLevelScrapLists = true;
             }
         }
 

@@ -34,6 +34,9 @@ namespace BrutalCompanyMinus.Minus
             new Events.Trees(),
             new Events.LeaflessBrownTrees(),
             new Events.LeaflessTrees(),
+            new Events.Raining(),
+            new Events.Gloomy(),
+            new Events.HeavyRain(),
             // Bad
             new Events.HoardingBugs(),
             new Events.Bees(),
@@ -47,6 +50,9 @@ namespace BrutalCompanyMinus.Minus
             new Events.DoorGlitch(),
             new Events.OutsideTurrets(),
             new Events.OutsideLandmines(),
+            new Events.ShipmentFees(),
+            new Events.GrabbableLandmines(),
+            new Events.GrabbableTurrets(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),
@@ -63,6 +69,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.GypsyColony(),
             new Events.ForestGiant(),
             new Events.InsideBees(),
+            new Events.NutSlayer(),
             // NoEnemy
             new Events.NoBaboons(),
             new Events.NoBracken(),

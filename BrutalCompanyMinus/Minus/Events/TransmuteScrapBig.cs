@@ -21,8 +21,6 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.VeryBad;
 
             EventsToRemove = new List<string>() { nameof(TransmuteScrapSmall), nameof(Dentures), nameof(Pickles), nameof(GoldenFacility), nameof(Honk), nameof(GoldenBars)};
-
-            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.08f, 0.0015f));
         }
 
         public override bool AddEventIfOnly() // If two-handed item exists in item pool
@@ -58,10 +56,9 @@ namespace BrutalCompanyMinus.Minus.Events
             }
 
             // Scale scrap amount abit more
-            Manager.scrapMinAmount += RoundManager.Instance.currentLevel.minTotalScrapValue / chosenScrap.spawnableItem.minValue;
-            Manager.scrapMaxAmount += RoundManager.Instance.currentLevel.maxTotalScrapValue / chosenScrap.spawnableItem.maxValue;
-            Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
+            float scrapValue = (chosenScrap.spawnableItem.minValue + chosenScrap.spawnableItem.maxValue) * 0.25f; // Intentionally
+            if (scrapValue <= 0) scrapValue = 40;
+            Manager.scrapAmountMultiplier *= Functions.Range(Mathf.Log(Assets.averageScrapValueList[Manager.GetLevelIndex()] / scrapValue, 5) + 1, 1.0f, 2.0f); // Range : [1.0f, 2.0f]
         }
-
     }
 }

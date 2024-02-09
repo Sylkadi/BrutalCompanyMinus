@@ -19,8 +19,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            EventsToRemove = new List<string>() { nameof(Coilhead), nameof(LeaflessBrownTrees) };
-            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees) };
+            EventsToRemove = new List<string>() { nameof(Coilhead), nameof(LeaflessBrownTrees), nameof(Trees), nameof(HeavyRain) };
+            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees), nameof(Gloomy) };   
 
             ScaleList.Add(ScaleType.EnemyRarity, new Scale(30.0f, 0.5f));
             ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.08f));

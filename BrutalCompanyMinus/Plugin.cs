@@ -6,6 +6,10 @@ using System.Reflection;
 using BrutalCompanyMinus.Minus;
 using System.Collections.Generic;
 using BrutalCompanyMinus.Minus.Handlers;
+using UnityEngine.Diagnostics;
+using GameNetcodeStuff;
+using Unity.Netcode;
+using UnityEngine.InputSystem.HID;
 
 namespace BrutalCompanyMinus
 {
@@ -15,7 +19,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.7.6";
+        private const string VERSION = "0.8.0";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -39,9 +43,6 @@ namespace BrutalCompanyMinus
             }
             // Load assets
             Assets.Load();
-
-            var obj = new Assets();
-            
 
             // Patch all
             harmony.PatchAll();
@@ -97,13 +98,14 @@ namespace BrutalCompanyMinus
             }
         }
 
-            [HarmonyPrefix]
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
         private static void ModifyLevel(ref SelectableLevel newLevel)
         {
             Manager.currentLevel = newLevel;
             Manager.currentTerminal = FindObjectOfType<Terminal>();
             Manager.daysPassed++;
+            Assets.generateLevelScrapLists();
 
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
@@ -136,7 +138,7 @@ namespace BrutalCompanyMinus
             EventManager.ApplyEvents(currentEvents);
             EventManager.ApplyEvents(additionalEvents);
 
-            if(Configuration.showEventsInChat.Value)
+            if (Configuration.showEventsInChat.Value)
             {
                 HUDManager.Instance.AddTextToChatOnServer("<color=#FFFFFF>Events:</color>");
                 foreach(MEvent e in currentEvents)
@@ -167,7 +169,7 @@ namespace BrutalCompanyMinus
                 if (obj.prefabToSpawn.name == "Landmine") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
                 if (obj.prefabToSpawn.name == "TurretContainer") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
             }
-            Manager.BountyActive = false; Manager.DoorGlitchActive = false;
+            Manager.BountyActive = false; Manager.DoorGlitchActive = false; Manager.ShipmentFees = false; Manager.grabbableLandmines = false; Manager.grabbableTurrets = false;
 
             // Reset Multipliers
             try

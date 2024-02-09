@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#008000";
             Type = EventType.Remove;
 
-            EventsToRemove = new List<string>() { nameof(Nutcracker) };
+            EventsToRemove = new List<string>() { nameof(Nutcracker), nameof(NutSlayer) };
         }
 
         public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.NutCracker]);

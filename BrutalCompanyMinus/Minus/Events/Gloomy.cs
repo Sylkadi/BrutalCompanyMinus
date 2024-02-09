@@ -1,0 +1,38 @@
+﻿using BrutalCompanyMinus;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Unity.Netcode;
+using UnityEngine;
+
+namespace BrutalCompanyMinus.Minus.Events
+{
+    internal class Gloomy : MEvent
+    {
+        public override string Name() => nameof(Gloomy);
+
+        public override void Initalize()
+        {
+            Weight = 8;
+            Description = "It's gloomy out here";
+            ColorHex = "#FFFFFF";
+            Type = EventType.Neutral;
+        }
+
+        public override bool AddEventIfOnly()
+        {
+            switch(RoundManager.Instance.currentLevel.currentWeather)
+            {
+                case LevelWeatherType.Eclipsed: return false;
+                case LevelWeatherType.Stormy: return false;
+                case LevelWeatherType.Flooded: return false;
+                case LevelWeatherType.Foggy: return false;
+            }
+            return true;
+        }
+
+        public override void Execute() => Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Foggy], true);
+    }
+}

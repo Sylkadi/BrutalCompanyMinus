@@ -42,8 +42,7 @@ namespace BrutalCompanyMinus.Minus
         internal static int scrapMinAmount = 0;
         internal static int scrapMaxAmount = 0;
 
-        internal static bool BountyActive = false;
-        internal static bool DoorGlitchActive = false;
+        internal static bool BountyActive = false, DoorGlitchActive = false, ShipmentFees = false, grabbableTurrets = false, grabbableLandmines = false;
 
         internal static int randomItemsToSpawnOutsideCount = 0;
         internal static List<SpawnableItemWithRarity> ScrapToSpawn = new List<SpawnableItemWithRarity>();
@@ -102,7 +101,7 @@ namespace BrutalCompanyMinus.Minus
                         position.y = info.point.y; // Match raycast hit y position
 
                         position += offset;
-                        rotation.eulerAngles = rotation.eulerAngles + new Vector3(0.0f, random.Next(0, 360), 0.0f);
+                        rotation.eulerAngles += new Vector3(0.0f, random.Next(0, 360), 0.0f);
 
                         GameObject gameObject = UnityEngine.Object.Instantiate(obj, position, rotation);
 
@@ -212,7 +211,7 @@ namespace BrutalCompanyMinus.Minus
                     GrabbableObject grabbableObject = obj.GetComponent<GrabbableObject>();
                     grabbableObject.transform.rotation = Quaternion.Euler(grabbableObject.itemProperties.restingRotation);
                     grabbableObject.fallTime = 0.0f;
-                    ScrapValues.Add((int)(UnityEngine.Random.Range(ScrapToSpawn[i].minValue, ScrapToSpawn[i].maxValue + 1) * r.scrapValueMultiplier));
+                    ScrapValues.Add((int)(UnityEngine.Random.Range(ScrapToSpawn[i].minValue, ScrapToSpawn[i].maxValue + 1) * r.scrapValueMultiplier));  
                     grabbableObject.scrapValue = ScrapValues[ScrapValues.Count - 1];
                     NetworkObject netObj = obj.GetComponent<NetworkObject>();
                     netObj.Spawn();
@@ -246,6 +245,15 @@ namespace BrutalCompanyMinus.Minus
                     terminal.orderedItemsFromTerminal.Add(item);
                 }
             }
+        }
+
+        public static int GetLevelIndex()
+        {
+            for(int i = 0; i < StartOfRound.Instance.levels.Length; i++)
+            {
+                if (StartOfRound.Instance.levels[i].name == RoundManager.Instance.currentLevel.name) return i;
+            }
+            return 0;
         }
 
         internal static void SampleMap()
@@ -337,44 +345,69 @@ namespace BrutalCompanyMinus.Minus
             list.Add(spawnableEnemyWithRarity);
         }
 
+        public static void SetAtmosphere(string name, bool state) => Net.Instance.SetAtmosphereClientRpc(name, state);
+
         public static void RemoveSpawn(string Name)
         {
-            bool removedEnemy = false;
-            int index = RoundManager.Instance.currentLevel.Enemies.FindIndex(x => x.enemyType.name.ToUpper() == Name.ToUpper());
-            if (index != -1)
+            int amountRemoved = 0;
+            try
             {
-                RoundManager.Instance.currentLevel.Enemies.RemoveAt(index);
-                removedEnemy = true;
-            }
-            index = RoundManager.Instance.currentLevel.OutsideEnemies.FindIndex(x => x.enemyType.name.ToUpper() == Name.ToUpper());
-            if (index != -1)
+                amountRemoved += RoundManager.Instance.currentLevel.Enemies.RemoveAll(x => x.enemyType.name.ToUpper() == Name.ToUpper());
+            } catch
             {
-                RoundManager.Instance.currentLevel.OutsideEnemies.RemoveAt(index);
-                removedEnemy = true;
+                Log.LogError("RemoveAll() on insideEnemies failed");
             }
-            index = RoundManager.Instance.currentLevel.DaytimeEnemies.FindIndex(x => x.enemyType.name.ToUpper() == Name.ToUpper());
-            if (index != -1)
+            try
             {
-                RoundManager.Instance.currentLevel.DaytimeEnemies.RemoveAt(index);
-                removedEnemy = true;
+                amountRemoved += RoundManager.Instance.currentLevel.OutsideEnemies.RemoveAll(x => x.enemyType.name.ToUpper() == Name.ToUpper());
+            } catch
+            {
+                Log.LogError("RemoveAll() on outsideEnemies failed");
             }
-            if (!removedEnemy) Log.LogInfo(string.Format("Failed to remove '{0}' from enemy pool, either it dosen't exist on the map or wrong string used.", Name));
+            try
+            {
+                amountRemoved += RoundManager.Instance.currentLevel.DaytimeEnemies.RemoveAll(x => x.enemyType.name.ToUpper() == Name.ToUpper());
+            } catch
+            {
+                Log.LogError("RemoveAll() on daytimeEnemies failed");
+            }
+            if (amountRemoved > 0) Log.LogInfo(string.Format("Failed to remove '{0}' from enemy pool, either it dosen't exist on the map or wrong string used.", Name));
         }
 
         public static bool SpawnExists(string name)
         {
-            if (RoundManager.Instance.currentLevel.Enemies.Exists(x => x.enemyType.name == name)) return true;
-            if (RoundManager.Instance.currentLevel.OutsideEnemies.Exists(x => x.enemyType.name == name)) return true;
-            if (RoundManager.Instance.currentLevel.DaytimeEnemies.Exists(x => x.enemyType.name == name)) return true;
+            try
+            {
+                if (RoundManager.Instance.currentLevel.Enemies.Exists(x => x.enemyType.name == name)) return true;
+            } catch
+            {
+                Log.LogError("Exists() on insideEnemies failed");
+            }
+            try
+            {
+                if (RoundManager.Instance.currentLevel.OutsideEnemies.Exists(x => x.enemyType.name == name)) return true;
+            } catch
+            {
+                Log.LogError("Exists() on outsideEnemies failed");
+            }
+            try
+            {
+                if (RoundManager.Instance.currentLevel.DaytimeEnemies.Exists(x => x.enemyType.name == name)) return true;
+            } catch
+            {
+                Log.LogError("Exists() on daytimeEnemies failed");
+            }
             return false;
         }
 
         public static void PayCredits(int amount)
         {
+            if (amount == 0) return;
             currentTerminal.groupCredits += amount;
             currentTerminal.SyncGroupCreditsServerRpc(currentTerminal.groupCredits, currentTerminal.numberOfItemsInDropship);
 
-            HUDManager.Instance.AddTextToChatOnServer(string.Format("<color=green>{0}{1} credits</color>", (amount >= 0) ? "+" : "", amount));
+            bool isPositive = (amount >= 0);
+            HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}{2} credits</color>", isPositive ? "#008000" : "#FF0000", isPositive ? "+" : "", amount));
         }
 
         [HarmonyPostfix]
@@ -502,6 +535,13 @@ namespace BrutalCompanyMinus.Minus
             }
 
             return nodes;
+        }
+
+        public static float Range(float value, float min, float max)
+        {
+            if (value < min) value = min;
+            if (value > max) value = max;
+            return value;
         }
 
         public static Vector3 GetSafePosition(List<Vector3> nodes, List<Vector3> denialNodes, float radius)
@@ -668,6 +708,4 @@ namespace BrutalCompanyMinus.Minus
             }
         }
     }
-
-
 }

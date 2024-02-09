@@ -22,17 +22,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public static void StoreUnmodifiedParamaters(SelectableLevel currentLevel)
         {
-            int index = 0;
-            if(StartOfRound.Instance.levels.Length > Assets.levelScrapList.Count)
-            {
-                // Regenerate List
-                Assets.generateLevelScrapLists(); // If event makes map smaller, this will make map permamently smaller...
-            }
-            for(int i = 0; i < StartOfRound.Instance.levels.Length; i++)
-            {
-                if(currentLevel.name == StartOfRound.Instance.levels[i].name) index = i;
-            }
-            currentLevel.spawnableScrap.Clear(); currentLevel.spawnableScrap.AddRange(Assets.levelScrapList[index]);
+            currentLevel.spawnableScrap.Clear(); currentLevel.spawnableScrap.AddRange(Assets.levelScrapList[Manager.GetLevelIndex()]);
 
             Log.LogInfo(string.Format("Storing un-modified level paramaters on level:{0}", currentLevel.name));
             // Store parameters before any changes made

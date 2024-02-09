@@ -39,8 +39,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public Collider mainCollider;
 
-        // Custom Variables
-
         public Light leftEyeLight;
         public Light rightEyeLight;
 
@@ -158,7 +156,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     }
                     stoppingMovement = flag;
                 }
-                UpdateLightsServerRpc(!flag);
             }
             if (stoppingMovement)
             {
@@ -258,20 +255,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     controller.JumpToFearLevel(1f);
                 }
             }
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void UpdateLightsServerRpc(bool enabled)
-        {
-            UpdateLightsClientRpc(enabled);
-        }
-
-        [ClientRpc]
-        public void UpdateLightsClientRpc(bool enabled)
-        {
-            float intensity = enabled ? 500f : 5f;
-            leftEyeLight.intensity = intensity;
-            rightEyeLight.intensity = intensity;
         }
 
         protected override void __initializeVariables()

@@ -27,6 +27,7 @@ namespace BrutalCompanyMinus
 
         public static ConfigEntry<bool> useCustomWeights, showEventsInChat;
         public static ConfigEntry<int> eventsToSpawn;
+        public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier;
 
         public static ConfigEntry<bool> useWeatherMultipliers, randomizeWeatherMultipliers, enableTerminalText;
 
@@ -70,10 +71,12 @@ namespace BrutalCompanyMinus
                 eventScales.Add(scales);
             }
 
-            // Weight settings
+            // Event settings
             useCustomWeights = config.Bind("__Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
             eventsToSpawn = config.Bind("__Event Settings", "How many events will spawn per round?", 3);
             showEventsInChat = config.Bind("__Event Settings", "Will Minus display events in chat?", false);
+            goodEventIncrementMultiplier = config.Bind("__Event Settings", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
+            badEventIncrementMultiplier = config.Bind("__Event Settings", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
 
             // eventType weights
             veryGoodWeight = config.Bind("_EventType Weights", "VeryGood event weight", 6);

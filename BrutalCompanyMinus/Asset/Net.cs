@@ -82,6 +82,31 @@ namespace BrutalCompanyMinus
             RoundManager.Instance.currentLevel.maxScrap = Manager.scrapMaxAmount;
         }
 
+        [ServerRpc]
+        public void SyncScrapValueServerRpc(NetworkObjectReference obj, int value)
+        {
+            SyncScrapValueClientRpc(obj, value);
+        }
+
+        [ClientRpc]
+        private void SyncScrapValueClientRpc(NetworkObjectReference obj, int value)
+        {
+            obj.TryGet(out NetworkObject netObj);
+            netObj.GetComponent<GrabbableObject>().SetScrapValue(value);
+        }
+
+        [ClientRpc]
+        public void SetAtmosphereClientRpc(string name, bool state)
+        {
+            for (int i = 0; i < TimeOfDay.Instance.effects.Length; i++)
+            {
+                if (TimeOfDay.Instance.effects[i].name == name)
+                {
+                    TimeOfDay.Instance.effects[i].effectEnabled = state;
+                }
+            }
+        }
+
         [ClientRpc]
         public void ShowCaseEventsClientRpc()
         {

@@ -45,7 +45,12 @@ namespace BrutalCompanyMinus.Minus
             try
             {
                 Scale scale = ScaleList[EventType];
-                return scale.Base + (scale.Increment * Manager.daysPassed);
+                float increment = scale.Increment;
+
+                if (Type == MEvent.EventType.VeryBad || Type == MEvent.EventType.Bad) increment = scale.Increment * Configuration.badEventIncrementMultiplier.Value;
+                if (Type == MEvent.EventType.VeryGood || Type == MEvent.EventType.Good) increment = scale.Increment * Configuration.goodEventIncrementMultiplier.Value;
+
+                return scale.Base + (increment * Manager.daysPassed);
             } catch
             {
                 Log.LogError(string.Format("Scalar '{0}' for '{1}' not found, returning 0.", EventType.ToString(), Name()));
