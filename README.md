@@ -3,6 +3,8 @@
 #### This mod is required on all clients
 #### Makes the game harder
 #### Current plan is to make more 'unique' events
+#### Config is generated on save file load
+#### Mod is highly configurable
 
 # Features
 <details>
@@ -111,8 +113,11 @@
 | Locusts | Spawns Roaming Locusts |
 | Birds | Spawns Manticoils |
 | Trees | Spawns Trees |
-| Leafless Brown Trees | Spawns trees withouth leaves |
+| Leafless Brown Trees | Spawns trees without leaves |
 | Leafless Trees | Spawns spooky trees |
+| Gloomy | Makes the atmosphere foggy |
+| Rainy | Makes it rain (No mud) | 
+| Heavy Rain | Makes the atmosphere rainy, flooded and stormy. Triple rain. |
   </details>
 
   <details>
@@ -132,6 +137,9 @@
 | Door Glitch | Makes big doors inside the facility open and close randomly |
 | Outside Turrets | Spawns turrets outside, comes with Trees |
 | Outside Landmines | Spawns Landmines outside |
+| Grabbable Turrets | Turns some of the turrets on the map into scrap |
+| Grabbable Mines | Turns some of the mines on the map into scrap |
+| Shipment Fees | Any shipment's on given moon will deduct credits as a fee |
   </details>
 
   <details>
@@ -141,19 +149,20 @@
 |-|-|
 | Nutcracker | Spawns Nutcrackers outside and inside, comes with Turrets |
 | Arachnophobia | Spawns alot of Bunker Spiders outside and inside, comes with Leafless Trees |
-| Breacken | Spawns Brackens Inside |
+| Bracken | Spawns Brackens Inside |
 | Coilhead | Spawns Coilheads Inside |
 | BaboonHorde | Spawns alot of Baboon Hawks outside |
 | Dogs | Spawns Eyeless Dogs outside and inside |
 | Jester | Spawns Jesters inside |
 | Little Girl | Spawns Ghost Girls inside |
-| Anti Coilhead | Changes Coilhead AI and spawns them inside |
+| Anti Coilhead | Changes Coilhead AI and spawns them inside, comes with Leafless Trees and Gloomy |
 | Chinese Produce | Decreased Scrap Value but Increased Scrap Amount |
 | Transmute Scrap Big | Takes any two-handed scrap in map scrap pool and only spawns that |
 | War Zone | Acts as Quad event including Turrets, Landmines, Outside Turrets and Outside Landmines |
 | Gypsy Colony | Spawns a load of Hoarding Bugs outside and inside, comes with Scarce Outside Scrap |
 | Forest Giant | Spawns a Forest Keeper inside |
 | Inside Bees | Spawns Bees outside and inside |
+| Nutslayer | Spawns the Nutslayer inside the facility, kills everything... comes with gloomy. |
     
   </details>
   
