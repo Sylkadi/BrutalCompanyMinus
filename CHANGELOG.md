@@ -1,10 +1,28 @@
 # ChangeLog
 <details>
+  <summary>0.8.0</summary>
+  
+  - Added 7 new events.
+    
+  - Raining: Turns the atmosphere to raining (withouth the puddles)
+  - Gloomy: Turns atmopshere gloomy(foggy withouth the fog).
+  - Heavy Rain: Triple rain
+  - Shipment Fees: Any shipment on given planet will incur fees.
+  - Grabbable Landmines: Some landmines on the map will turn into scrap. (Wont blow you up straight away)
+  - Grabbable Turrets: Some turrets on the map will turn into scrap.
+  - Nut slayer: Spawns the nutslayer inside the facility, kills everything... If killed drops shotgun with infinite ammo.
+
+  - Updated antiCoilHead, no longer double audio.
+  - Updated how transmuteScrapSmall and transmuteScrapBig scale scrapAmount.
+  - Added Increment Global Multipliers config settings.
+
+</details>
+<details>
   <summary>0.7.6</summary>
   
   - Game wont outright break when loading any of the zingar moon mod's
   - AntiCoilHead is now a seperate enemy(audio is doubling yet to fix)
-  - Reverted rm.mapSizeMultiplier to rm.currentLevel.factorySizeMultilier
+  - Reverted rm.mapSizeMultiplier to rm.currentLevel.factorySizeMultiplier
 </details>
 <details>
   <summary>0.7.5</summary>
