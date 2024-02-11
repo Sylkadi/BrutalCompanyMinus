@@ -253,7 +253,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private void OnTriggerEnter(Collider other)
         {
-            if (hasExploded || pressMineDebounceTimer > 0f)
+            if (hasExploded || pressMineDebounceTimer > 0f || mineGrabbed)
             {
                 return;
             }
@@ -302,7 +302,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private void OnTriggerExit(Collider other)
         {
-            if (hasExploded || !mineActivated)
+            if (hasExploded || !mineActivated || mineGrabbed)
             {
                 return;
             }

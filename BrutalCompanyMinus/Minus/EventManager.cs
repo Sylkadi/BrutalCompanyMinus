@@ -187,9 +187,16 @@ namespace BrutalCompanyMinus.Minus
             foreach (MEvent e in currentEvents) e.Execute();
         }
 
+
         internal static void UpdateAllEventWeights()
         {
-            float eventTypeWeightSum = Configuration.veryGoodWeight.Value + Configuration.goodWeight.Value + Configuration.neutralWeight.Value + Configuration.badWeight.Value + Configuration.veryBadWeight.Value + Configuration.removeEnemyWeight.Value;
+            float fix(float value) // This is to avoid division by zero
+            {
+                if (value < 1) return 1;
+                return value;
+            }
+
+            float eventTypeWeightSum = fix(Configuration.veryGoodWeight.Value + Configuration.goodWeight.Value + Configuration.neutralWeight.Value + Configuration.badWeight.Value + Configuration.veryBadWeight.Value + Configuration.removeEnemyWeight.Value);
 
             float veryGoodProbability = Configuration.veryGoodWeight.Value / eventTypeWeightSum;
             float goodProbablity = Configuration.goodWeight.Value / eventTypeWeightSum;
@@ -200,8 +207,7 @@ namespace BrutalCompanyMinus.Minus
 
 
             // Update all weights on events
-            // CurrentSplit: VeryGood = 5%, Good = 18%, Neutral = 12%, Remove = 15%, Bad = 35%, VeryBad = 15%
-            int VeryGoodCount = 0, GoodCount = 0, NeutralCount = 0, RemoveCount = 0, BadCount = 0, VeryBadCount = 0, Sum = 0;
+            float VeryGoodCount = 0, GoodCount = 0, NeutralCount = 0, RemoveCount = 0, BadCount = 0, VeryBadCount = 0, Sum = 0;
             foreach (MEvent e in events)
             {
                 switch (e.Type)
@@ -226,11 +232,10 @@ namespace BrutalCompanyMinus.Minus
                         break;
                 }
             }
-
             Sum = VeryBadCount + GoodCount + NeutralCount + RemoveCount + BadCount + VeryBadCount;
 
-            float VeryGoodWeight = (Sum / VeryGoodCount) * veryGoodProbability, GoodWeight = (Sum / GoodCount) * goodProbablity, NeutralWeight = (Sum / NeutralCount) * neutralProbability,
-                  RemoveWeight = (Sum / RemoveCount) * removeEnemyProbability, BadWeight = (Sum / BadCount) * badProbability, VeryBadWeight = (Sum / VeryBadCount) * veryBadProbability;
+            float VeryGoodWeight = (Sum / fix(VeryGoodCount)) * veryGoodProbability, GoodWeight = (Sum / fix(GoodCount)) * goodProbablity, NeutralWeight = (Sum / fix(NeutralCount)) * neutralProbability,
+                  RemoveWeight = (Sum / fix(RemoveCount)) * removeEnemyProbability, BadWeight = (Sum / fix(BadCount)) * badProbability, VeryBadWeight = (Sum / fix(VeryBadCount)) * veryBadProbability;
 
             Log.LogInfo(string.Format("VeryGood:{0}, Good:{1}, Neutral:{2}, Remove:{3}, Bad:{4}, VeryBad:{5}", VeryGoodWeight, GoodWeight, NeutralWeight, RemoveWeight, BadWeight, VeryBadWeight));
 
@@ -240,21 +245,27 @@ namespace BrutalCompanyMinus.Minus
                 {
                     case MEvent.EventType.VeryGood:
                         e.Weight = (int)(VeryGoodWeight * 1000f);
+                        if (VeryGoodCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.Good:
                         e.Weight = (int)(GoodWeight * 1000f);
+                        if (GoodCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.Neutral:
                         e.Weight = (int)(NeutralWeight * 1000f);
+                        if (NeutralCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.Remove:
                         e.Weight = (int)(RemoveWeight * 1000f);
+                        if (RemoveCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.Bad:
                         e.Weight = (int)(BadWeight * 1000f);
+                        if (BadCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.VeryBad:
                         e.Weight = (int)(VeryBadWeight * 1000f);
+                        if (VeryBadCount == 0) e.Weight = 0;
                         break;
                 }
                 switch (e.Name())
