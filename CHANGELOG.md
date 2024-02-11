@@ -1,5 +1,11 @@
 # ChangeLog
 <details>
+  <summary>0.8.1</summary>
+  
+  - Game should no longer break when disabling all events of one type.
+  - Fixed some things with grabbableLandmines(Still cant figure out why scan node is not working)
+</details>
+<details>
   <summary>0.8.0</summary>
   
   - Added 7 new events.
