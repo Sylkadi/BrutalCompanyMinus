@@ -237,34 +237,38 @@ namespace BrutalCompanyMinus.Minus
             float VeryGoodWeight = (Sum / fix(VeryGoodCount)) * veryGoodProbability, GoodWeight = (Sum / fix(GoodCount)) * goodProbablity, NeutralWeight = (Sum / fix(NeutralCount)) * neutralProbability,
                   RemoveWeight = (Sum / fix(RemoveCount)) * removeEnemyProbability, BadWeight = (Sum / fix(BadCount)) * badProbability, VeryBadWeight = (Sum / fix(VeryBadCount)) * veryBadProbability;
 
-            Log.LogInfo(string.Format("VeryGood:{0}, Good:{1}, Neutral:{2}, Remove:{3}, Bad:{4}, VeryBad:{5}", VeryGoodWeight, GoodWeight, NeutralWeight, RemoveWeight, BadWeight, VeryBadWeight));
-
             foreach (MEvent e in events)
             {
                 switch (e.Type)
                 {
                     case MEvent.EventType.VeryGood:
                         e.Weight = (int)(VeryGoodWeight * 1000f);
+                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
                         if (VeryGoodCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.Good:
                         e.Weight = (int)(GoodWeight * 1000f);
+                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
                         if (GoodCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.Neutral:
                         e.Weight = (int)(NeutralWeight * 1000f);
+                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
                         if (NeutralCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.Remove:
                         e.Weight = (int)(RemoveWeight * 1000f);
+                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
                         if (RemoveCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.Bad:
                         e.Weight = (int)(BadWeight * 1000f);
+                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
                         if (BadCount == 0) e.Weight = 0;
                         break;
                     case MEvent.EventType.VeryBad:
                         e.Weight = (int)(VeryBadWeight * 1000f);
+                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
                         if (VeryBadCount == 0) e.Weight = 0;
                         break;
                 }

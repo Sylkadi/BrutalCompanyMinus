@@ -336,7 +336,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private void TriggerMineOnLocalClientByExiting()
         {
-            if (!hasExploded && !mineGrabbed)
+            if (!hasExploded || !mineGrabbed)
             {
                 SetOffMineAnimation();
                 sendingExplosionRPC = true;
