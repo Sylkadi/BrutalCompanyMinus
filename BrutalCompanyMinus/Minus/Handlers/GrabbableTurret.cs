@@ -32,8 +32,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     NetworkObject netObject = grabbableTurret.GetComponent<NetworkObject>();
                     netObject.Spawn();
 
-                    Manager.objectsToClear.Add(grabbableTurret);
-
                     __instance.StartCoroutine(destroySelf(__instance, netObject)); // destroy
                 }
             }

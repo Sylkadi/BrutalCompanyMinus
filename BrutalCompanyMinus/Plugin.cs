@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.8.0";
+        private const string VERSION = "0.8.2";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -108,6 +108,7 @@ namespace BrutalCompanyMinus
             Assets.generateLevelScrapLists();
 
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
+            Manager.grabbableLandmines = false; Manager.grabbableTurrets = false;
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
 
             // Reset values
@@ -169,7 +170,7 @@ namespace BrutalCompanyMinus
                 if (obj.prefabToSpawn.name == "Landmine") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
                 if (obj.prefabToSpawn.name == "TurretContainer") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
             }
-            Manager.BountyActive = false; Manager.DoorGlitchActive = false; Manager.ShipmentFees = false; Manager.grabbableLandmines = false; Manager.grabbableTurrets = false;
+            Manager.BountyActive = false; Manager.DoorGlitchActive = false; Manager.ShipmentFees = false;
 
             // Reset Multipliers
             try

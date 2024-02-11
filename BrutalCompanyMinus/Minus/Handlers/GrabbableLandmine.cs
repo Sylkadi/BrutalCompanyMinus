@@ -79,8 +79,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     NetworkObject netObject = grabbableLandmine.GetComponent<NetworkObject>();
                     netObject.Spawn();
 
-                    Manager.objectsToClear.Add(grabbableLandmine);
-
                     __instance.StartCoroutine(destroySelf(__instance, netObject)); // destroy
                 }
             }
