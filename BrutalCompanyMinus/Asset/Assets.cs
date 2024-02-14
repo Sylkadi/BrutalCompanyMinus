@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 using HarmonyLib;
 using Unity.Netcode;
 using BrutalCompanyMinus.Minus.Events;
+using System.Reflection.Emit;
 
 namespace BrutalCompanyMinus
 {
@@ -67,10 +68,10 @@ namespace BrutalCompanyMinus
         };
         
 
-        private static Dictionary<string, EnemyType> EnemyList = new Dictionary<string, EnemyType>();
-        private static Dictionary<string, Item> ItemList = new Dictionary<string, Item>();
-        private static Dictionary<string, GameObject> ObjectList = new Dictionary<string, GameObject>();
-        private static Dictionary<string, WeatherEffect> AtmosphereList = new Dictionary<string, WeatherEffect>();
+        internal static Dictionary<string, EnemyType> EnemyList = new Dictionary<string, EnemyType>();
+        internal static Dictionary<string, Item> ItemList = new Dictionary<string, Item>();
+        internal static Dictionary<string, GameObject> ObjectList = new Dictionary<string, GameObject>();
+        internal static Dictionary<string, WeatherEffect> AtmosphereList = new Dictionary<string, WeatherEffect>();
 
         internal static List<float> factorySizeMultiplierList = new List<float>();
 
@@ -115,144 +116,145 @@ namespace BrutalCompanyMinus
         private static bool generatedList = false;
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if(!generatedList && StartOfRound.Instance != null)
+            if (generatedList || StartOfRound.Instance == null) return;
+
+            // Generate Enemy List
+            Log.LogInfo("Generating 'EnemyList'");
+
+            EnemyType[] AllEnemies = Resources.FindObjectsOfTypeAll<EnemyType>().Concat(GameObject.FindObjectsByType<EnemyType>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray();
+            Array.Reverse(AllEnemies); // Reverse(Important)
+            AllEnemies = AllEnemies.GroupBy(x => x.name).Select(x => x.FirstOrDefault()).ToArray(); // Remove duplicates
+
+            for (int i = 0; i < AllEnemies.Length; i++)
             {
-                // Generate Enemy List
-                Log.LogInfo("Generating 'EnemyList'");
-
-                EnemyType[] AllEnemies = Resources.FindObjectsOfTypeAll<EnemyType>().Concat(GameObject.FindObjectsByType<EnemyType>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray();
-                Array.Reverse(AllEnemies); // Reverse(Important)
-                AllEnemies = AllEnemies.GroupBy(x => x.name).Select(x => x.FirstOrDefault()).ToArray(); // Remove duplicates
-                
-                for(int i = 0; i < AllEnemies.Length; i++)
-                {
-                    if (AllEnemies[i].enemyPrefab == null) Log.LogWarning(string.Format("Enemy:{0}, prefab is null, this may cause issues...", AllEnemies[i].name));
-                    EnemyList.Add(AllEnemies[i].name, AllEnemies[i]);
-                }
-
-                // Check list
-                foreach(KeyValuePair<string, EnemyType> e in EnemyList)
-                {
-                    bool existsInList = false;
-                    foreach(KeyValuePair<EnemyName, string> n in EnemyNameList)
-                    {
-                        if (e.Key == n.Value) existsInList = true;
-                    }
-                    if (!existsInList) Log.LogWarning(string.Format("Enemy:'{0}', isn't matched with enum, this may cause issues...", e.Key));
-                }
-
-                Log.LogInfo(string.Format("Finished generating 'EnemyList', Count:{0}", EnemyList.Count));
-
-
-
-                // Generate Item List
-                Log.LogInfo("Generating 'ItemList'");
-
-                Item[] AllItems = Resources.FindObjectsOfTypeAll<Item>().Concat(GameObject.FindObjectsByType<Item>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray();
-                Array.Reverse(AllItems); // Reverse(Important)
-                AllItems = AllItems.GroupBy(x => x.name).Select(x => x.FirstOrDefault()).ToArray(); // Remove duplicates
-
-                for(int i = 0; i < AllItems.Length; i++)
-                {
-                    if (AllItems[i].spawnPrefab == null) Log.LogWarning(string.Format("Item:{0}, prefab is null, this may cause issues...", AllItems[i].name));
-                    ItemList.Add(AllItems[i].name, AllItems[i]);
-                }
-
-                // Check list
-                foreach (KeyValuePair<string, Item> i in ItemList)
-                {
-                    bool existsInList = false;
-                    foreach (KeyValuePair<ItemName, string> n in ItemNameList)
-                    {
-                        if (i.Key == n.Value) existsInList = true;
-                    }
-                    if (!existsInList) Log.LogWarning(string.Format("Item:'{0}', isn't matched with enum, this may cause issues...", i.Key));
-                }
-
-                Log.LogInfo(string.Format("Finished generating 'ItemList', Count:{0}", ItemList.Count));
-
-
-
-                // Generate Object List
-                Log.LogInfo("Generating 'ObjectList'");
-
-                List<SpawnableMapObject> insideObjectList = new List<SpawnableMapObject>();
-                List<SpawnableOutsideObjectWithRarity> outsideObjectList = new List<SpawnableOutsideObjectWithRarity>();
-
-                foreach (SelectableLevel level in StartOfRound.Instance.levels)
-                {
-                    foreach (SpawnableMapObject obj in level.spawnableMapObjects)
-                    {
-                        if (insideObjectList.FindIndex(o => o.prefabToSpawn.name == obj.prefabToSpawn.name) < 0) // If dosent exist in list then add
-                        {
-                            insideObjectList.Add(obj);
-                        }
-                    }
-
-                    foreach (SpawnableOutsideObjectWithRarity obj in level.spawnableOutsideObjects)
-                    {
-                        if (outsideObjectList.FindIndex(o => o.spawnableObject.prefabToSpawn.name == obj.spawnableObject.prefabToSpawn.name) < 0) // If dosent exist in list then add
-                        {
-                            outsideObjectList.Add(obj);
-                        }
-                    }
-                }
-
-                foreach (SpawnableMapObject obj in insideObjectList) ObjectList.Add(obj.prefabToSpawn.name, obj.prefabToSpawn);
-                foreach (SpawnableOutsideObjectWithRarity obj in outsideObjectList) ObjectList.Add(obj.spawnableObject.prefabToSpawn.name, obj.spawnableObject.prefabToSpawn);
-
-                // Check list
-                foreach (KeyValuePair<string, GameObject> o in ObjectList)
-                {
-                    bool existsInList = false;
-                    foreach (KeyValuePair<ObjectName, string> n in ObjectNameList)
-                    {
-                        if (o.Key == n.Value) existsInList = true;
-                    }
-                    if (!existsInList) Log.LogWarning(string.Format("Object:'{0}', isn't matched with enum, this may cause issues...", o.Key));
-                }
-
-                Log.LogInfo(string.Format("Finished generating 'ObjectList', Count:{0}", ObjectList.Count));
-
-                Log.LogInfo(string.Format("Map Count:{0}", factorySizeMultiplierList.Count));
-
-                generatedList = true;
+                if (AllEnemies[i].enemyPrefab == null) Log.LogWarning(string.Format("Enemy:{0}, prefab is null, this may cause issues...", AllEnemies[i].name));
+                EnemyList.Add(AllEnemies[i].name, AllEnemies[i]);
             }
+            EnemyList.Remove("RedPillEnemyType"); // Useless
+
+            // Check list
+            foreach (KeyValuePair<string, EnemyType> e in EnemyList)
+            {
+                bool existsInList = false;
+                foreach (KeyValuePair<EnemyName, string> n in EnemyNameList)
+                {
+                    if (e.Key == n.Value) existsInList = true;
+                }
+                if (!existsInList) Log.LogWarning(string.Format("Enemy:'{0}', isn't matched with enum, this may cause issues...", e.Key));
+            }
+
+            Log.LogInfo(string.Format("Finished generating 'EnemyList', Count:{0}", EnemyList.Count));
+
+
+
+            // Generate Item List
+            Log.LogInfo("Generating 'ItemList'");
+
+            Item[] AllItems = Resources.FindObjectsOfTypeAll<Item>().Concat(GameObject.FindObjectsByType<Item>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray();
+            Array.Reverse(AllItems); // Reverse(Important)
+            AllItems = AllItems.GroupBy(x => x.name).Select(x => x.FirstOrDefault()).ToArray(); // Remove duplicates
+
+            for (int i = 0; i < AllItems.Length; i++)
+            {
+                if (AllItems[i].spawnPrefab == null) Log.LogWarning(string.Format("Item:{0}, prefab is null, this may cause issues...", AllItems[i].name));
+                ItemList.Add(AllItems[i].name, AllItems[i]);
+            }
+
+            // Check list
+            foreach (KeyValuePair<string, Item> i in ItemList)
+            {
+                bool existsInList = false;
+                foreach (KeyValuePair<ItemName, string> n in ItemNameList)
+                {
+                    if (i.Key == n.Value) existsInList = true;
+                }
+                if (!existsInList) Log.LogWarning(string.Format("Item:'{0}', isn't matched with enum, this may cause issues...", i.Key));
+            }
+
+            Log.LogInfo(string.Format("Finished generating 'ItemList', Count:{0}", ItemList.Count));
+
+
+
+            // Generate Object List
+            Log.LogInfo("Generating 'ObjectList'");
+
+            List<SpawnableMapObject> insideObjectList = new List<SpawnableMapObject>();
+            List<SpawnableOutsideObjectWithRarity> outsideObjectList = new List<SpawnableOutsideObjectWithRarity>();
+
+            foreach (SelectableLevel level in StartOfRound.Instance.levels)
+            {
+                foreach (SpawnableMapObject obj in level.spawnableMapObjects)
+                {
+                    if (insideObjectList.FindIndex(o => o.prefabToSpawn.name == obj.prefabToSpawn.name) < 0) // If dosent exist in list then add
+                    {
+                        insideObjectList.Add(obj);
+                    }
+                }
+
+                foreach (SpawnableOutsideObjectWithRarity obj in level.spawnableOutsideObjects)
+                {
+                    if (outsideObjectList.FindIndex(o => o.spawnableObject.prefabToSpawn.name == obj.spawnableObject.prefabToSpawn.name) < 0) // If dosent exist in list then add
+                    {
+                        outsideObjectList.Add(obj);
+                    }
+                }
+            }
+
+            foreach (SpawnableMapObject obj in insideObjectList) ObjectList.Add(obj.prefabToSpawn.name, obj.prefabToSpawn);
+            foreach (SpawnableOutsideObjectWithRarity obj in outsideObjectList) ObjectList.Add(obj.spawnableObject.prefabToSpawn.name, obj.spawnableObject.prefabToSpawn);
+
+            // Check list
+            foreach (KeyValuePair<string, GameObject> o in ObjectList)
+            {
+                bool existsInList = false;
+                foreach (KeyValuePair<ObjectName, string> n in ObjectNameList)
+                {
+                    if (o.Key == n.Value) existsInList = true;
+                }
+                if (!existsInList) Log.LogWarning(string.Format("Object:'{0}', isn't matched with enum, this may cause issues...", o.Key));
+            }
+
+            Log.LogInfo(string.Format("Finished generating 'ObjectList', Count:{0}", ObjectList.Count));
+
+            Log.LogInfo(string.Format("Map Count:{0}", factorySizeMultiplierList.Count));
+
+            generatedList = true;
         }
 
         private static bool generatedLevelScrapLists = false;
         internal static void generateLevelScrapLists()
         {
-            if(!generatedLevelScrapLists)
+            if (generatedLevelScrapLists) return;
+
+            
+            // Generate FactorySize List and scrap List
+            foreach (SelectableLevel level in StartOfRound.Instance.levels)
             {
-                // Generate FactorySize List and scrap List
-                foreach (SelectableLevel level in StartOfRound.Instance.levels)
+                factorySizeMultiplierList.Add(level.factorySizeMultiplier);
+                List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
+
+                items.AddRange(level.spawnableScrap);
+
+                levelScrapList.Add(items);
+
+                float scrapValueSum = 0.0f;
+                float scrapWeightSum = 0.0f;
+                foreach (SpawnableItemWithRarity item in items)
                 {
-                    factorySizeMultiplierList.Add(level.factorySizeMultiplier);
-                    List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
-
-                    items.AddRange(level.spawnableScrap);
-
-                    levelScrapList.Add(items);
-
-                    float scrapValueSum = 0.0f;
-                    float scrapWeightSum = 0.0f;
-                    foreach (SpawnableItemWithRarity item in items)
-                    {
-                        scrapValueSum += (item.spawnableItem.minValue + item.spawnableItem.maxValue) * item.rarity;
-                        scrapWeightSum += item.rarity;
-                    }
-                    if (scrapWeightSum != 0.0f)
-                    {
-                        averageScrapValueList.Add(scrapValueSum / (scrapWeightSum * 2.0f));
-                    }
-                    else {
-                        averageScrapValueList.Add(80);
-                    }
+                    scrapValueSum += (item.spawnableItem.minValue + item.spawnableItem.maxValue) * item.rarity;
+                    scrapWeightSum += item.rarity;
                 }
-
-                generatedLevelScrapLists = true;
+                if (scrapWeightSum != 0.0f)
+                {
+                    averageScrapValueList.Add(scrapValueSum / (scrapWeightSum * 2.0f));
+                }
+                else
+                {
+                    averageScrapValueList.Add(80);
+                }
             }
+            
+            generatedLevelScrapLists = true;
         }
 
         public static EnemyType GetEnemy(EnemyName name) => EnemyList[EnemyNameList[name]];

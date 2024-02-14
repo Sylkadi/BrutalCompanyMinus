@@ -320,16 +320,18 @@ namespace BrutalCompanyMinus.Minus
 
         public static SpawnableItemWithRarity generateItemWithRarity(Item item, int rarity)
         {
-
             SpawnableItemWithRarity spawnableItemWithRarity = new SpawnableItemWithRarity();
             spawnableItemWithRarity.spawnableItem = item;
             spawnableItemWithRarity.rarity = rarity;
-            if (item.spawnPrefab == null)
-            {
-                Log.LogError("Item prefab on generateItemWithRarity() is null, setting rarity to 0");
-                spawnableItemWithRarity.rarity = 0;
-            }
             return spawnableItemWithRarity;
+        }
+
+        public static SpawnableEnemyWithRarity generateEnemyWithRarity(EnemyType enemy, int rarity)
+        {
+            SpawnableEnemyWithRarity spawnableEnemyWithRarity = new SpawnableEnemyWithRarity();
+            spawnableEnemyWithRarity.enemyType = enemy;
+            spawnableEnemyWithRarity.rarity = rarity;
+            return spawnableEnemyWithRarity;
         }
 
         public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, EnemyType enemy, int rarity)

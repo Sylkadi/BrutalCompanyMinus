@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
+using System.Threading.Tasks;
 using HarmonyLib;
+using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -35,6 +37,60 @@ namespace BrutalCompanyMinus.Minus.Handlers
             daytimeEnemies.Clear(); daytimeEnemies.AddRange(currentLevel.DaytimeEnemies);
         }
 
+
+        private static bool modifiedEnemySpawns = false;
+        public static void ModifyEnemyScrapSpawns(StartOfRound instance)
+        {
+            if (modifiedEnemySpawns) return;
+
+            Log.LogInfo("Modifying enemy map pool and scrap pool from config.");
+
+            // Multi-thread this shit
+            Parallel.For(0, instance.levels.Length, i =>
+            {
+                Log.LogInfo(string.Format("Modifying enemy map pool and scrap pool for {0} using config settings.", instance.levels[i].name));
+
+                if (!Configuration.insideEnemyRarityList.TryGetValue(instance.levels[i].name, out _))
+                {
+                    Log.LogError(string.Format("Level {0} dosen't exist in dictionaries, skipping.", instance.levels[i].name));
+                    return;
+                }
+
+                instance.levels[i].Enemies.Clear();
+                instance.levels[i].OutsideEnemies.Clear();
+                instance.levels[i].DaytimeEnemies.Clear();
+                instance.levels[i].spawnableScrap.Clear();
+
+                foreach (KeyValuePair<string, int> insideEnemy in Configuration.insideEnemyRarityList[instance.levels[i].name])
+                {
+                    instance.levels[i].Enemies.Add(Manager.generateEnemyWithRarity(Assets.GetEnemy(insideEnemy.Key), insideEnemy.Value));
+                }
+
+                foreach (KeyValuePair<string, int> outsideEnemy in Configuration.outsideEnemyRarityList[instance.levels[i].name])
+                {
+                    instance.levels[i].OutsideEnemies.Add(Manager.generateEnemyWithRarity(Assets.GetEnemy(outsideEnemy.Key), outsideEnemy.Value));
+                }
+
+                foreach (KeyValuePair<string, int> daytimeEnemy in Configuration.daytimeEnemyRarityList[instance.levels[i].name])
+                {
+                    instance.levels[i].DaytimeEnemies.Add(Manager.generateEnemyWithRarity(Assets.GetEnemy(daytimeEnemy.Key), daytimeEnemy.Value));
+                }
+
+                foreach (KeyValuePair<string, int> scrap in Configuration.scrapRarityList[instance.levels[i].name])
+                {
+                    instance.levels[i].spawnableScrap.Add(Manager.generateItemWithRarity(Assets.GetItem(scrap.Key), scrap.Value));
+                }
+            });
+
+            modifiedEnemySpawns = true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StartOfRound), "Start")]
+        private static void onStartOfRoundStart()
+        {
+            modifiedEnemySpawns = false;
+        }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(RoundManager), "waitForScrapToSpawnToSync")]

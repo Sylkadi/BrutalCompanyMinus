@@ -50,7 +50,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
             }
         }
-
+        
         public override void Start()
         {
             base.Start();

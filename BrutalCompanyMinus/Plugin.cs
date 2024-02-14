@@ -105,7 +105,10 @@ namespace BrutalCompanyMinus
             Manager.currentLevel = newLevel;
             Manager.currentTerminal = FindObjectOfType<Terminal>();
             Manager.daysPassed++;
-            Assets.generateLevelScrapLists();
+
+            Configuration.GenerateLevelConfigurations(StartOfRound.Instance); // Bind 
+            LevelParameterRestoring.ModifyEnemyScrapSpawns(StartOfRound.Instance); // Set
+            Assets.generateLevelScrapLists(); // Store
 
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             Manager.grabbableLandmines = false; Manager.grabbableTurrets = false;
