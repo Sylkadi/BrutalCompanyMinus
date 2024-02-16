@@ -10,6 +10,8 @@ using UnityEngine.Diagnostics;
 using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine.InputSystem.HID;
+using Discord;
+using System.Diagnostics;
 
 namespace BrutalCompanyMinus
 {
@@ -19,7 +21,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.8.2";
+        private const string VERSION = "0.8.3";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -110,8 +112,9 @@ namespace BrutalCompanyMinus
             LevelParameterRestoring.ModifyEnemyScrapSpawns(StartOfRound.Instance); // Set
             Assets.generateLevelScrapLists(); // Store
 
+            Manager.ShipmentFees = false; // Was i fucking high at the time??????????????
+
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
-            Manager.grabbableLandmines = false; Manager.grabbableTurrets = false;
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
 
             // Reset values
@@ -173,7 +176,7 @@ namespace BrutalCompanyMinus
                 if (obj.prefabToSpawn.name == "Landmine") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
                 if (obj.prefabToSpawn.name == "TurretContainer") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
             }
-            Manager.BountyActive = false; Manager.DoorGlitchActive = false; Manager.ShipmentFees = false;
+            Manager.BountyActive = false; Manager.DoorGlitchActive = false; Manager.grabbableLandmines = false; Manager.grabbableTurrets = false;
 
             // Reset Multipliers
             try

@@ -12,13 +12,16 @@ using static BrutalCompanyMinus.Minus.MEvent;
 using System.Reflection.Emit;
 using static UnityEngine.EventSystems.EventTrigger;
 using MonoMod.Utils;
+using System.Diagnostics;
+using HarmonyLib;
 
 namespace BrutalCompanyMinus
 {
+    [HarmonyPatch]
     internal class Configuration
     {
 
-        public static ConfigFile generalConfig, eventConfig;
+        public static ConfigFile generalConfig, eventConfig, weatherMultipliersConfig;
 
         public static List<ConfigFile> levelConfigs = new List<ConfigFile>();
 
@@ -44,6 +47,12 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<string> UIKey;
         public static ConfigEntry<bool> NormaliseScrapValueDisplay, EnableUI, ShowUILetterBox, ShowExtraProperties, PopUpUI;
 
+        public static ConfigEntry<bool> customScrapWeights, customEnemyWeights, enableAllEnemies, enableAllScrap;
+        public static ConfigEntry<int> allEnemiesDefaultWeight, allScrapDefaultWeight;
+
+        public static ConfigEntry<bool> enableQuotaChanges;
+        public static ConfigEntry<int> deadLineDaysAmount, startingCredits, startingQuota, baseIncrease, increaseSteepness;
+
         public static Dictionary<string, Dictionary<string, int>>  // Level name => Enemy/Scrap name => Rarity
             insideEnemyRarityList = new Dictionary<string, Dictionary<string, int>>(), 
             outsideEnemyRarityList = new Dictionary<string, Dictionary<string, int>>(),
@@ -52,41 +61,53 @@ namespace BrutalCompanyMinus
         
         public static void Initalize()
         {
-            // Create General Config
+            // Create Configs
             generalConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\General_Settings.cfg", true);
+            eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
+            weatherMultipliersConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Multipliers.cfg", true);
 
             // Event settings
-            useCustomWeights = generalConfig.Bind("__Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
-            eventsToSpawn = generalConfig.Bind("__Event Settings", "How many events will spawn per round?", 3);
-            showEventsInChat = generalConfig.Bind("__Event Settings", "Will Minus display events in chat?", false);
-            goodEventIncrementMultiplier = generalConfig.Bind("__Event Settings", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
-            badEventIncrementMultiplier = generalConfig.Bind("__Event Settings", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
+            useCustomWeights = generalConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
+            eventsToSpawn = generalConfig.Bind("_Event Settings", "How many events will spawn per round?", 3);
+            showEventsInChat = generalConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
+            goodEventIncrementMultiplier = generalConfig.Bind("_Event Settings", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
+            badEventIncrementMultiplier = generalConfig.Bind("_Event Settings", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
 
             // eventType weights
-            veryGoodWeight = generalConfig.Bind("_EventType Weights", "VeryGood event weight", 6);
-            goodWeight = generalConfig.Bind("_EventType Weights", "Good event weight", 18);
-            neutralWeight = generalConfig.Bind("_EventType Weights", "Neutral event weight", 15);
-            badWeight = generalConfig.Bind("_EventType Weights", "Bad event weight", 33);
-            veryBadWeight = generalConfig.Bind("_EventType Weights", "VeryBad event weight", 13);
-            removeEnemyWeight = generalConfig.Bind("_EventType Weights", "Remove event weight", 15, "These events remove something");
+            veryGoodWeight = generalConfig.Bind("EventType Weights", "VeryGood event weight", 6);
+            goodWeight = generalConfig.Bind("EventType Weights", "Good event weight", 18);
+            neutralWeight = generalConfig.Bind("EventType Weights", "Neutral event weight", 15);
+            badWeight = generalConfig.Bind("EventType Weights", "Bad event weight", 33);
+            veryBadWeight = generalConfig.Bind("EventType Weights", "VeryBad event weight", 13);
+            removeEnemyWeight = generalConfig.Bind("EventType Weights", "Remove event weight", 15, "These events remove something");
 
             // Weather settings
-            useWeatherMultipliers = generalConfig.Bind("__Weather Settings", "Enable weather multipliers?", true, "'false'= Disable all weather multipliers     'true'= Enable weather multipliers");
-            randomizeWeatherMultipliers = generalConfig.Bind("__Weather Settings", "Weather multiplier randomness?", false, "'false'= disable     'true'= enable");
-            enableTerminalText = generalConfig.Bind("__Weather Settings", "Enable terminal text?", true);
-
+            useWeatherMultipliers = generalConfig.Bind("Weather Settings", "Enable weather multipliers?", true, "'false'= Disable all weather multipliers     'true'= Enable weather multipliers");
+            randomizeWeatherMultipliers = generalConfig.Bind("Weather Settings", "Weather multiplier randomness?", false, "'false'= disable     'true'= enable");
+            enableTerminalText = generalConfig.Bind("Weather Settings", "Enable terminal text?", true);
+            
             // Weather Random settings
-            weatherRandomRandomMinInclusive = generalConfig.Bind("_Weather Random Value", "Min Inclusive", 0.9f, "Lower bound of random value");
-            weatherRandomRandomMaxInclusive = generalConfig.Bind("_Weather Random Value", "Max Inclusive", 1.2f, "Upper bound of random value");
+            weatherRandomRandomMinInclusive = generalConfig.Bind("Weather Random Multipliers", "Min Inclusive", 0.9f, "Lower bound of random value");
+            weatherRandomRandomMaxInclusive = generalConfig.Bind("Weather Random Multipliers", "Max Inclusive", 1.2f, "Upper bound of random value");
+
+            // Level Enemy/Scrap settings
+            customScrapWeights = generalConfig.Bind("Custom enemy and scrap weights", "Generate and use scrap weights?", false, "This will generate customizable scrap weights for each level (This can become slow if you have alot of modded scraps)");
+            customEnemyWeights = generalConfig.Bind("Custom enemy and scrap weights", "Generate and use enemy weights?", true, "This will generate customizable enemy weights for each level");
+            enableAllEnemies = generalConfig.Bind("Custom enemy and scrap weights", "Enable all enemies on all moons", false, "This will enable all insideEnemies to spawn inside.., you need to have generate and use enemy weights enabled.");
+            enableAllScrap = generalConfig.Bind("Custom enemy and scrap weights", "Enable all scrap on all moons", false, "This will enable for all scraps to spawn on all moons, you need to have generate and use scrap weights enabled.");
+            allEnemiesDefaultWeight = generalConfig.Bind("Custom enemy and scrap weights", "All enemies on all moons weight", 2, "If there is any enemy with weight 0, it will be set to this weight enabling them to spawn.");
+            allEnemiesDefaultWeight = generalConfig.Bind("Custom enemy and scrap weights", "All scrap on all moons weight", 2, "If there is any scrap with weight 0, it will be set to this weight enabling them to spawn.");
+
+            // Quota settings
 
             // Weather multipliers settings
             Weather createWeatherSettings(Weather weather)
             {
                 string configHeader = "_(" + weather.weatherType.ToString() + ") Weather multipliers";
 
-                float valueMultiplierSetting = generalConfig.Bind(configHeader, "Value Multiplier", weather.scrapValueMultiplier, "Multiply Scrap value for " + weather.weatherType.ToString()).Value;
-                float amountMultiplierSetting = generalConfig.Bind(configHeader, "Amount Multiplier", weather.scrapAmountMultiplier, "Multiply Scrap amount for " + weather.weatherType.ToString()).Value;
-                float sizeMultiplerSetting = generalConfig.Bind(configHeader, "Factory Size Multiplier", weather.factorySizeMultiplier, "Multiply Factory size for " + weather.weatherType.ToString()).Value;
+                float valueMultiplierSetting = weatherMultipliersConfig.Bind(configHeader, "Value Multiplier", weather.scrapValueMultiplier, "Multiply Scrap value for " + weather.weatherType.ToString()).Value;
+                float amountMultiplierSetting = weatherMultipliersConfig.Bind(configHeader, "Amount Multiplier", weather.scrapAmountMultiplier, "Multiply Scrap amount for " + weather.weatherType.ToString()).Value;
+                float sizeMultiplerSetting = weatherMultipliersConfig.Bind(configHeader, "Factory Size Multiplier", weather.factorySizeMultiplier, "Multiply Factory size for " + weather.weatherType.ToString()).Value;
 
                 return new Weather(weather.weatherType, valueMultiplierSetting, amountMultiplierSetting, sizeMultiplerSetting);
             }
@@ -107,10 +128,7 @@ namespace BrutalCompanyMinus
             ShowExtraProperties = generalConfig.Bind("_UI Options", "Display extra properties", true, "Display extra properties on UI such as scrap value and amount multipliers.");
             PopUpUI = generalConfig.Bind("_UI Options", "PopUp UI?", true, "Will the UI popup whenever you start the day?");
 
-
-
-            // Create  Event Config
-            eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Event_Settings.cfg", true);
+            // Event settings
 
             foreach (MEvent e in EventManager.events)
             {
@@ -144,6 +162,9 @@ namespace BrutalCompanyMinus
         {
             if (bindedLevelConfigurations) return;
 
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             // Create scrap list
             Log.LogInfo("Generating Enemy + Scrap rarity config");
             List<string> scrapNameList = new List<string>();
@@ -158,7 +179,7 @@ namespace BrutalCompanyMinus
                 Log.LogInfo(string.Format("Generating and binding Enemy + Scrap rarity config for {0}", level.name));
 
                 // Create configFile for particular moon
-                ConfigFile levelConfig = new ConfigFile(string.Format("{0}\\BrutalCompanyMinus\\Levels\\{1}_Settings.cfg", Paths.ConfigPath, level.name), true);
+                ConfigFile levelConfig = new ConfigFile(string.Format("{0}\\BrutalCompanyMinus\\Levels\\{1}_Weights.cfg", Paths.ConfigPath, level.name), true);
 
                 Dictionary<string, int>
                     insideEnemyList = new Dictionary<string, int>(),
@@ -166,103 +187,113 @@ namespace BrutalCompanyMinus
                     daytimeEnemyList = new Dictionary<string, int>(),
                     scrapList = new Dictionary<string, int>();
 
-                // Add all enemies with rarity 0
-                foreach (KeyValuePair<string, EnemyType> enemy in Assets.EnemyList)
-                {
-                    insideEnemyList.Add(enemy.Key, 0);
-                    outsideEnemyList.Add(enemy.Key, 0);
-                    daytimeEnemyList.Add(enemy.Key, 0);
-                }
-
-                // Add all scrap with rarity 0
-                foreach (string scrapName in scrapNameList)
-                {
-                    scrapList.Add(scrapName, 0);
-                }
-
                 // Assign rarities to lists
-                Dictionary<string, int>
-                    newInsideEnemyList = new Dictionary<string, int>(), 
-                    newOutsideEnemyList = new Dictionary<string, int>(),
-                    newDaytimeEnemyList = new Dictionary<string, int>(), 
-                    newScrapList = new Dictionary<string, int>();
-
-                // Inside enemies
-                foreach (SpawnableEnemyWithRarity enemy in level.Enemies)
+                // Enemies
+                if(customEnemyWeights.Value)
                 {
-                    if (enemy == null || enemy.enemyType == null)
+                    // Add all enemies with rarity 0
+                    foreach (KeyValuePair<string, EnemyType> enemy in Assets.EnemyList)
                     {
-                        Log.LogError(string.Format("Null entry on {0} in level.Enemies", level.name));
-                        continue; // Skip entry
+                        insideEnemyList.Add(enemy.Key, 0);
+                        outsideEnemyList.Add(enemy.Key, 0);
+                        daytimeEnemyList.Add(enemy.Key, 0);
                     }
-                    insideEnemyList[enemy.enemyType.name] = enemy.rarity;
-                }
-                foreach (KeyValuePair<string, int> enemy in insideEnemyList)
-                {
-                    int rarity = levelConfig.Bind("_Inside Enemies", enemy.Key, enemy.Value).Value;
-                    if (rarity == 0) continue; // Dont add to list if rarity is 0
-                    newInsideEnemyList.Add(enemy.Key, rarity);
-                }
-                insideEnemyRarityList.Add(level.name, newInsideEnemyList);
 
-                // Outside enemies
-                foreach (SpawnableEnemyWithRarity enemy in level.OutsideEnemies)
-                {
-                    if (enemy == null || enemy.enemyType == null)
+                    // Inside enemies
+                    foreach (SpawnableEnemyWithRarity enemy in level.Enemies)
                     {
-                        Log.LogError(string.Format("Null entry on {0} in level.OutsideEnemies", level.name));
-                        continue; // Skip entry
+                        if (enemy.enemyType == null)
+                        {
+                            Log.LogError(string.Format("Null entry on {0} in level.Enemies", level.name));
+                            continue; // Skip entry
+                        }
+                        insideEnemyList[enemy.enemyType.name] = enemy.rarity;
                     }
-                    outsideEnemyList[enemy.enemyType.name] = enemy.rarity;
-                }
-                foreach (KeyValuePair<string, int> enemy in outsideEnemyList)
-                {
-                    int rarity = levelConfig.Bind("_Outside Enemies", enemy.Key, enemy.Value).Value;
-                    if (rarity == 0) continue; // Dont add to list if rarity is 0
-                    newOutsideEnemyList.Add(enemy.Key, rarity);
-                }
-                outsideEnemyRarityList.Add(level.name, newOutsideEnemyList);
+                    foreach (KeyValuePair<string, int> enemy in insideEnemyList.ToList())
+                    {
+                        insideEnemyList[enemy.Key] = levelConfig.Bind("_Inside Enemies", enemy.Key, enemy.Value).Value;
+                    }
 
-                // Daytime enemies
-                foreach (SpawnableEnemyWithRarity enemy in level.DaytimeEnemies)
-                {
-                    if (enemy == null || enemy.enemyType == null)
+                    // Outside enemies
+                    foreach (SpawnableEnemyWithRarity enemy in level.OutsideEnemies)
                     {
-                        Log.LogError(string.Format("Null entry on {0} in level.DaytimeEnemies", level.name));
-                        continue; // Skip entry
+                        if (enemy.enemyType == null)
+                        {
+                            Log.LogError(string.Format("Null entry on {0} in level.OutsideEnemies", level.name));
+                            continue; // Skip entry
+                        }
+                        outsideEnemyList[enemy.enemyType.name] = enemy.rarity;
                     }
-                    daytimeEnemyList[enemy.enemyType.name] = enemy.rarity;
+                    foreach (KeyValuePair<string, int> enemy in outsideEnemyList.ToList())
+                    {
+                        outsideEnemyList[enemy.Key] = levelConfig.Bind("_Outside Enemies", enemy.Key, enemy.Value).Value;
+                    }
+
+                    // Daytime enemies
+                    foreach (SpawnableEnemyWithRarity enemy in level.DaytimeEnemies)
+                    {
+                        if (enemy.enemyType == null)
+                        {
+                            Log.LogError(string.Format("Null entry on {0} in level.DaytimeEnemies", level.name));
+                            continue; // Skip entry
+                        }
+                        daytimeEnemyList[enemy.enemyType.name] = enemy.rarity;
+                    }
+                    foreach (KeyValuePair<string, int> enemy in daytimeEnemyList.ToList())
+                    {
+                        daytimeEnemyList[enemy.Key] = levelConfig.Bind("Daytime Enemies", enemy.Key, enemy.Value).Value;
+                    }
                 }
-                foreach (KeyValuePair<string, int> enemy in daytimeEnemyList)
-                {
-                    int rarity = levelConfig.Bind("Daytime Enemies", enemy.Key, enemy.Value).Value;
-                    if (rarity == 0) continue;// Dont add to list if rarity is 0
-                    newDaytimeEnemyList.Add(enemy.Key, rarity);
-                }
-                daytimeEnemyRarityList.Add(level.name, newDaytimeEnemyList);
 
                 // Scrap
-                foreach (SpawnableItemWithRarity scrap in level.spawnableScrap)
+                if(customScrapWeights.Value)
                 {
-                    if (scrap == null || scrap.spawnableItem == null)
+                    // Add all scrap with rarity 0
+                    foreach (string scrapName in scrapNameList)
                     {
-                        Log.LogError(string.Format("Null entry on {0} in level.spawnableScrap", level.name));
-                        continue; // Skip Entry
+                        scrapList.Add(scrapName, 0);
                     }
-                    scrapList[scrap.spawnableItem.name] = scrap.rarity;
-                }
-                foreach (KeyValuePair<string, int> scrap in scrapList)
-                {
-                    int rarity = levelConfig.Bind("Scrap", scrap.Key, scrap.Value).Value;
-                    if (rarity == 0) continue;// Dont add to list if rarity is 0
-                    newScrapList.Add(scrap.Key, rarity);
-                }
-                scrapRarityList.Add(level.name, newScrapList);
 
-                // Add to list
-                levelConfigs.Add(levelConfig);
+                    foreach (SpawnableItemWithRarity scrap in level.spawnableScrap)
+                    {
+                        if (scrap.spawnableItem == null)
+                        {
+                            Log.LogError(string.Format("Null entry on {0} in level.spawnableScrap", level.name));
+                            continue; // Skip Entry
+                        }
+                        scrapList[scrap.spawnableItem.name] = scrap.rarity;
+                    }
+                    foreach (KeyValuePair<string, int> scrap in scrapList.ToList())
+                    {
+                        scrapList[scrap.Key] = levelConfig.Bind("Scrap", scrap.Key, scrap.Value).Value;
+                    }
+                }
+
+                outsideEnemyRarityList.Add(level.name, outsideEnemyList);
+                insideEnemyRarityList.Add(level.name, insideEnemyList);
+                daytimeEnemyRarityList.Add(level.name, daytimeEnemyList);
+                scrapRarityList.Add(level.name, scrapList);
             });
+
+            stopWatch.Stop();
+            Log.LogInfo(string.Format("Took {0}ms", stopWatch.ElapsedMilliseconds));
+
+            bindedLevelConfigurations = true;
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(TimeOfDay), "Awake")]
+        private static void OnTimeDayStart(ref TimeOfDay __instance)
+        {
+            enableQuotaChanges = generalConfig.Bind("Quota Settings", "_Enable Quota Changes", true);
+            if(enableQuotaChanges.Value)
+            {
+                __instance.quotaVariables.deadlineDaysAmount = generalConfig.Bind("Quota Settings", "Deadline Days Amount", __instance.quotaVariables.deadlineDaysAmount).Value;
+                __instance.quotaVariables.startingCredits = generalConfig.Bind("Quota Settings", "Starting Credits", __instance.quotaVariables.startingCredits).Value;
+                __instance.quotaVariables.startingQuota = generalConfig.Bind("Quota Settings", "Starting Quota", __instance.quotaVariables.startingQuota).Value;
+                __instance.quotaVariables.baseIncrease = generalConfig.Bind("Quota Settings", "Base Increase", __instance.quotaVariables.baseIncrease).Value;
+                __instance.quotaVariables.increaseSteepness = generalConfig.Bind("Quota Settings", "Increase Steepness", __instance.quotaVariables.increaseSteepness).Value;
+            }
+        }
     }
 }

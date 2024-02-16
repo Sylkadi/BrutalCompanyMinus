@@ -99,7 +99,15 @@ namespace BrutalCompanyMinus
             NetworkManager.Singleton.AddNetworkPrefab(grabbableTurret.spawnPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(grabbableLandmine.spawnPrefab);
         }
-        
+
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StartOfRound), "Start")]
+        private static void OnStartOfRoundStart() // Do this or items will disapear on save reload
+        {
+            StartOfRound.Instance.allItemsList.itemsList.AddRange(new List<Item>() { slayerShotgun, grabbableTurret, grabbableLandmine });
+        }
+
         internal static void Load()
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.asset"))

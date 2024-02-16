@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -8,6 +9,7 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace BrutalCompanyMinus.Minus.Handlers
 {
@@ -43,6 +45,9 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             if (modifiedEnemySpawns) return;
 
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             Log.LogInfo("Modifying enemy map pool and scrap pool from config.");
 
             // Multi-thread this shit
@@ -56,31 +61,54 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     return;
                 }
 
-                instance.levels[i].Enemies.Clear();
-                instance.levels[i].OutsideEnemies.Clear();
-                instance.levels[i].DaytimeEnemies.Clear();
-                instance.levels[i].spawnableScrap.Clear();
-
+                if (Configuration.customEnemyWeights.Value)
+                {
+                    instance.levels[i].Enemies.Clear();
+                    instance.levels[i].OutsideEnemies.Clear();
+                    instance.levels[i].DaytimeEnemies.Clear();
+                }
+                if (Configuration.customScrapWeights.Value) instance.levels[i].spawnableScrap.Clear();
+                
                 foreach (KeyValuePair<string, int> insideEnemy in Configuration.insideEnemyRarityList[instance.levels[i].name])
                 {
-                    instance.levels[i].Enemies.Add(Manager.generateEnemyWithRarity(Assets.GetEnemy(insideEnemy.Key), insideEnemy.Value));
+                    EnemyType enemy = Assets.GetEnemy(insideEnemy.Key);
+                    int rarity = insideEnemy.Value;
+                    if (Configuration.enableAllEnemies.Value && rarity == 0 && !enemy.isOutsideEnemy) rarity = Configuration.allEnemiesDefaultWeight.Value;
+                    if (rarity == 0) continue; // Skip Entry
+                    instance.levels[i].Enemies.Add(new SpawnableEnemyWithRarity() { enemyType = enemy, rarity = rarity });
                 }
 
                 foreach (KeyValuePair<string, int> outsideEnemy in Configuration.outsideEnemyRarityList[instance.levels[i].name])
                 {
-                    instance.levels[i].OutsideEnemies.Add(Manager.generateEnemyWithRarity(Assets.GetEnemy(outsideEnemy.Key), outsideEnemy.Value));
+                    EnemyType enemy = Assets.GetEnemy(outsideEnemy.Key);
+                    int rarity = outsideEnemy.Value;
+                    if (Configuration.enableAllEnemies.Value && rarity == 0 && enemy.isOutsideEnemy) rarity = Configuration.allEnemiesDefaultWeight.Value;
+                    if (outsideEnemy.Value == 0) continue; // Skip Entry
+                    instance.levels[i].OutsideEnemies.Add(new SpawnableEnemyWithRarity() { enemyType = enemy, rarity = rarity });
                 }
 
                 foreach (KeyValuePair<string, int> daytimeEnemy in Configuration.daytimeEnemyRarityList[instance.levels[i].name])
                 {
-                    instance.levels[i].DaytimeEnemies.Add(Manager.generateEnemyWithRarity(Assets.GetEnemy(daytimeEnemy.Key), daytimeEnemy.Value));
+                    EnemyType enemy = Assets.GetEnemy(daytimeEnemy.Key);
+                    int rarity = daytimeEnemy.Value;
+                    if (Configuration.enableAllEnemies.Value && rarity == 0 && enemy.isDaytimeEnemy) rarity = Configuration.allEnemiesDefaultWeight.Value;
+                    if (daytimeEnemy.Value == 0) continue; // Skip Entry
+                    instance.levels[i].DaytimeEnemies.Add(new SpawnableEnemyWithRarity() { enemyType = enemy, rarity = rarity });
                 }
 
                 foreach (KeyValuePair<string, int> scrap in Configuration.scrapRarityList[instance.levels[i].name])
                 {
-                    instance.levels[i].spawnableScrap.Add(Manager.generateItemWithRarity(Assets.GetItem(scrap.Key), scrap.Value));
+                    Item item = Assets.GetItem(scrap.Key);
+                    int rarity = scrap.Value;
+                    if (Configuration.enableAllScrap.Value && rarity == 0) rarity = Configuration.allScrapDefaultWeight.Value;
+                    if (scrap.Value == 0) continue; // Skip Entry
+                    instance.levels[i].spawnableScrap.Add(new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(scrap.Key), rarity = scrap.Value });
                 }
+                
             });
+
+            stopWatch.Stop();
+            Log.LogInfo(string.Format("Took {0}ms", stopWatch.ElapsedMilliseconds));
 
             modifiedEnemySpawns = true;
         }
@@ -140,7 +168,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 int num2 = r.AnomalyRandom.Next(10, 30);
                 num += num2;
-                Debug.Log($"Anomaly random 0b: {num2}");
+                Log.LogInfo($"Anomaly random 0b: {num2}");
             }
             List<Item> ScrapToSpawn = new List<Item>();
             List<int> list = new List<int>();
@@ -162,7 +190,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 ScrapToSpawn.Add(r.currentLevel.spawnableScrap[r.GetRandomWeightedIndex(weights)].spawnableItem);
             }
-            Debug.Log($"Number of scrap to spawn: {ScrapToSpawn.Count}. minTotalScrapValue: {r.currentLevel.minTotalScrapValue}. Total value of items: {num3}.");
+            Log.LogInfo($"Number of scrap to spawn: {ScrapToSpawn.Count}. minTotalScrapValue: {r.currentLevel.minTotalScrapValue}. Total value of items: {num3}.");
             RandomScrapSpawn randomScrapSpawn = null;
             RandomScrapSpawn[] source = UnityEngine.Object.FindObjectsOfType<RandomScrapSpawn>();
             List<NetworkObjectReference> list3 = new List<NetworkObjectReference>();
@@ -172,13 +200,13 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 if (ScrapToSpawn[i] == null)
                 {
-                    Debug.Log("Error!!!!! Found null element in list ScrapToSpawn. Skipping it.");
+                    Log.LogInfo("Error!!!!! Found null element in list ScrapToSpawn. Skipping it.");
                     continue;
                 }
                 List<RandomScrapSpawn> list4 = ((ScrapToSpawn[i].spawnPositionTypes != null && ScrapToSpawn[i].spawnPositionTypes.Count != 0) ? source.Where((RandomScrapSpawn x) => ScrapToSpawn[i].spawnPositionTypes.Contains(x.spawnableItems) && !x.spawnUsed).ToList() : source.ToList());
                 if (list4.Count <= 0)
                 {
-                    Debug.Log("No tiles containing a scrap spawn with item type: " + ScrapToSpawn[i].itemName);
+                    Log.LogInfo("No tiles containing a scrap spawn with item type: " + ScrapToSpawn[i].itemName);
                     continue;
                 }
                 if (usedSpawns.Count > 0 && list4.Contains(randomScrapSpawn))

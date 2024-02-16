@@ -320,17 +320,21 @@ namespace BrutalCompanyMinus.Minus
 
         public static SpawnableItemWithRarity generateItemWithRarity(Item item, int rarity)
         {
-            SpawnableItemWithRarity spawnableItemWithRarity = new SpawnableItemWithRarity();
-            spawnableItemWithRarity.spawnableItem = item;
-            spawnableItemWithRarity.rarity = rarity;
+            SpawnableItemWithRarity spawnableItemWithRarity = new SpawnableItemWithRarity
+            {
+                spawnableItem = item,
+                rarity = rarity
+            };
             return spawnableItemWithRarity;
         }
 
         public static SpawnableEnemyWithRarity generateEnemyWithRarity(EnemyType enemy, int rarity)
         {
-            SpawnableEnemyWithRarity spawnableEnemyWithRarity = new SpawnableEnemyWithRarity();
-            spawnableEnemyWithRarity.enemyType = enemy;
-            spawnableEnemyWithRarity.rarity = rarity;
+            SpawnableEnemyWithRarity spawnableEnemyWithRarity = new SpawnableEnemyWithRarity
+            {
+                enemyType = enemy,
+                rarity = rarity
+            };
             return spawnableEnemyWithRarity;
         }
 
