@@ -1,5 +1,19 @@
 # ChangeLog
 <details>
+  <summary>0.8.3</summary>
+  
+  - Added Quota config options
+  - Added customizable config weights for all enemies and all scrap for all moons (Including modded ones)
+  - Fixed items from this mod not saving
+  - Shipment fee's should no longer happen on the company moon. Literally 
+</details>
+<details>
+  <summary>0.8.2</summary>
+  
+  - Grabbable Landmines and Grabbable Turrets should no longer disapear.
+  - Shipment fee's should no longer happen on the company moon.
+</details>
+<details>
   <summary>0.8.1</summary>
   
   - Game should no longer break when disabling all events of one type.

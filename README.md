@@ -3,7 +3,7 @@
 #### This mod is required on all clients
 #### Makes the game harder
 #### Current plan is to make more 'unique' events
-#### Config is generated on save file load
+#### Config is fully generated when you load on a moon.
 #### Mod is highly configurable
 
 # Features
@@ -39,6 +39,19 @@
 | Foggy      | 1.20        | 1.10         | 1.00         |
 | Flooded    | 1.30        | 1.15         | 1.00         |
 | Eclipsed   | 1.50        | 1.25         | 1.00         |
+</details>
+
+<details>
+  <summary><b>Custom Weights / Quota Settings</b></summary>
+  
+  - You can change the following quota settings in the config.
+  - DeadLine Days Amount, Starting Credits, Starting Quota, Base Increase and Increase Steepness.
+
+  - This mod will also generate a weight setting for every moon for every enemy (Including modded ones) and for every scrap (Has to be enabled in config)
+![Screenshot](https://i.imgur.com/Bi97D1P.png)
+
+asdasdasdas
+
 </details>
 
 <details>
