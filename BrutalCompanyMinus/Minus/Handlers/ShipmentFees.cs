@@ -22,15 +22,15 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 int owed = due;
                 if(Manager.currentTerminal.groupCredits - due < 0)
                 {
-                    due = due - Manager.currentTerminal.groupCredits;
                     owed = Manager.currentTerminal.groupCredits;
                 }
                 Manager.PayCredits(-owed);
+                due -= owed;
 
                 HUDManager.Instance.AddTextToChatOnServer(string.Format("<color=#FF0000>New Due balance:</color> <color=#800000>{0}</color>", due));
             }
 
-            if(Manager.ShipmentFees)
+            if(Events.ShipmentFees.Active)
             {
                 MEvent shipmentEvent = MEvent.GetEvent(nameof(Events.ShipmentFees));
                 float min = shipmentEvent.Getf(MEvent.ScaleType.MinCash);

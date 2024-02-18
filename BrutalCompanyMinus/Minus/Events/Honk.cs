@@ -27,10 +27,10 @@ namespace BrutalCompanyMinus.Minus.Events
         public override void Execute()
         {
             Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
-
-            RoundManager.Instance.currentLevel.spawnableScrap.Clear();
-            RoundManager.Instance.currentLevel.spawnableScrap.Add(Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.AirHorn), 50));
-            RoundManager.Instance.currentLevel.spawnableScrap.Add(Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.ClownHorn), 50));
+            Manager.TransmuteScrap(
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.AirHorn), rarity = 50 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.ClownHorn), rarity = 50 }
+            );
         }
     }
 }

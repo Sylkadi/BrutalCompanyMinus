@@ -13,6 +13,7 @@ using System.Reflection.Emit;
 using System.Reflection;
 using DigitalRuby.ThunderAndLightning;
 using System.IO;
+using UnityEngine.Events;
 
 namespace BrutalCompanyMinus.Minus
 {
@@ -39,13 +40,11 @@ namespace BrutalCompanyMinus.Minus
         internal static float factorySizeMultiplier = 1f;
         internal static float scrapValueMultiplier = 0.4f;
         internal static float scrapAmountMultiplier = 1f;
-        internal static int scrapMinAmount = 0;
-        internal static int scrapMaxAmount = 0;
-
-        internal static bool BountyActive = false, DoorGlitchActive = false, ShipmentFees = false, grabbableTurrets = false, grabbableLandmines = false;
 
         internal static int randomItemsToSpawnOutsideCount = 0;
-        internal static List<SpawnableItemWithRarity> ScrapToSpawn = new List<SpawnableItemWithRarity>();
+
+        internal static bool transmuteScrap = false;
+        internal static List<SpawnableItemWithRarity> ScrapToTransmuteTo = new List<SpawnableItemWithRarity>();
 
         public static class Spawn
         {
@@ -227,6 +226,12 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
+        public static void TransmuteScrap(params SpawnableItemWithRarity[] Items)
+        {
+            transmuteScrap = true;
+            ScrapToTransmuteTo.AddRange(Items);
+        }
+
         public static void DeliverRandomItems(int Amount, int MaxPrice)
         {
             if (RoundManager.Instance.IsServer)
@@ -318,26 +323,6 @@ namespace BrutalCompanyMinus.Minus
             terrainName = Functions.MostCommon(hits.Select(x => x.collider.gameObject.name).ToList());
         }
 
-        public static SpawnableItemWithRarity generateItemWithRarity(Item item, int rarity)
-        {
-            SpawnableItemWithRarity spawnableItemWithRarity = new SpawnableItemWithRarity
-            {
-                spawnableItem = item,
-                rarity = rarity
-            };
-            return spawnableItemWithRarity;
-        }
-
-        public static SpawnableEnemyWithRarity generateEnemyWithRarity(EnemyType enemy, int rarity)
-        {
-            SpawnableEnemyWithRarity spawnableEnemyWithRarity = new SpawnableEnemyWithRarity
-            {
-                enemyType = enemy,
-                rarity = rarity
-            };
-            return spawnableEnemyWithRarity;
-        }
-
         public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, EnemyType enemy, int rarity)
         {
             if (enemy.enemyPrefab == null)
@@ -377,7 +362,7 @@ namespace BrutalCompanyMinus.Minus
             {
                 Log.LogError("RemoveAll() on daytimeEnemies failed");
             }
-            if (amountRemoved > 0) Log.LogInfo(string.Format("Failed to remove '{0}' from enemy pool, either it dosen't exist on the map or wrong string used.", Name));
+            if (amountRemoved == 0) Log.LogInfo(string.Format("Failed to remove '{0}' from enemy pool, either it dosen't exist on the map or wrong string used.", Name));
         }
 
         public static bool SpawnExists(string name)

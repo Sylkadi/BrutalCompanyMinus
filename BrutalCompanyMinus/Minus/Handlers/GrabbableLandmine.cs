@@ -67,7 +67,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch("Start")]
         private static void onLandmineStart(ref Landmine __instance)
         {
-            if(Manager.grabbableLandmines && RoundManager.Instance.IsHost)
+            if(Events.GrabbableLandmines.Active && RoundManager.Instance.IsHost)
             {
                 MEvent _event = MEvent.GetEvent(nameof(Events.GrabbableLandmines));
 

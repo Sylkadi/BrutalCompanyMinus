@@ -5,11 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 
 namespace BrutalCompanyMinus.Minus.Events
 {
     internal class NoMasks : MEvent
     {
+        public static bool removedComedy, removedTragedy;
+        public static SpawnableItemWithRarity comedyReference, tragedyRefernece;
+
         public override string Name() => nameof(NoMasks);
 
         public override void Initalize()
@@ -32,13 +36,41 @@ namespace BrutalCompanyMinus.Minus.Events
         {
             // Remove masked scrap
             int index = RoundManager.Instance.currentLevel.spawnableScrap.FindIndex(s => s.spawnableItem.name == Assets.ItemNameList[Assets.ItemName.Comedy]);
-            if (index != -1) RoundManager.Instance.currentLevel.spawnableScrap.RemoveAt(index);
+            if (index != -1)
+            {
+                RoundManager.Instance.currentLevel.spawnableScrap.RemoveAt(index);
+                removedComedy = true;
+            }
 
             index = RoundManager.Instance.currentLevel.spawnableScrap.FindIndex(s => s.spawnableItem.name == Assets.ItemNameList[Assets.ItemName.Tragedy]);
-            if (index != -1) RoundManager.Instance.currentLevel.spawnableScrap.RemoveAt(index);
+            if (index != -1) 
+            { 
+                RoundManager.Instance.currentLevel.spawnableScrap.RemoveAt(index);
+                removedTragedy = true;
+            }
 
             // Remove masked enemy
             Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.Masked]);
+        }
+
+        public override void OnShipLeave()
+        {
+            if(removedComedy)
+            {
+                RoundManager.Instance.currentLevel.spawnableScrap.Add(comedyReference);
+            }
+            if(removedTragedy)
+            {
+                RoundManager.Instance.currentLevel.spawnableScrap.Add(tragedyRefernece);
+            }
+
+            removedComedy = false; removedTragedy = false;
+        }
+
+        public override void OnGameStart()
+        {
+            removedComedy = false;
+            removedTragedy = false;
         }
     }
 }

@@ -10,6 +10,8 @@ namespace BrutalCompanyMinus.Minus.Events
 {
     internal class DoorGlitch : MEvent
     {
+        public static bool Active = false;
+
         public override string Name() => nameof(DoorGlitch);
 
         public override void Initalize()
@@ -20,9 +22,10 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.Bad;
         }
 
-        public override void Execute()
-        {
-            Manager.DoorGlitchActive = true;
-        }
+        public override void Execute() => Active = true;
+
+        public override void OnShipLeave() => Active = false;
+
+        public override void OnGameStart() => Active = false;
     }
 }

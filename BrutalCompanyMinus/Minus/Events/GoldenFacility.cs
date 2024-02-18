@@ -28,21 +28,15 @@ namespace BrutalCompanyMinus.Minus.Events
         public override void Execute()
         {
             Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
-
-            RoundManager.Instance.currentLevel.spawnableScrap.Clear();
-
-            List<SpawnableItemWithRarity> ScrapToSpawn = new List<SpawnableItemWithRarity>
-            {
-                    Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.GoldenCup), 25),
-                    Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.Ring), 20),
-                    Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.GoldBar), 2),
-                    Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.FancyLamp), 10),
-                    Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.PerfumeBottle), 25),
-                    Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.Painting), 15),
-                    Manager.generateItemWithRarity(Assets.GetItem(Assets.ItemName.CashRegister), 3)
-            };
-
-            foreach (SpawnableItemWithRarity scrap in ScrapToSpawn) RoundManager.Instance.currentLevel.spawnableScrap.Add(scrap);
+            Manager.TransmuteScrap(
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.GoldenCup), rarity = 25 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.Ring), rarity = 20 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.GoldBar), rarity = 2 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.FancyLamp), rarity = 10 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.PerfumeBottle), rarity = 25 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.Painting), rarity = 15 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.CashRegister), rarity = 3 }
+            );
         }
     }
 }

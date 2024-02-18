@@ -34,26 +34,16 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override void Execute()
         {
-            // Remove all small scrap
             List<SpawnableItemWithRarity> BigScrapList = new List<SpawnableItemWithRarity>();
             foreach (SpawnableItemWithRarity item in RoundManager.Instance.currentLevel.spawnableScrap)
             {
-                if (!item.spawnableItem.twoHanded) BigScrapList.Add(item);
-            }
-            foreach (SpawnableItemWithRarity item in BigScrapList)
-            {
-                RoundManager.Instance.currentLevel.spawnableScrap.Remove(item);
+                if (item.spawnableItem.twoHanded) BigScrapList.Add(item);
             }
 
-            SpawnableItemWithRarity chosenScrap = RoundManager.Instance.currentLevel.spawnableScrap[UnityEngine.Random.Range(0, RoundManager.Instance.currentLevel.spawnableScrap.Count)];
+            SpawnableItemWithRarity chosenScrap = BigScrapList[UnityEngine.Random.Range(0, BigScrapList.Count)];
             chosenScrap.spawnableItem = Assets.GetItem(chosenScrap.spawnableItem.name);
 
-            RoundManager.Instance.currentLevel.spawnableScrap.RemoveAll(x => x.spawnableItem.name != chosenScrap.spawnableItem.name);
-
-            foreach (SpawnableItemWithRarity item in RoundManager.Instance.currentLevel.spawnableScrap)
-            {
-                if (chosenScrap.spawnableItem.name == item.spawnableItem.name) item.rarity = 100;
-            }
+            Manager.TransmuteScrap(new SpawnableItemWithRarity() { spawnableItem = chosenScrap.spawnableItem, rarity = 100 });
 
             // Scale scrap amount abit more
             float scrapValue = (chosenScrap.spawnableItem.minValue + chosenScrap.spawnableItem.maxValue) * 0.25f; // Intentionally

@@ -20,7 +20,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch("Start")]
         private static void onTurretStart(ref Turret __instance)
         {
-            if (Manager.grabbableTurrets && RoundManager.Instance.IsHost)
+            if (Events.GrabbableTurrets.Active && RoundManager.Instance.IsHost)
             {
                 MEvent _event = MEvent.GetEvent(nameof(Events.GrabbableTurrets));
 

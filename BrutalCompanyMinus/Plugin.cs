@@ -12,6 +12,7 @@ using Unity.Netcode;
 using UnityEngine.InputSystem.HID;
 using Discord;
 using System.Diagnostics;
+using BepInEx.Configuration;
 
 namespace BrutalCompanyMinus
 {
@@ -21,7 +22,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.8.3";
+        private const string VERSION = "0.8.4";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -48,7 +49,6 @@ namespace BrutalCompanyMinus
 
             // Patch all
             harmony.PatchAll();
-            harmony.PatchAll(typeof(_LevelParameterRestoring));
 
             Log.LogInfo(NAME + " " + VERSION + " " + "is done patching.");
         }
@@ -60,6 +60,19 @@ namespace BrutalCompanyMinus
         {
             if(!Initalized)
             {
+                Configuration.generalConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\General_Settings.cfg", true);
+                Configuration.eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
+                Configuration.weatherMultipliersConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Multipliers.cfg", true);
+                Configuration.customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Custom_Enemy_Scrap_Settings.cfg", true);
+
+                // Custom enemy events
+                for (int i = 0; i < 10; i++)
+                {
+                    MEvent e = new Minus.Events.CustomMonsterEvent();
+                    e.Enabled = false;
+                    EventManager.AddEvents(e);
+                }
+
                 // Initalize Events
                 foreach (MEvent e in EventManager.events) e.Initalize();
 
@@ -109,17 +122,13 @@ namespace BrutalCompanyMinus
             Manager.daysPassed++;
 
             Configuration.GenerateLevelConfigurations(StartOfRound.Instance); // Bind 
-            LevelParameterRestoring.ModifyEnemyScrapSpawns(StartOfRound.Instance); // Set
-            Assets.generateLevelScrapLists(); // Store
+            LevelModifications.ModifyEnemyScrapSpawns(StartOfRound.Instance); // Set
 
-            Manager.ShipmentFees = false; // Was i fucking high at the time??????????????
-
+            Assets.generateLevelScrapLists();
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
 
-            // Reset values
-            LevelParameterRestoring.StoreUnmodifiedParamaters(newLevel);
-            ResetValues(newLevel);
+            LevelModifications.ResetValues(StartOfRound.Instance);
 
             // Apply weather multipliers
             foreach (Weather e in Net.Instance.currentWeatherMultipliers)
@@ -131,15 +140,12 @@ namespace BrutalCompanyMinus
                     Manager.currentLevel.factorySizeMultiplier *= e.factorySizeMultiplier;
                 }
             }
-
             // Update Enemy max power counts
             RoundManager.Instance.currentMaxInsidePower += Math.Min(Manager.daysPassed, 10) + Manager.daysPassed;
             RoundManager.Instance.currentMaxOutsidePower += Manager.daysPassed / 2;
-
             // Choose any apply events
             List<MEvent> additionalEvents = new List<MEvent>();
             List<MEvent> currentEvents = EventManager.ChooseEvents(out additionalEvents);
-
             foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name()); // Log Chosen events
 
             EventManager.ApplyEvents(currentEvents);
@@ -154,8 +160,6 @@ namespace BrutalCompanyMinus
                 }
             }
 
-            Manager.ScrapToSpawn.Clear(); Manager.ScrapToSpawn.AddRange(newLevel.spawnableScrap);
-
             // Spawn outside scrap
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
 
@@ -167,33 +171,6 @@ namespace BrutalCompanyMinus
 
             // Logging
             Log.LogInfo("MapMultipliers = [scrapValueMultiplier: " + Manager.scrapValueMultiplier + ",     scrapAmountMultiplier: " + Manager.scrapAmountMultiplier + ",     currentLevel.factorySizeMultiplier:" + Manager.currentLevel.factorySizeMultiplier + "]");
-        }
-        
-        private static void ResetValues(SelectableLevel newLevel)
-        {
-            foreach (SpawnableMapObject obj in newLevel.spawnableMapObjects)
-            {
-                if (obj.prefabToSpawn.name == "Landmine") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
-                if (obj.prefabToSpawn.name == "TurretContainer") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 2.5f));
-            }
-            Manager.BountyActive = false; Manager.DoorGlitchActive = false; Manager.grabbableLandmines = false; Manager.grabbableTurrets = false;
-
-            // Reset Multipliers
-            try
-            {
-                Manager.currentLevel.factorySizeMultiplier = Assets.factorySizeMultiplierList[newLevel.levelID];
-            } catch
-            {
-                Manager.currentLevel.factorySizeMultiplier = 1f;
-            }
-            Manager.scrapAmountMultiplier = 1.0f;
-            Manager.scrapValueMultiplier = 0.4f; // Default value is 0.4 not 1.0
-            Manager.scrapMinAmount = newLevel.minScrap;
-            Manager.scrapMaxAmount = newLevel.maxScrap;
-            Manager.randomItemsToSpawnOutsideCount = 0;
-
-            // Reset objectSpawnLists
-            Manager.insideObjectsToSpawnOutside.Clear();
         }
     }
 }

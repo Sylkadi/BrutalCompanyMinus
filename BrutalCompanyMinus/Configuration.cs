@@ -21,7 +21,7 @@ namespace BrutalCompanyMinus
     internal class Configuration
     {
 
-        public static ConfigFile generalConfig, eventConfig, weatherMultipliersConfig;
+        public static ConfigFile generalConfig, eventConfig, weatherMultipliersConfig, customAssetsConfig;
 
         public static List<ConfigFile> levelConfigs = new List<ConfigFile>();
 
@@ -34,8 +34,8 @@ namespace BrutalCompanyMinus
         public static List<ConfigEntry<bool>> eventEnables = new List<ConfigEntry<bool>>();
 
         public static ConfigEntry<bool> useCustomWeights, showEventsInChat;
-        public static ConfigEntry<int> eventsToSpawn;
-        public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier;
+        public static ConfigEntry<int> eventsToSpawn, maxEventsToSpawn;
+        public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier, chanceForExtraEvent;
 
         public static ConfigEntry<bool> useWeatherMultipliers, randomizeWeatherMultipliers, enableTerminalText;
 
@@ -47,7 +47,7 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<string> UIKey;
         public static ConfigEntry<bool> NormaliseScrapValueDisplay, EnableUI, ShowUILetterBox, ShowExtraProperties, PopUpUI;
 
-        public static ConfigEntry<bool> customScrapWeights, customEnemyWeights, enableAllEnemies, enableAllScrap;
+        public static ConfigEntry<bool> customScrapWeights, customEnemyWeights, enableAllEnemies, enableAllScrap, enableCustomWeights;
         public static ConfigEntry<int> allEnemiesDefaultWeight, allScrapDefaultWeight;
 
         public static ConfigEntry<bool> enableQuotaChanges;
@@ -58,17 +58,22 @@ namespace BrutalCompanyMinus
             outsideEnemyRarityList = new Dictionary<string, Dictionary<string, int>>(),
             daytimeEnemyRarityList = new Dictionary<string, Dictionary<string, int>>(),
             scrapRarityList = new Dictionary<string, Dictionary<string, int>>();
+
+        // Custom assets
+        public static ConfigEntry<int> nutSlayerLives, nutSlayerHp;
+        public static ConfigEntry<float> nutSlayerMovementSpeed;
+        public static ConfigEntry<bool> nutSlayerImmortal;
+
+        public static ConfigEntry<int>
+            slayerShotgunMinValue, slayerShotgunMaxValue;
         
         public static void Initalize()
         {
-            // Create Configs
-            generalConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\General_Settings.cfg", true);
-            eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
-            weatherMultipliersConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Multipliers.cfg", true);
-
             // Event settings
             useCustomWeights = generalConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
-            eventsToSpawn = generalConfig.Bind("_Event Settings", "How many events will spawn per round?", 3);
+            eventsToSpawn = generalConfig.Bind("_Event Settings", "Event count", 2);
+            maxEventsToSpawn = generalConfig.Bind("_Event Settings", "Max event count", 4);
+            chanceForExtraEvent = generalConfig.Bind("_Event Settings", "Chance for extra event", 0.5f, "Will roll this chance, if rolled true, then +1 event and roll again until failed or hit cap.");
             showEventsInChat = generalConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
             goodEventIncrementMultiplier = generalConfig.Bind("_Event Settings", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
             badEventIncrementMultiplier = generalConfig.Bind("_Event Settings", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
@@ -95,10 +100,21 @@ namespace BrutalCompanyMinus
             customEnemyWeights = generalConfig.Bind("Custom enemy and scrap weights", "Generate and use enemy weights?", true, "This will generate customizable enemy weights for each level");
             enableAllEnemies = generalConfig.Bind("Custom enemy and scrap weights", "Enable all enemies on all moons", false, "This will enable all insideEnemies to spawn inside.., you need to have generate and use enemy weights enabled.");
             enableAllScrap = generalConfig.Bind("Custom enemy and scrap weights", "Enable all scrap on all moons", false, "This will enable for all scraps to spawn on all moons, you need to have generate and use scrap weights enabled.");
+            enableCustomWeights = generalConfig.Bind("Custom enemy and scrap weights", "_Enable?", true);
             allEnemiesDefaultWeight = generalConfig.Bind("Custom enemy and scrap weights", "All enemies on all moons weight", 2, "If there is any enemy with weight 0, it will be set to this weight enabling them to spawn.");
             allEnemiesDefaultWeight = generalConfig.Bind("Custom enemy and scrap weights", "All scrap on all moons weight", 2, "If there is any scrap with weight 0, it will be set to this weight enabling them to spawn.");
 
-            // Quota settings
+            // Custom scrap settings
+            nutSlayerLives = customAssetsConfig.Bind("NutSlayer", "Lives", 6, "If hp reaches zero or below, decrement lives and reset hp until 0 lives.");
+            nutSlayerHp = customAssetsConfig.Bind("NutSlayer", "Hp", 4);
+            nutSlayerMovementSpeed = customAssetsConfig.Bind("NutSlayer", "Speed", 8.0f);
+            nutSlayerImmortal = customAssetsConfig.Bind("NutSlayer", "Immortal", false);
+            Assets.grabbableTurret.minValue = customAssetsConfig.Bind("Grabbable Landmine", "Min value", 50).Value;
+            Assets.grabbableTurret.maxValue = customAssetsConfig.Bind("Grabbable Landmine", "Max value", 75).Value;
+            Assets.grabbableLandmine.minValue = customAssetsConfig.Bind("Grabbable Turret", "Min value", 100).Value;
+            Assets.grabbableLandmine.maxValue = customAssetsConfig.Bind("Grabbable Turret", "Max value", 150).Value;
+            slayerShotgunMinValue = customAssetsConfig.Bind("Slayer Shotgun", "Min value", 200);
+            slayerShotgunMaxValue = customAssetsConfig.Bind("Slayer Shotgun", "Max value", 300);
 
             // Weather multipliers settings
             Weather createWeatherSettings(Weather weather)
@@ -136,7 +152,7 @@ namespace BrutalCompanyMinus
                 eventDescriptions.Add(eventConfig.Bind(e.Name(), "Description", e.Description));
                 eventColorHexes.Add(eventConfig.Bind(e.Name(), "Color Hex", e.ColorHex));
                 eventTypes.Add(eventConfig.Bind(e.Name(), "Event Type", e.Type));
-                eventEnables.Add(eventConfig.Bind(e.Name(), "Event Enabled?", e.Enabled, "Setting this to false will stop the event from occuring."));
+                eventEnables.Add(eventConfig.Bind(e.Name(), "Event Enabled?", e.Enabled, "Setting this to false will stop the event from occuring.")); // Normal event
 
                 // Make scale list
                 List<ScaleType> scaleTypes = new List<ScaleType>();
@@ -160,7 +176,7 @@ namespace BrutalCompanyMinus
         private static bool bindedLevelConfigurations = false;
         internal static void GenerateLevelConfigurations(StartOfRound instance)
         {
-            if (bindedLevelConfigurations) return;
+            if (bindedLevelConfigurations || !enableCustomWeights.Value) return;
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();

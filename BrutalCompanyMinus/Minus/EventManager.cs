@@ -92,6 +92,8 @@ namespace BrutalCompanyMinus.Minus
         };
         internal static List<MEvent> disabledEvents = new List<MEvent>();
 
+        internal static List<MEvent> currentEvents = new List<MEvent>();
+
         public static void AddEvents(params MEvent[] _event) => events.AddRange(_event);
 
         internal static MEvent RandomWeightedEvent(List<MEvent> _events)
@@ -113,11 +115,31 @@ namespace BrutalCompanyMinus.Minus
 
         internal static List<MEvent> ChooseEvents(out List<MEvent> additionalEvents)
         {
+            currentEvents.Clear();
+
             List<MEvent> chosenEvents = new List<MEvent>();
             List<MEvent> eventsToChooseForm = new List<MEvent>();
             foreach (MEvent e in events) eventsToChooseForm.Add(e);
 
-            for (int i = 0; i < Configuration.eventsToSpawn.Value; i++)
+            // Decide how many events to spawn
+            int eventsToSpawn = Configuration.eventsToSpawn.Value;
+
+            bool failed = false;
+            Random rng = new Random(StartOfRound.Instance.randomMapSeed + 98672);
+            while(!failed)
+            {
+                if(rng.NextDouble() <= Configuration.chanceForExtraEvent.Value)
+                {
+                    eventsToSpawn++;
+                } else
+                {
+                    failed = true;
+                }
+                if (eventsToSpawn >= Configuration.maxEventsToSpawn.Value) failed = true;
+            }
+                
+            // Spawn events
+            for (int i = 0; i < eventsToSpawn; i++)
             {
                 MEvent newEvent = RandomWeightedEvent(eventsToChooseForm);
 
@@ -179,6 +201,7 @@ namespace BrutalCompanyMinus.Minus
             }
 
             additionalEvents = eventsToSpawnWith;
+            currentEvents = chosenEvents;
             return chosenEvents;
         }
 

@@ -78,8 +78,6 @@ namespace BrutalCompanyMinus
             RoundManager.Instance.currentLevel.factorySizeMultiplier = factorySizeMultiplier;
             RoundManager.Instance.scrapValueMultiplier = scrapValueMultiplier;
             RoundManager.Instance.scrapAmountMultiplier = scrapAmountMultiplier;
-            RoundManager.Instance.currentLevel.minScrap = Manager.scrapMinAmount;
-            RoundManager.Instance.currentLevel.maxScrap = Manager.scrapMaxAmount;
         }
 
         [ServerRpc]

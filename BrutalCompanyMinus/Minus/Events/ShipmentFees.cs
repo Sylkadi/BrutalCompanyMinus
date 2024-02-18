@@ -10,6 +10,7 @@ namespace BrutalCompanyMinus.Minus.Events
 {
     internal class ShipmentFees : MEvent
     {
+        public static bool Active = false;
         public override string Name() => nameof(ShipmentFees);
 
         public override void Initalize()
@@ -23,6 +24,10 @@ namespace BrutalCompanyMinus.Minus.Events
             ScaleList.Add(ScaleType.MaxCash, new Scale(0.25f, 0.0f));
         }
 
-        public override void Execute() => Manager.ShipmentFees = true;
+        public override void Execute() => Active = true;
+
+        public override void OnShipLeave() => Active = false;
+
+        public override void OnGameStart() => Active = false;
     }
 }

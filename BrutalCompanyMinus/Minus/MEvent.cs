@@ -40,6 +40,8 @@ namespace BrutalCompanyMinus.Minus
         public virtual void Initalize() { }
         public virtual bool AddEventIfOnly() { return true; }
         public virtual void Execute() { }
+        public virtual void OnShipLeave() { }
+        public virtual void OnGameStart() { }
         public virtual float Getf(ScaleType EventType)
         {
             try

@@ -75,7 +75,6 @@ namespace BrutalCompanyMinus
 
         internal static List<float> factorySizeMultiplierList = new List<float>();
 
-        internal static List<List<SpawnableItemWithRarity>> levelScrapList = new List<List<SpawnableItemWithRarity>>();
         internal static List<float> averageScrapValueList = new List<float>();
 
         // Custom Assets
@@ -233,17 +232,13 @@ namespace BrutalCompanyMinus
         internal static void generateLevelScrapLists()
         {
             if (generatedLevelScrapLists) return;
-
             
             // Generate FactorySize List and scrap List
             foreach (SelectableLevel level in StartOfRound.Instance.levels)
             {
                 factorySizeMultiplierList.Add(level.factorySizeMultiplier);
                 List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
-
                 items.AddRange(level.spawnableScrap);
-
-                levelScrapList.Add(items);
 
                 float scrapValueSum = 0.0f;
                 float scrapWeightSum = 0.0f;

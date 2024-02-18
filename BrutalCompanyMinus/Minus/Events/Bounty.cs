@@ -13,6 +13,7 @@ namespace BrutalCompanyMinus.Minus.Events
     [HarmonyPatch(typeof(EnemyAI))]
     internal class Bounty : MEvent
     {
+        public static bool Active = false;
         public override string Name() => nameof(Bounty);
 
         public override void Initalize()
@@ -26,6 +27,10 @@ namespace BrutalCompanyMinus.Minus.Events
             ScaleList.Add(ScaleType.MaxValue, new Scale(40.0f, 0.5f));
         }
 
-        public override void Execute() => Manager.BountyActive = true;
+        public override void Execute() => Active = true;
+
+        public override void OnShipLeave() => Active = false;
+
+        public override void OnGameStart() => Active = false;
     }
 }

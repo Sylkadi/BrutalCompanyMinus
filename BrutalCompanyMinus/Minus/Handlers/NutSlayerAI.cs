@@ -111,15 +111,19 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         // Custom variables
 
-        private float speedWhileMoving = 7.5f;
+        private float speedWhileMoving = 8.0f;
         private float widthSearch = 45f;
         private int rangeSearch = 30;
         private Transform target;
         private List<string> aiBlackList = new List<string>();
+        private bool isFiring = false;
+
+        private int setHp = 5;
+        private int Lives = 4;
+        private bool Immortal = false;
 
         public Light leftEyeLight;
         public Light rightEyeLight;
-
 
 #pragma warning restore 0649
 
@@ -136,6 +140,12 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 }
             }
             rayHit = default(RaycastHit);
+
+            setHp = Configuration.nutSlayerHp.Value;
+            Lives = Configuration.nutSlayerLives.Value;
+            Immortal = Configuration.nutSlayerImmortal.Value;
+
+            enemyHP = setHp;
         }
 
         [ServerRpc]
@@ -143,7 +153,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             GameObject gameObject = UnityEngine.Object.Instantiate(gunPrefab, base.transform.position + Vector3.up * 0.5f, Quaternion.identity, RoundManager.Instance.spawnedScrapContainer);
             gameObject.GetComponent<NetworkObject>().Spawn();
-            setShotgunScrapValue = UnityEngine.Random.Range(250, 350);
+            setShotgunScrapValue = UnityEngine.Random.Range(Configuration.slayerShotgunMinValue.Value, Configuration.slayerShotgunMaxValue.Value + 1);
             GrabGun(gameObject);
             randomSeedNumber = UnityEngine.Random.Range(0, 10000);
             InitializeNutcrackerValuesClientRpc(randomSeedNumber, gameObject.GetComponent<NetworkObject>(), setShotgunScrapValue);
@@ -696,7 +706,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 timesSeeingSamePlayer = 0;
             }
             longRangeAudio.PlayOneShot(aimSFX);
-            speedWhileAiming = speedWhileMoving * 0.05f;
+            speedWhileAiming = speedWhileMoving * 0.35f;
             inSpecialAnimation = true;
             serverPosition = enemyPos;
             if (enemyHP <= 1)
@@ -709,10 +719,10 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
             else
             {
-                yield return new WaitForSeconds(1.75f);
+                yield return new WaitForSeconds(0.9f);
             }
             yield return new WaitForEndOfFrame();
-            if (base.IsOwner)
+            if (base.IsOwner && !isFiring)
             {
                 FireGunServerRpc();
             }
@@ -747,7 +757,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         private IEnumerator waitToFireGun()
         {
             yield return new WaitUntil(() => stunNormalizedTimer <= 0f);
-            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(0.5f);
             FireGunClientRpc();
         }
 
@@ -762,6 +772,22 @@ namespace BrutalCompanyMinus.Minus.Handlers
         }
 
         private void FireGun(Vector3 gunPosition, Vector3 gunForward)
+        {
+            isFiring = true;
+            fire(gunPosition, gunForward);
+            StartCoroutine(fireAfterDelay(0.35f, gunPosition, gunForward));
+            StartCoroutine(fireAfterDelay(0.7f, gunPosition, gunForward));
+            isFiring = false;
+        }
+
+        private IEnumerator fireAfterDelay(float time, Vector3 gunPosition, Vector3 gunForward)
+        {
+            yield return new WaitForSeconds(time);
+            gun.currentUseCooldown = -1.0f;
+            fire(gunPosition, gunForward);
+        }
+
+        private void fire(Vector3 gunPosition, Vector3 gunForward)
         {
             creatureAnimator.ResetTrigger("ShootGun");
             creatureAnimator.SetTrigger("ShootGun");
@@ -904,6 +930,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public override void HitEnemy(int force = 1, PlayerControllerB playerWhoHit = null, bool playHitSFX = false)
         {
             base.HitEnemy(force, playerWhoHit, playHitSFX);
+            if (Immortal) return;
             if (!isEnemyDead)
             {
                 if (isInspecting || currentBehaviourStateIndex == 2)
@@ -921,7 +948,10 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 }
                 if (enemyHP <= 0 && base.IsOwner)
                 {
-                    KillEnemyOnOwnerClient();
+                    enemyHP = setHp;
+                    Lives--;
+                    Log.LogInfo(string.Format("Nutslayer new lives:{0}", Lives));
+                    if(Lives <= 0) KillEnemyOnOwnerClient();
                 }
             }
         }
