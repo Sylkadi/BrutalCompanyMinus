@@ -1,5 +1,15 @@
 # ChangeLog
 <details>
+  <summary>0.8.4</summary>
+  
+  - Changed how scrap is handled in this mod, should no longer cause compatibility issues.
+  - Event default amount is now set 2 to but.
+  - There is now a default chance of 50% to add another event up to 4. (Can be configured)
+  - There is now 10 temp custom monster events at the bottom of the events config. (Haven't tested these too much)
+  - Made nutslayer much more harsh...
+  - Added config options for nutslayer, slayer shotgun, grabbable landmines and grabbable turrets.
+</details>
+<details>
   <summary>0.8.3</summary>
   
   - Added Quota config options
