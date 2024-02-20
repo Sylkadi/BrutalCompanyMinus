@@ -53,27 +53,26 @@ namespace BrutalCompanyMinus.Minus
         {
             internal static int randomSeedValue = 0;
 
-            internal static void OutsideObjects(GameObject obj, Vector3 offset, float density, float radius = -1.0f)
+            internal static void OutsideObjects(GameObject obj, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000)
             {
                 if (obj == null) return;
 
-                System.Random random = new System.Random(randomSeedValue);
-
                 List<Vector3> spawnDenialPoints = Functions.GetSpawnDenialNodes();
 
-                int count = (int)(density * terrainArea); // Compute amount
+                int count = (int)Functions.Range(density * terrainArea, 0, objectCap); // Compute amount
                 for (int i = 0; i < count; i++)
                 {
                     randomSeedValue++;
-
+                    
                     UnityEngine.Random.InitState(randomSeedValue); // Important or wont be same on all clients
                     Vector3 position = new Vector3(0.0f, 0.0f, 0.0f);
-                    if(radius != -1.0f || outsideObjectSpawnNodes.Count == 0)
+                    if (radius != -1.0f || outsideObjectSpawnNodes.Count == 0)
                     {
-                        position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(RoundManager.Instance.outsideAINodes[random.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position, radius);
-                    } else
+                        position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(RoundManager.Instance.outsideAINodes[UnityEngine.Random.Range(0, RoundManager.Instance.outsideAINodes.Length)].transform.position, radius);
+                    }
+                    else
                     {
-                        position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(outsideObjectSpawnNodes[random.Next(0, outsideObjectSpawnNodes.Count)], outsideObjectSpawnRadius);
+                        position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(outsideObjectSpawnNodes[UnityEngine.Random.Range(0, outsideObjectSpawnNodes.Count)], outsideObjectSpawnRadius);
                     }
                     Quaternion rotation = obj.transform.rotation;
 
@@ -103,7 +102,7 @@ namespace BrutalCompanyMinus.Minus
                         position.y = info.point.y; // Match raycast hit y position
 
                         position += offset;
-                        rotation.eulerAngles += new Vector3(0.0f, random.Next(0, 360), 0.0f);
+                        rotation.eulerAngles += new Vector3(0.0f, UnityEngine.Random.Range(0, 360), 0.0f);
 
                         GameObject gameObject = UnityEngine.Object.Instantiate(obj, position, rotation);
 
@@ -343,7 +342,7 @@ namespace BrutalCompanyMinus.Minus
             list.Add(spawnableEnemyWithRarity);
         }
 
-        public static void SetAtmosphere(string name, bool state) => Net.Instance.SetAtmosphereClientRpc(name, state);
+        public static void SetAtmosphere(string name, bool state) => Net.Instance.currentWeatherEffects.Add(new CurrentWeatherEffect(name, state));
 
         public static void RemoveSpawn(string Name)
         {
@@ -427,7 +426,7 @@ namespace BrutalCompanyMinus.Minus
             RoundManager.Instance.StartCoroutine(DelayedExecution());
 
             // Net objects
-            foreach (ObjectInfo obj in insideObjectsToSpawnOutside) Spawn.OutsideObjects(obj.obj, new Vector3(0.0f, -0.05f, 0.0f), obj.density);
+            foreach (ObjectInfo obj in insideObjectsToSpawnOutside) Spawn.OutsideObjects(obj.obj, new Vector3(0.0f, -0.05f, 0.0f), obj.density, -1, 250); // 250 Cap for outside landmines and turrets as such
         }
 
         private static IEnumerator DelayedExecution() // Delay this to fix trees not spawning in correctly on clients
@@ -435,7 +434,7 @@ namespace BrutalCompanyMinus.Minus
             yield return new WaitForSeconds(5.0f);
             foreach (OutsideObjectsToSpawn obj in Net.Instance.outsideObjectsToSpawn)
             {
-                Spawn.OutsideObjects(Assets.GetObject((Assets.ObjectName)obj.objectEnumID), new Vector3(0.0f, -1.0f, 0.0f), obj.density);
+                Spawn.OutsideObjects(Assets.GetObject((Assets.ObjectName)obj.objectEnumID), new Vector3(0.0f, -1.0f, 0.0f), obj.density, -1, 1000); // 1000 cap for trees as such
             }
         }
 
@@ -579,7 +578,7 @@ namespace BrutalCompanyMinus.Minus
                     position = newPosition;
                     break;
                 }
-                if (Iteration > 1000)
+                if (Iteration > 51)
                 {
                     Log.LogError("GetSafePosition() got stuck, returning " + position);
                     break;

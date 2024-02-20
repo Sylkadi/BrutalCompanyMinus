@@ -111,9 +111,6 @@ namespace BrutalCompanyMinus
             netObj.GetComponent<GrabbableObject>().SetScrapValue(value);
         }
 
-        [ClientRpc]
-        public void SetAtmosphereClientRpc(string name, bool state) => currentWeatherEffects.Add(new CurrentWeatherEffect(name, state));
-
         private void UpdateAtmosphere(FixedString128Bytes name, bool state)
         {
             for (int i = 0; i < TimeOfDay.Instance.effects.Length; i++)
