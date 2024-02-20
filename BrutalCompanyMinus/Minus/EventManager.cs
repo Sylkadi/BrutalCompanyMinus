@@ -122,21 +122,8 @@ namespace BrutalCompanyMinus.Minus
             foreach (MEvent e in events) eventsToChooseForm.Add(e);
 
             // Decide how many events to spawn
-            int eventsToSpawn = Configuration.eventsToSpawn.Value;
-
-            bool failed = false;
-            Random rng = new Random(StartOfRound.Instance.randomMapSeed + 98672);
-            while(!failed)
-            {
-                if(rng.NextDouble() <= Configuration.chanceForExtraEvent.Value)
-                {
-                    eventsToSpawn++;
-                } else
-                {
-                    failed = true;
-                }
-                if (eventsToSpawn >= Configuration.maxEventsToSpawn.Value) failed = true;
-            }
+            Random rng = new Random(StartOfRound.Instance.randomMapSeed + 32345);
+            int eventsToSpawn = Configuration.eventsToSpawn.Value + RoundManager.Instance.GetRandomWeightedIndex(Configuration.weightsForExtraEvents.IntArray(), rng);
                 
             // Spawn events
             for (int i = 0; i < eventsToSpawn; i++)

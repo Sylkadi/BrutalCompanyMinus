@@ -535,6 +535,16 @@ namespace BrutalCompanyMinus.Minus
             return value;
         }
 
+        public static int[] IntArray(this float[] Values)
+        {
+            int[] newValues = new int[Values.Length];
+            for(int i = 0; i < Values.Length; i++)
+            {
+                newValues[i] = (int)Values[i];
+            }
+            return newValues;
+        }
+
         public static Vector3 GetSafePosition(List<Vector3> nodes, List<Vector3> denialNodes, float radius)
         {
             Vector3 position = nodes[UnityEngine.Random.Range(0, nodes.Count)];

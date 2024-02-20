@@ -71,7 +71,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 MEvent _event = MEvent.GetEvent(nameof(Events.GrabbableLandmines));
 
-                float rarity = _event.Getf(MEvent.ScaleType.EnemyRarity);
+                float rarity = _event.Getf(MEvent.ScaleType.Rarity);
 
                 if(UnityEngine.Random.Range(0.0f, 1.0f) - rarity <= 0.0f)
                 {

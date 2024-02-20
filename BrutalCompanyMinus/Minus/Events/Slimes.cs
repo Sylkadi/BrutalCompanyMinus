@@ -19,18 +19,20 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.EnemyRarity, new Scale(30.0f, 0.5f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.05f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.1f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(1.0f, 0.04f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(2.0f, 0.08f));
+            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(20.0f, 0.67f, 25.0f, 60.0f));
+            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(8.0f, 0.27f, 8.0f, 24.0f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.067f, 1.0f, 6.0f));
+            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
+            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(2.0f, 0.067f, 1.0f, 6.0f));
         }
 
         public override void Execute()
         {
             EnemyType Slime = Assets.GetEnemy(Assets.EnemyName.Hygrodere);
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Slime, Get(ScaleType.EnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Slime, Get(ScaleType.InsideEnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Slime, Get(ScaleType.OutsideEnemyRarity));
 
             Manager.Spawn.OutsideEnemies(Slime, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
             Manager.Spawn.InsideEnemies(Slime, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));

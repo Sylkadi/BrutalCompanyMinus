@@ -19,8 +19,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#008000";
             Type = EventType.Good;
 
-            ScaleList.Add(ScaleType.MinCash, new Scale(80.0f, 0.8f));
-            ScaleList.Add(ScaleType.MaxCash, new Scale(120.0f, 1.5f));
+            ScaleList.Add(ScaleType.MinCash, new Scale(75.0f, 2.5f, 75.0f, 225.0f));
+            ScaleList.Add(ScaleType.MaxCash, new Scale(125.0f, 4.167f, 125.0f, 375.0f));
         }
 
         public override void Execute() => Manager.PayCredits(UnityEngine.Random.Range(Get(ScaleType.MinCash), Get(ScaleType.MaxCash) + 1));

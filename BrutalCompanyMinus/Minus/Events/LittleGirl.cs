@@ -19,13 +19,9 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(2.0f, 0.03f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(3.0f, 0.05f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(3.0f, 0.1f, 3.0f, 9.0f));
         }
-        public override void Execute()
-        {
-            Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.GhostGirl), UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-        }
-
+        public override void Execute() => Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.GhostGirl), UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
     }
 }

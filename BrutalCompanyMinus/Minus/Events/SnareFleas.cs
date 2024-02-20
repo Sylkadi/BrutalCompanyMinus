@@ -19,16 +19,16 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.EnemyRarity, new Scale(35.0f, 0.5f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(2.0f, 0.1f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(3.0f, 0.15f));
+            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(25.0f, 0.84f, 25.0f, 75.0f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(3.0f, 0.1f, 3.0f, 9.0f));
         }
 
         public override void Execute()
         {
             EnemyType SnareFlea = Assets.GetEnemy(Assets.EnemyName.SnareFlea);
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, SnareFlea, Get(ScaleType.EnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, SnareFlea, Get(ScaleType.InsideEnemyRarity));
             Manager.Spawn.InsideEnemies(SnareFlea, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
         }
     }

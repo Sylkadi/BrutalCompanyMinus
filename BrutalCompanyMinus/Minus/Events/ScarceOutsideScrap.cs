@@ -19,8 +19,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#008000";
             Type = EventType.Good;
 
-            ScaleList.Add(ScaleType.MinItemAmount, new Scale(3.0f, 0.07f));
-            ScaleList.Add(ScaleType.MaxItemAmount, new Scale(5.0f, 0.1f));
+            ScaleList.Add(ScaleType.MinItemAmount, new Scale(3.0f, 0.084f, 3.0f, 8.0f));
+            ScaleList.Add(ScaleType.MaxItemAmount, new Scale(5.0f, 0.117f, 5.0f, 12.0f));
         }
 
         public override void Execute() => Manager.Spawn.ScrapOutside(UnityEngine.Random.Range(Get(ScaleType.MinItemAmount), Get(ScaleType.MaxItemAmount) + 1));

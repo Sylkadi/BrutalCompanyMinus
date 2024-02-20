@@ -19,13 +19,9 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#008000";
             Type = EventType.Good;
 
-            ScaleList.Add(ScaleType.FactorySize, new Scale(0.75f, 0.0f));
+            ScaleList.Add(ScaleType.FactorySize, new Scale(0.75f, 0.0f, 0.75f, 0.75f));
         }
 
-        public override void Execute()
-        {
-            Manager.currentLevel.factorySizeMultiplier *= Getf(ScaleType.FactorySize);
-        }
-
+        public override void Execute() => Manager.currentLevel.factorySizeMultiplier *= Getf(ScaleType.FactorySize);
     }
 }

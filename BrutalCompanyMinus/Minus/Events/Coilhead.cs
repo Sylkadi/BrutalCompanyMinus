@@ -19,16 +19,16 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            ScaleList.Add(ScaleType.EnemyRarity, new Scale(40.0f, 0.5f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.05f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.1f));
+            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(30.0f, 1.0f, 30.0f, 90.0f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.05f, 1.0f, 5.0f));
         }
 
         public override void Execute()
         {
             EnemyType Coilhead = Assets.GetEnemy(Assets.EnemyName.CoilHead);
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Coilhead, Get(ScaleType.EnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Coilhead, Get(ScaleType.InsideEnemyRarity));
             Manager.Spawn.InsideEnemies(Coilhead, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
         }
     }

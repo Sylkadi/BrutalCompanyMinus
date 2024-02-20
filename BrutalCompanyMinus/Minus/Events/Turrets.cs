@@ -19,9 +19,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(15.0f, 0.5f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(25.0f, 0.75f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(9.0f, 0.3f, 9.0f, 27.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(12.0f, 0.4f, 12.0f, 36.0f));
         }
 
         public override void Execute()

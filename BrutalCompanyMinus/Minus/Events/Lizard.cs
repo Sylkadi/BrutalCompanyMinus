@@ -19,16 +19,16 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.EnemyRarity, new Scale(35.0f, 0.5f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.06f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.12f));
+            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(25.0f, 0.84f, 25.0f, 75.0f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.05f, 1.0f, 4.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
         }
 
         public override void Execute()
         {
             EnemyType Lizard = Assets.GetEnemy(Assets.EnemyName.SporeLizard);
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Lizard, Get(ScaleType.EnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Lizard, Get(ScaleType.InsideEnemyRarity));
             Manager.Spawn.InsideEnemies(Lizard, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
         }
     }

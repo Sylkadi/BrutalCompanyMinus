@@ -19,12 +19,9 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#008000";
             Type = EventType.Good;
 
-            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.2f, 0.004f));
+            ScaleList.Add(ScaleType.ScrapValue, new Scale(1.2f, 0.0067f, 1.2f, 1.6f));
         }
 
-        public override void Execute()
-        {
-            Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
-        }
+        public override void Execute() => Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
     }
 }

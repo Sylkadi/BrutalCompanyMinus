@@ -14,6 +14,8 @@ using static UnityEngine.EventSystems.EventTrigger;
 using MonoMod.Utils;
 using System.Diagnostics;
 using HarmonyLib;
+using System.Numerics;
+using UnityEngine;
 
 namespace BrutalCompanyMinus
 {
@@ -35,7 +37,8 @@ namespace BrutalCompanyMinus
 
         public static ConfigEntry<bool> useCustomWeights, showEventsInChat;
         public static ConfigEntry<int> eventsToSpawn, maxEventsToSpawn;
-        public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier, chanceForExtraEvent;
+        public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier;
+        public static float[] weightsForExtraEvents;
 
         public static ConfigEntry<bool> useWeatherMultipliers, randomizeWeatherMultipliers, enableTerminalText;
 
@@ -65,15 +68,14 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<bool> nutSlayerImmortal;
 
         public static ConfigEntry<int>
-            slayerShotgunMinValue, slayerShotgunMaxValue;
-        
+            slayerShotgunMinValue, slayerShotgunMaxValue;  
+
         public static void Initalize()
         {
             // Event settings
             useCustomWeights = generalConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
             eventsToSpawn = generalConfig.Bind("_Event Settings", "Event count", 2);
-            maxEventsToSpawn = generalConfig.Bind("_Event Settings", "Max event count", 4);
-            chanceForExtraEvent = generalConfig.Bind("_Event Settings", "Chance for extra event", 0.5f, "Will roll this chance, if rolled true, then +1 event and roll again until failed or hit cap.");
+            weightsForExtraEvents = ParseValuesFromString(generalConfig.Bind("_Event Settings", "Weights for extra events", "40, 40, 15, 5", "Weights for extra events, can be expanded. (45, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
             showEventsInChat = generalConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
             goodEventIncrementMultiplier = generalConfig.Bind("_Event Settings", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
             badEventIncrementMultiplier = generalConfig.Bind("_Event Settings", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
@@ -105,8 +107,8 @@ namespace BrutalCompanyMinus
             allEnemiesDefaultWeight = generalConfig.Bind("Custom enemy and scrap weights", "All scrap on all moons weight", 2, "If there is any scrap with weight 0, it will be set to this weight enabling them to spawn.");
 
             // Custom scrap settings
-            nutSlayerLives = customAssetsConfig.Bind("NutSlayer", "Lives", 6, "If hp reaches zero or below, decrement lives and reset hp until 0 lives.");
-            nutSlayerHp = customAssetsConfig.Bind("NutSlayer", "Hp", 4);
+            nutSlayerLives = customAssetsConfig.Bind("NutSlayer", "Lives", 5, "If hp reaches zero or below, decrement lives and reset hp until 0 lives.");
+            nutSlayerHp = customAssetsConfig.Bind("NutSlayer", "Hp", 3);
             nutSlayerMovementSpeed = customAssetsConfig.Bind("NutSlayer", "Speed", 8.0f);
             nutSlayerImmortal = customAssetsConfig.Bind("NutSlayer", "Immortal", false);
             Assets.grabbableTurret.minValue = customAssetsConfig.Bind("Grabbable Landmine", "Min value", 50).Value;
@@ -155,19 +157,11 @@ namespace BrutalCompanyMinus
                 eventEnables.Add(eventConfig.Bind(e.Name(), "Event Enabled?", e.Enabled, "Setting this to false will stop the event from occuring.")); // Normal event
 
                 // Make scale list
-                List<ScaleType> scaleTypes = new List<ScaleType>();
-                List<ConfigEntry<float>> baseScales = new List<ConfigEntry<float>>();
-                List<ConfigEntry<float>> incrementScales = new List<ConfigEntry<float>>();
                 Dictionary<ScaleType, Scale> scales = new Dictionary<ScaleType, Scale>();
                 foreach (KeyValuePair<ScaleType, Scale> obj in e.ScaleList)
                 {
-                    scaleTypes.Add(obj.Key);
-                    baseScales.Add(eventConfig.Bind(e.Name(), obj.Key.ToString() + " Base Scale Value", obj.Value.Base, "Starting Value"));
-                    incrementScales.Add(eventConfig.Bind(e.Name(), obj.Key.ToString() + " Increment Scale Value", obj.Value.Increment, "Formula: BaseScale + (IncrementScale * DaysPassed)"));
-                }
-                for (int i = 0; i != baseScales.Count; i++)
-                {
-                    scales.Add(scaleTypes[i], new Scale(baseScales[i].Value, incrementScales[i].Value));
+                    float[] ScaleValues = ParseValuesFromString(eventConfig.Bind(e.Name(), obj.Key.ToString(), $"{obj.Value.Base}, {obj.Value.Increment}, {obj.Value.MinCap}, {obj.Value.MaxCap}", ScaleInfoList[obj.Key] + "   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+                    scales.Add(obj.Key, new Scale(ScaleValues[0], ScaleValues[1], ScaleValues[2], ScaleValues[3]));
                 }
                 eventScales.Add(scales);
             }
@@ -218,7 +212,7 @@ namespace BrutalCompanyMinus
                     // Inside enemies
                     foreach (SpawnableEnemyWithRarity enemy in level.Enemies)
                     {
-                        if (enemy.enemyType == null)
+                        if (enemy == null || enemy.enemyType == null)
                         {
                             Log.LogError(string.Format("Null entry on {0} in level.Enemies", level.name));
                             continue; // Skip entry
@@ -233,7 +227,7 @@ namespace BrutalCompanyMinus
                     // Outside enemies
                     foreach (SpawnableEnemyWithRarity enemy in level.OutsideEnemies)
                     {
-                        if (enemy.enemyType == null)
+                        if (enemy == null || enemy.enemyType == null)
                         {
                             Log.LogError(string.Format("Null entry on {0} in level.OutsideEnemies", level.name));
                             continue; // Skip entry
@@ -248,7 +242,7 @@ namespace BrutalCompanyMinus
                     // Daytime enemies
                     foreach (SpawnableEnemyWithRarity enemy in level.DaytimeEnemies)
                     {
-                        if (enemy.enemyType == null)
+                        if (enemy == null || enemy.enemyType == null)
                         {
                             Log.LogError(string.Format("Null entry on {0} in level.DaytimeEnemies", level.name));
                             continue; // Skip entry
@@ -272,7 +266,7 @@ namespace BrutalCompanyMinus
 
                     foreach (SpawnableItemWithRarity scrap in level.spawnableScrap)
                     {
-                        if (scrap.spawnableItem == null)
+                        if (scrap == null || scrap.spawnableItem == null)
                         {
                             Log.LogError(string.Format("Null entry on {0} in level.spawnableScrap", level.name));
                             continue; // Skip Entry
@@ -310,6 +304,12 @@ namespace BrutalCompanyMinus
                 __instance.quotaVariables.baseIncrease = generalConfig.Bind("Quota Settings", "Base Increase", __instance.quotaVariables.baseIncrease).Value;
                 __instance.quotaVariables.increaseSteepness = generalConfig.Bind("Quota Settings", "Increase Steepness", __instance.quotaVariables.increaseSteepness).Value;
             }
+        }
+
+
+        private static float[] ParseValuesFromString(string from)
+        {
+            return from.Split(',').Select(float.Parse).ToArray();
         }
     }
 }

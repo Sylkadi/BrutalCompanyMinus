@@ -719,7 +719,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
             else
             {
-                yield return new WaitForSeconds(0.9f);
+                yield return new WaitForSeconds(1.3f);
             }
             yield return new WaitForEndOfFrame();
             if (base.IsOwner && !isFiring)

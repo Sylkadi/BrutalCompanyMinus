@@ -19,8 +19,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#00FF00";
             Type = EventType.VeryGood;
 
-            ScaleList.Add(ScaleType.ScrapValue, new Scale(1.35f, 0.006f));
-            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.35f, 0.006f));
+            ScaleList.Add(ScaleType.ScrapValue, new Scale(1.35f, 0.0117f, 1.35f, 2.05f));
+            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.35f, 0.0117f, 1.35f, 2.05f));
         }
 
         public override void Execute()

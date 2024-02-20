@@ -30,18 +30,20 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Neutral;
 
-            ScaleList.Add(ScaleType.EnemyRarity, new Scale(30.0f, 0.5f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.05f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.1f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(1.0f, 0.04f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(2.0f, 0.08f));
+            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(30.0f, 0.5f, 30.0f, 80.0f));
+            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(30.0f, 0.5f, 30.0f, 80.0f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.05f, 1.0f, 5.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.1f, 2.0f, 5.0f));
+            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(1.0f, 0.04f, 1.0f, 2.0f));
+            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(2.0f, 0.08f, 2.0f, 5.0f));
         }
 
         public override void Execute()
         {
             EnemyType enemy = Assets.GetEnemy(enemyName.Value);
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, enemy, Get(ScaleType.EnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, enemy, Get(ScaleType.InsideEnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, enemy, Get(ScaleType.OutsideEnemyRarity));
 
             Manager.Spawn.OutsideEnemies(enemy, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
             Manager.Spawn.InsideEnemies(enemy, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));

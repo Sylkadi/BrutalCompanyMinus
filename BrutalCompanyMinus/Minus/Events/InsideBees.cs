@@ -21,8 +21,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToSpawnWith = new List<string>() { nameof(Bees) };
 
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(2.0f, 0.05f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(3.0f, 0.08f));
+            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(2.0f, 0.05f, 2.0f, 5.0f));
+            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(3.0f, 0.084f, 3.0f, 8.0f));
         }
 
         public override void Execute() => Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.CircuitBee), UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy)), 10.0f);

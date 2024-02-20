@@ -22,7 +22,7 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(TransmuteScrapBig), nameof(TransmuteScrapSmall), nameof(Dentures), nameof(Pickles), nameof(Honk), nameof(GoldenBars)};
 
-            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.08f, 0.0015f));
+            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
         }
 
         public override void Execute()
@@ -31,9 +31,9 @@ namespace BrutalCompanyMinus.Minus.Events
             Manager.TransmuteScrap(
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.GoldenCup), rarity = 25 },
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.Ring), rarity = 20 },
-                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.GoldBar), rarity = 2 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.GoldBar), rarity = 1 },
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.FancyLamp), rarity = 10 },
-                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.PerfumeBottle), rarity = 25 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.PerfumeBottle), rarity = 26 },
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.Painting), rarity = 15 },
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.CashRegister), rarity = 3 }
             );

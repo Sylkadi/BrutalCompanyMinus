@@ -19,16 +19,16 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.EnemyRarity, new Scale(40.0f, 0.5f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(2.0f, 0.1f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(3.0f, 0.15f));
+            ScaleList.Add(ScaleType.DaytimeEnemyRarity, new Scale(25.0f, 0.84f, 25.0f, 75.0f));
+            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(2.0f, 0.034f, 2.0f, 4.0f));
+            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
         }
 
         public override void Execute()
         {
             EnemyType CircuitBee = Assets.GetEnemy(Assets.EnemyName.CircuitBee);
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.DaytimeEnemies, CircuitBee, Get(ScaleType.EnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.DaytimeEnemies, CircuitBee, Get(ScaleType.DaytimeEnemyRarity));
             Manager.Spawn.OutsideEnemies(CircuitBee, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
         }
     }

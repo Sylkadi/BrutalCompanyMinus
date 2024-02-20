@@ -21,7 +21,7 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(TransmuteScrapBig), nameof(TransmuteScrapSmall), nameof(Dentures), nameof(GoldenFacility), nameof(Honk), nameof(GoldenBars)};
 
-            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.08f, 0.0015f));
+            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
         }
 
         public override void Execute()

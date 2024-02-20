@@ -21,8 +21,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(ScarceOutsideScrap) };
 
-            ScaleList.Add(ScaleType.MinItemAmount, new Scale(8.0f, 0.1f));
-            ScaleList.Add(ScaleType.MaxItemAmount, new Scale(12.0f, 0.15f));
+            ScaleList.Add(ScaleType.MinItemAmount, new Scale(7.0f, 0.117f, 7.0f, 14.0f));
+            ScaleList.Add(ScaleType.MaxItemAmount, new Scale(11.0f, 0.184f, 10.0f, 22.0f));
         }
 
         public override void Execute() => Manager.Spawn.ScrapOutside(UnityEngine.Random.Range(Get(ScaleType.MinItemAmount), Get(ScaleType.MaxItemAmount) + 1));

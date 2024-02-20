@@ -22,17 +22,31 @@ namespace BrutalCompanyMinus.Minus
 
         public enum ScaleType
         {
-            EnemyRarity, MinOutsideEnemy, MinInsideEnemy, MaxOutsideEnemy, MaxInsideEnemy, ScrapValue, ScrapAmount, FactorySize, MinDensity, MaxDensity, MinCash, MaxCash, MinItemAmount, MaxItemAmount, MinValue, MaxValue, Other
+            InsideEnemyRarity, OutsideEnemyRarity, DaytimeEnemyRarity, MinOutsideEnemy, MinInsideEnemy, MaxOutsideEnemy, MaxInsideEnemy,
+            ScrapValue, ScrapAmount, FactorySize, MinDensity, MaxDensity, MinCash, MaxCash, MinItemAmount, MaxItemAmount, MinValue, MaxValue, Rarity, MinRarity, MaxRarity,
+            MinCut, MaxCut
         }
+
+        public static Dictionary<ScaleType, string> ScaleInfoList = new Dictionary<ScaleType, string>() {
+            { ScaleType.InsideEnemyRarity, "Enemy is added to Inside enemy list with rarity." }, { ScaleType.OutsideEnemyRarity, "Enemy is added to Outside enemy list with rarity." }, { ScaleType.DaytimeEnemyRarity, "Enemy is added to Daytime enemy list with rarity." },
+            { ScaleType.MinOutsideEnemy, "Minimum amount of enemies garunteed to spawn outside." }, { ScaleType.MaxOutsideEnemy, "Maximum amount of enemies garunteed to spawn outside." }, { ScaleType.MinInsideEnemy, "Minimum amount of enemies garunteed to spawn inside." }, { ScaleType.MaxInsideEnemy, "Maximum amount of enemies garunteed to spawn inside." },
+            { ScaleType.ScrapValue, "The amount that scrap value is multiplied by." }, { ScaleType.ScrapAmount, "The amount that scrap amount is multiplied by." }, { ScaleType.FactorySize, "The amount that factory size is multiplied by." },
+            { ScaleType.MinDensity, "Minimum density value chosen." }, { ScaleType.MaxDensity, "Maximum density value chosen." }, { ScaleType.MinCash, "Minumum amount of cash given." }, { ScaleType.MaxCash, "Maximum amount of cash given." },
+            { ScaleType.MinItemAmount, "Minimum amount of items to spawn." }, { ScaleType.MaxItemAmount, "Maximum amount of items to spawn." }, { ScaleType.MinValue, "The minimum value of something." }, { ScaleType.MaxValue, "The maximum value of something." },
+            { ScaleType.Rarity, "The general chance of something." }, { ScaleType.MinRarity, "Minimum chance of something." }, { ScaleType.MaxRarity, "Maximum chance of something." }, { ScaleType.MinCut, "Minimum cut taken." }, { ScaleType.MaxCut, "Maximum cut taken." }
+        };
+
 
         public struct Scale
         {
-            public float Base, Increment;
+            public float Base, Increment, MinCap, MaxCap;
 
-            public Scale(float Base, float Increment)
+            public Scale(float Base, float Increment, float MinCap, float MaxCap)
             {
                 this.Base = Base;
                 this.Increment = Increment;
+                this.MinCap = MinCap;
+                this.MaxCap = MaxCap;
             }
         }
 
@@ -52,7 +66,7 @@ namespace BrutalCompanyMinus.Minus
                 if (Type == MEvent.EventType.VeryBad || Type == MEvent.EventType.Bad) increment = scale.Increment * Configuration.badEventIncrementMultiplier.Value;
                 if (Type == MEvent.EventType.VeryGood || Type == MEvent.EventType.Good) increment = scale.Increment * Configuration.goodEventIncrementMultiplier.Value;
 
-                return scale.Base + (increment * Manager.daysPassed);
+                return Functions.Range(scale.Base + (increment * Manager.daysPassed), scale.MinCap, scale.MaxCap);
             } catch
             {
                 Log.LogError(string.Format("Scalar '{0}' for '{1}' not found, returning 0.", EventType.ToString(), Name()));

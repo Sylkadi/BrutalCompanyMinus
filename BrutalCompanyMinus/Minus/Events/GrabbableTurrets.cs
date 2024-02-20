@@ -20,7 +20,7 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.EnemyRarity, new Scale(0.50f, 0.0f));
+            ScaleList.Add(ScaleType.Rarity, new Scale(0.4f, 0.0084f, 0.4f, 0.9f));
         }
 
         public override void Execute() => Active = true;

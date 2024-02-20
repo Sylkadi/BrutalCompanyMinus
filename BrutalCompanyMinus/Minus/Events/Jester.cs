@@ -19,13 +19,17 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(2.0f, 0.03f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(3.0f, 0.05f));
+            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(10.0f, 0.34f, 10.0f, 30.0f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
         }
 
         public override void Execute()
         {
-            Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.Jester), UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
+            EnemyType Jester = Assets.GetEnemy(Assets.EnemyName.Jester);
+
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Jester, Get(ScaleType.InsideEnemyRarity));
+            Manager.Spawn.InsideEnemies(Jester, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
         }
     }
 }
