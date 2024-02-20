@@ -6,6 +6,7 @@ using UnityEngine;
 using HarmonyLib;
 using BrutalCompanyMinus.Minus;
 using Unity.Collections;
+using GameNetcodeStuff;
 
 namespace BrutalCompanyMinus
 {
@@ -17,6 +18,7 @@ namespace BrutalCompanyMinus
 
         public NetworkList<Weather> currentWeatherMultipliers;
         public NetworkList<OutsideObjectsToSpawn> outsideObjectsToSpawn;
+        public NetworkList<CurrentWeatherEffect> currentWeatherEffects;
 
         public NetworkVariable<FixedString4096Bytes> textUI = new NetworkVariable<FixedString4096Bytes>();
 
@@ -25,6 +27,22 @@ namespace BrutalCompanyMinus
             // Initalize or it will break
             currentWeatherMultipliers = new NetworkList<Weather>();
             outsideObjectsToSpawn = new NetworkList<OutsideObjectsToSpawn>();
+            currentWeatherEffects = new NetworkList<CurrentWeatherEffect>();
+        }
+
+        void FixedUpdate()
+        {
+            if(currentWeatherEffects.Count > 0) // Set atmosphere
+            {
+                foreach(CurrentWeatherEffect e in currentWeatherEffects)
+                {
+                    PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
+                    if(localPlayer != null)
+                    {
+                        if(!localPlayer.isInsideFactory) UpdateAtmosphere(e.name, e.state);
+                    }
+                }
+            }
         }
 
         public override void OnNetworkSpawn()
@@ -94,7 +112,9 @@ namespace BrutalCompanyMinus
         }
 
         [ClientRpc]
-        public void SetAtmosphereClientRpc(string name, bool state)
+        public void SetAtmosphereClientRpc(string name, bool state) => currentWeatherEffects.Add(new CurrentWeatherEffect(name, state));
+
+        private void UpdateAtmosphere(FixedString128Bytes name, bool state)
         {
             for (int i = 0; i < TimeOfDay.Instance.effects.Length; i++)
             {
@@ -160,12 +180,46 @@ namespace BrutalCompanyMinus
                 Instance.UpdateCurrentWeatherMultipliersServerRpc();
 
                 // If called on server
-                if (RoundManager.Instance.IsServer)
+                if (RoundManager.Instance.IsServer) // Why did i write if is Server?? just gona leave this here.
                 {
+                    Instance.currentWeatherEffects.Clear(); // Clear weather effects
                     Instance.outsideObjectsToSpawn.Clear();
                     UI.ClearText();
                 }
             }
+        }
+    }
+
+    public struct CurrentWeatherEffect : INetworkSerializable, IEquatable<CurrentWeatherEffect>
+    {
+        public FixedString128Bytes name;
+        public bool state;
+
+        public CurrentWeatherEffect(FixedString128Bytes name, bool state)
+        {
+            this.name = name;
+            this.state = state;
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            if (serializer.IsReader)
+            {
+                FastBufferReader reader = serializer.GetFastBufferReader();
+                reader.ReadValueSafe(out name);
+                reader.ReadValueSafe(out state);
+            }
+            else
+            {
+                FastBufferWriter write = serializer.GetFastBufferWriter();
+                write.WriteValueSafe(name);
+                write.WriteValueSafe(state);
+            }
+        }
+
+        public bool Equals(CurrentWeatherEffect other)
+        {
+            return name == other.name;
         }
     }
 
