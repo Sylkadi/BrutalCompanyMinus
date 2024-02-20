@@ -60,10 +60,11 @@ namespace BrutalCompanyMinus
         {
             if(!Initalized)
             {
-                Configuration.generalConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\General_Settings.cfg", true);
+                Configuration.uiConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\UI_Settings.cfg", true);
+                Configuration.difficultyConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Difficulty_Settings.cfg", true);
                 Configuration.eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
-                Configuration.weatherMultipliersConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Multipliers.cfg", true);
-                Configuration.customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Custom_Enemy_Scrap_Settings.cfg", true);
+                Configuration.weatherConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Settings.cfg", true);
+                Configuration.customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
 
                 // Custom enemy events
                 for (int i = 0; i < 10; i++)
@@ -140,9 +141,13 @@ namespace BrutalCompanyMinus
                     Manager.currentLevel.factorySizeMultiplier *= e.factorySizeMultiplier;
                 }
             }
-            // Update Enemy max power counts
-            RoundManager.Instance.currentMaxInsidePower += Math.Min(Manager.daysPassed, 10) + Manager.daysPassed;
-            RoundManager.Instance.currentMaxOutsidePower += Manager.daysPassed / 2;
+
+            // Difficulty modifications
+            Manager.AddEnemyHp((int)MEvent.Scale.Compute(Configuration.enemyBonusHpScaling));
+            Manager.MultiplySpawnChance(newLevel, MEvent.Scale.Compute(Configuration.spawnChanceMultiplierScaling));
+            Manager.AddInsidePower((int)MEvent.Scale.Compute(Configuration.insideEnemyMaxPowerCountScaling));
+            Manager.AddOutsidePower((int)MEvent.Scale.Compute(Configuration.outsideEnemyPowerCountScaling));
+
             // Choose any apply events
             List<MEvent> additionalEvents = new List<MEvent>();
             List<MEvent> currentEvents = EventManager.ChooseEvents(out additionalEvents);
@@ -159,6 +164,10 @@ namespace BrutalCompanyMinus
                     HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
                 }
             }
+
+            // Apply maxPower counts
+            RoundManager.Instance.currentMaxInsidePower += Manager.bonusMaxInsidePowerCount;
+            RoundManager.Instance.currentOutsideEnemyPower += Manager.bonusMaxOutsidePowerCount;
 
             // Spawn outside scrap
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);

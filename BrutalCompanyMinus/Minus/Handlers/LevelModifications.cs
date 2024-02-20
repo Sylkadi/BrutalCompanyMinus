@@ -157,7 +157,20 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 if (obj.prefabToSpawn.name == "Landmine") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 3.0f));
                 if (obj.prefabToSpawn.name == "TurretContainer") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 3.0f));
             }
-            // Reset Multipliers
+
+            // Reset spawn chances
+            __instance.currentLevel.enemySpawnChanceThroughoutDay.ClearKeys();
+            __instance.currentLevel.outsideEnemySpawnChanceThroughDay.ClearKeys();
+            __instance.currentLevel.daytimeEnemySpawnChanceThroughDay.ClearKeys();
+            foreach (Keyframe key in Assets.insideSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.enemySpawnChanceThroughoutDay.AddKey(key);
+            foreach (Keyframe key in Assets.outsideSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.outsideEnemySpawnChanceThroughDay.AddKey(key);
+            foreach (Keyframe key in Assets.daytimeSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.daytimeEnemySpawnChanceThroughDay.AddKey(key);
+
+            // Reset bonus hp
+            Manager.bonusEnemyHp = 0;
+            Manager.spawnChanceMultiplier = 1.0f;
+
+            // Reset multipliers
             try
             {
                 Manager.currentLevel.factorySizeMultiplier = Assets.factorySizeMultiplierList[__instance.currentLevel.levelID];

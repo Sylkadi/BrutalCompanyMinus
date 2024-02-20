@@ -24,8 +24,9 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         [HarmonyPostfix]
         [HarmonyPatch("Start")]
-        private static void OnStart(ref EnemyAI __instance) // Set isOutside
+        private static void OnStart(ref EnemyAI __instance) // Set isOutside and scale hp
         {
+            __instance.enemyHP += Manager.bonusEnemyHp;
             try
             {
                 GameObject terrainMap = GameObject.FindGameObjectWithTag(Manager.terrainTag);

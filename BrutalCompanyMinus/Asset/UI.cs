@@ -24,7 +24,7 @@ namespace BrutalCompanyMinus
 
         public bool showCaseEvents = false;
 
-        public float showCaseEventTime = 20.0f;
+        public float showCaseEventTime = 45.0f;
         public float curretShowCaseEventTime = 0.0f;
 
         public bool keyPressEnabledTyping = true, keyPressEnabledTerminal = true, keyPressEnabledSettings = true;
@@ -112,12 +112,27 @@ namespace BrutalCompanyMinus
             {
                 float ScrapValueMultiplier = RoundManager.Instance.scrapValueMultiplier;
                 if (Configuration.NormaliseScrapValueDisplay.Value) ScrapValueMultiplier *= 2.5f;
-                text += string.Format("<br>Map:<br> Scrap:<br>  -Value: x{0}<br>  -Amount: x{1}<br><br> Factory:<br>  -Size: x{2}",
-                    ScrapValueMultiplier.ToString("F2"), RoundManager.Instance.scrapAmountMultiplier.ToString("F2"), RoundManager.Instance.currentLevel.factorySizeMultiplier.ToString("F2"));
+                text += 
+                    $"<br>Difficulty:" +
+                    $"<br> -Day: {Manager.daysPassed}" +
+                    $"<br> -SpawnChance: x{Manager.spawnChanceMultiplier:F2}" +
+                    $"<br> -Max inside power: {plusMinus(Manager.bonusMaxInsidePowerCount)}" +
+                    $"<br> -Max outside power: {plusMinus(Manager.bonusMaxOutsidePowerCount)}" +
+                    $"<br> -Bonus enemy hp: {plusMinus(Manager.bonusEnemyHp)}" +
+                    $"<br><br> -Scrap Amount: x{RoundManager.Instance.scrapAmountMultiplier:F2}" +
+                    $"<br> -Scrap Value: x{ScrapValueMultiplier:F2}" +
+                    $"<br> -Factory Size: x{RoundManager.Instance.currentLevel.factorySizeMultiplier:F2}";
             }
 
             Net.Instance.textUI.Value = new FixedString4096Bytes(text);
             if (Configuration.PopUpUI.Value && Configuration.EnableUI.Value) Net.Instance.ShowCaseEventsClientRpc();
+        }
+
+        private static string plusMinus(float value)
+        {
+            string s = value.ToString();
+            if (value >= 0) s = "+" + s;
+            return s;
         }
 
         public static void ClearText() => Net.Instance.textUI.Value = new FixedString4096Bytes("<br>No Events...");

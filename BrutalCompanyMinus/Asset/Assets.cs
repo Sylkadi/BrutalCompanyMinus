@@ -74,8 +74,9 @@ namespace BrutalCompanyMinus
         internal static Dictionary<string, WeatherEffect> AtmosphereList = new Dictionary<string, WeatherEffect>();
 
         internal static List<float> factorySizeMultiplierList = new List<float>();
-
         internal static List<float> averageScrapValueList = new List<float>();
+        internal static List<AnimationCurve> insideSpawnChanceCurves = new List<AnimationCurve>(), outsideSpawnChanceCurves = new List<AnimationCurve>(), daytimeSpawnChanceCurves = new List<AnimationCurve>();
+
 
         // Custom Assets
         internal static EnemyType antiCoilHead, nutSlayer;
@@ -233,9 +234,10 @@ namespace BrutalCompanyMinus
         {
             if (generatedLevelScrapLists) return;
             
-            // Generate FactorySize List and scrap List
+            // Generate FactorySize List and animation curves list
             foreach (SelectableLevel level in StartOfRound.Instance.levels)
             {
+                // Factory size list and average scrap value
                 factorySizeMultiplierList.Add(level.factorySizeMultiplier);
                 List<SpawnableItemWithRarity> items = new List<SpawnableItemWithRarity>();
                 items.AddRange(level.spawnableScrap);
@@ -255,6 +257,17 @@ namespace BrutalCompanyMinus
                 {
                     averageScrapValueList.Add(80);
                 }
+
+                // Animation curves list
+                AnimationCurve newInsideSpawnChanceCurve = new AnimationCurve(), newOutsideSpawnChanceCurve = new AnimationCurve(), newDaytimeSpawnChanceCurve = new AnimationCurve();
+
+                foreach (Keyframe key in level.enemySpawnChanceThroughoutDay.keys) newInsideSpawnChanceCurve.AddKey(key);
+                foreach (Keyframe key in level.outsideEnemySpawnChanceThroughDay.keys) newOutsideSpawnChanceCurve.AddKey(key);
+                foreach (Keyframe key in level.daytimeEnemySpawnChanceThroughDay.keys) newDaytimeSpawnChanceCurve.AddKey(key);
+
+                insideSpawnChanceCurves.Add(newInsideSpawnChanceCurve);
+                outsideSpawnChanceCurves.Add(newOutsideSpawnChanceCurve);
+                daytimeSpawnChanceCurves.Add(newDaytimeSpawnChanceCurve);
             }
             
             generatedLevelScrapLists = true;

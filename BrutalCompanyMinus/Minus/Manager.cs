@@ -42,6 +42,9 @@ namespace BrutalCompanyMinus.Minus
         internal static float scrapAmountMultiplier = 1f;
 
         internal static int randomItemsToSpawnOutsideCount = 0;
+        internal static int bonusEnemyHp = 0;
+        internal static int bonusMaxInsidePowerCount = 0, bonusMaxOutsidePowerCount = 0;
+        internal static float spawnChanceMultiplier = 1.0f;
 
         internal static bool transmuteScrap = false;
         internal static List<SpawnableItemWithRarity> ScrapToTransmuteTo = new List<SpawnableItemWithRarity>();
@@ -261,6 +264,10 @@ namespace BrutalCompanyMinus.Minus
             return 0;
         }
 
+        public static void AddEnemyHp(int amount) => bonusEnemyHp += amount;
+        public static void AddInsidePower(int amount) => bonusMaxInsidePowerCount += amount;
+        public static void AddOutsidePower(int amount) => bonusMaxOutsidePowerCount += amount;
+
         internal static void SampleMap()
         {
             // Compute Map Area
@@ -389,6 +396,14 @@ namespace BrutalCompanyMinus.Minus
                 Log.LogError("Exists() on daytimeEnemies failed");
             }
             return false;
+        }
+
+        public static void MultiplySpawnChance(SelectableLevel currentLevel, float by)
+        {
+            spawnChanceMultiplier *= by;
+            for(int i = 0; i < currentLevel.enemySpawnChanceThroughoutDay.keys.Length; i++) currentLevel.enemySpawnChanceThroughoutDay.keys[i].value *= by;
+            for(int i = 0; i < currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length; i++) currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value *= by;
+            for(int i = 0; i < currentLevel.daytimeEnemySpawnChanceThroughDay.keys.Length; i++) currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value *= by;
         }
 
         public static void PayCredits(int amount)

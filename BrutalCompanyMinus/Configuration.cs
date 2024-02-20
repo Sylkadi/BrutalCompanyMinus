@@ -23,7 +23,7 @@ namespace BrutalCompanyMinus
     internal class Configuration
     {
 
-        public static ConfigFile generalConfig, eventConfig, weatherMultipliersConfig, customAssetsConfig;
+        public static ConfigFile uiConfig, eventConfig, weatherConfig, customAssetsConfig, difficultyConfig;
 
         public static List<ConfigFile> levelConfigs = new List<ConfigFile>();
 
@@ -55,6 +55,8 @@ namespace BrutalCompanyMinus
 
         public static ConfigEntry<bool> enableQuotaChanges;
         public static ConfigEntry<int> deadLineDaysAmount, startingCredits, startingQuota, baseIncrease, increaseSteepness;
+        public static Scale spawnChanceMultiplierScaling = new Scale(), insideEnemyMaxPowerCountScaling = new Scale(), outsideEnemyPowerCountScaling = new Scale(), enemyBonusHpScaling = new Scale();
+        public static ConfigEntry<bool> ignoreScaleCap;
 
         public static Dictionary<string, Dictionary<string, int>>  // Level name => Enemy/Scrap name => Rarity
             insideEnemyRarityList = new Dictionary<string, Dictionary<string, int>>(), 
@@ -73,38 +75,36 @@ namespace BrutalCompanyMinus
         public static void Initalize()
         {
             // Event settings
-            useCustomWeights = generalConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
-            eventsToSpawn = generalConfig.Bind("_Event Settings", "Event count", 2);
-            weightsForExtraEvents = ParseValuesFromString(generalConfig.Bind("_Event Settings", "Weights for extra events", "40, 40, 15, 5", "Weights for extra events, can be expanded. (45, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
-            showEventsInChat = generalConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
-            goodEventIncrementMultiplier = generalConfig.Bind("_Event Settings", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
-            badEventIncrementMultiplier = generalConfig.Bind("_Event Settings", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
+            useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
+            eventsToSpawn = difficultyConfig.Bind("_Event Settings", "Event count", 2);
+            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events", "40, 40, 15, 5", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
+            showEventsInChat = difficultyConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
 
             // eventType weights
-            veryGoodWeight = generalConfig.Bind("EventType Weights", "VeryGood event weight", 6);
-            goodWeight = generalConfig.Bind("EventType Weights", "Good event weight", 18);
-            neutralWeight = generalConfig.Bind("EventType Weights", "Neutral event weight", 15);
-            badWeight = generalConfig.Bind("EventType Weights", "Bad event weight", 33);
-            veryBadWeight = generalConfig.Bind("EventType Weights", "VeryBad event weight", 13);
-            removeEnemyWeight = generalConfig.Bind("EventType Weights", "Remove event weight", 15, "These events remove something");
+            veryGoodWeight = difficultyConfig.Bind("_EventType Weights", "VeryGood event weight", 6);
+            goodWeight = difficultyConfig.Bind("_EventType Weights", "Good event weight", 18);
+            neutralWeight = difficultyConfig.Bind("_EventType Weights", "Neutral event weight", 15);
+            badWeight = difficultyConfig.Bind("_EventType Weights", "Bad event weight", 33);
+            veryBadWeight = difficultyConfig.Bind("_EventType Weights", "VeryBad event weight", 13);
+            removeEnemyWeight = difficultyConfig.Bind("_EventType Weights", "Remove event weight", 15, "These events remove something");
 
-            // Weather settings
-            useWeatherMultipliers = generalConfig.Bind("Weather Settings", "Enable weather multipliers?", true, "'false'= Disable all weather multipliers     'true'= Enable weather multipliers");
-            randomizeWeatherMultipliers = generalConfig.Bind("Weather Settings", "Weather multiplier randomness?", false, "'false'= disable     'true'= enable");
-            enableTerminalText = generalConfig.Bind("Weather Settings", "Enable terminal text?", true);
-            
-            // Weather Random settings
-            weatherRandomRandomMinInclusive = generalConfig.Bind("Weather Random Multipliers", "Min Inclusive", 0.9f, "Lower bound of random value");
-            weatherRandomRandomMaxInclusive = generalConfig.Bind("Weather Random Multipliers", "Max Inclusive", 1.2f, "Upper bound of random value");
+            // Difficulty scaling
+            ignoreScaleCap = difficultyConfig.Bind("Difficulty Scaling", "Ignore minCap, maxCap", false, "Ignore caps that limit scaling.");
+            spawnChanceMultiplierScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn chance multiplier scale", "0.8, 0.0284, 0.8, 2.5", "This will multiply the spawn chance by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Inside Max Enemy Power Count", "0, 0.84, 0, 50", "Added max enemy power count for inside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Outside Max Enemy Power Count", "0, 0.5, 0, 30", "Added max enemy power count for outside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus hp", "0, 0.067, 0, 4", "Added hp to all enemies,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            goodEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
+            badEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
 
             // Level Enemy/Scrap settings
-            customScrapWeights = generalConfig.Bind("Custom enemy and scrap weights", "Generate and use scrap weights?", false, "This will generate customizable scrap weights for each level (This can become slow if you have alot of modded scraps)");
-            customEnemyWeights = generalConfig.Bind("Custom enemy and scrap weights", "Generate and use enemy weights?", true, "This will generate customizable enemy weights for each level");
-            enableAllEnemies = generalConfig.Bind("Custom enemy and scrap weights", "Enable all enemies on all moons", false, "This will enable all insideEnemies to spawn inside.., you need to have generate and use enemy weights enabled.");
-            enableAllScrap = generalConfig.Bind("Custom enemy and scrap weights", "Enable all scrap on all moons", false, "This will enable for all scraps to spawn on all moons, you need to have generate and use scrap weights enabled.");
-            enableCustomWeights = generalConfig.Bind("Custom enemy and scrap weights", "_Enable?", true);
-            allEnemiesDefaultWeight = generalConfig.Bind("Custom enemy and scrap weights", "All enemies on all moons weight", 2, "If there is any enemy with weight 0, it will be set to this weight enabling them to spawn.");
-            allEnemiesDefaultWeight = generalConfig.Bind("Custom enemy and scrap weights", "All scrap on all moons weight", 2, "If there is any scrap with weight 0, it will be set to this weight enabling them to spawn.");
+            customScrapWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Generate and use scrap weights?", false, "This will generate customizable scrap weights for each level (This can become slow if you have alot of modded scraps)");
+            customEnemyWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Generate and use enemy weights?", true, "This will generate customizable enemy weights for each level");
+            enableAllEnemies = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Enable all enemies on all moons", false, "This will enable all insideEnemies to spawn inside.., you need to have generate and use enemy weights enabled.");
+            enableAllScrap = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Enable all scrap on all moons", false, "This will enable for all scraps to spawn on all moons, you need to have generate and use scrap weights enabled.");
+            enableCustomWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "_Enable?", true);
+            allEnemiesDefaultWeight = customAssetsConfig.Bind("_Custom enemy and scrap weights", "All enemies on all moons weight", 2, "If there is any enemy with weight 0, it will be set to this weight enabling them to spawn.");
+            allEnemiesDefaultWeight = customAssetsConfig.Bind("_Custom enemy and scrap weights", "All scrap on all moons weight", 2, "If there is any scrap with weight 0, it will be set to this weight enabling them to spawn.");
 
             // Custom scrap settings
             nutSlayerLives = customAssetsConfig.Bind("NutSlayer", "Lives", 5, "If hp reaches zero or below, decrement lives and reset hp until 0 lives.");
@@ -118,14 +118,23 @@ namespace BrutalCompanyMinus
             slayerShotgunMinValue = customAssetsConfig.Bind("Slayer Shotgun", "Min value", 200);
             slayerShotgunMaxValue = customAssetsConfig.Bind("Slayer Shotgun", "Max value", 300);
 
+            // Weather settings
+            useWeatherMultipliers = weatherConfig.Bind("_Weather Settings", "Enable weather multipliers?", true, "'false'= Disable all weather multipliers     'true'= Enable weather multipliers");
+            randomizeWeatherMultipliers = weatherConfig.Bind("_Weather Settings", "Weather multiplier randomness?", false, "'false'= disable     'true'= enable");
+            enableTerminalText = weatherConfig.Bind("_Weather Settings", "Enable terminal text?", true);
+
+            // Weather Random settings
+            weatherRandomRandomMinInclusive = weatherConfig.Bind("_Weather Random Multipliers", "Min Inclusive", 0.9f, "Lower bound of random value");
+            weatherRandomRandomMaxInclusive = weatherConfig.Bind("_Weather Random Multipliers", "Max Inclusive", 1.2f, "Upper bound of random value");
+
             // Weather multipliers settings
             Weather createWeatherSettings(Weather weather)
             {
                 string configHeader = "_(" + weather.weatherType.ToString() + ") Weather multipliers";
 
-                float valueMultiplierSetting = weatherMultipliersConfig.Bind(configHeader, "Value Multiplier", weather.scrapValueMultiplier, "Multiply Scrap value for " + weather.weatherType.ToString()).Value;
-                float amountMultiplierSetting = weatherMultipliersConfig.Bind(configHeader, "Amount Multiplier", weather.scrapAmountMultiplier, "Multiply Scrap amount for " + weather.weatherType.ToString()).Value;
-                float sizeMultiplerSetting = weatherMultipliersConfig.Bind(configHeader, "Factory Size Multiplier", weather.factorySizeMultiplier, "Multiply Factory size for " + weather.weatherType.ToString()).Value;
+                float valueMultiplierSetting = weatherConfig.Bind(configHeader, "Value Multiplier", weather.scrapValueMultiplier, "Multiply Scrap value for " + weather.weatherType.ToString()).Value;
+                float amountMultiplierSetting = weatherConfig.Bind(configHeader, "Amount Multiplier", weather.scrapAmountMultiplier, "Multiply Scrap amount for " + weather.weatherType.ToString()).Value;
+                float sizeMultiplerSetting = weatherConfig.Bind(configHeader, "Factory Size Multiplier", weather.factorySizeMultiplier, "Multiply Factory size for " + weather.weatherType.ToString()).Value;
 
                 return new Weather(weather.weatherType, valueMultiplierSetting, amountMultiplierSetting, sizeMultiplerSetting);
             }
@@ -139,15 +148,14 @@ namespace BrutalCompanyMinus
             eclipsedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Eclipsed, 1.5f, 1.25f, 1.00f));
 
             // UI Key
-            UIKey = generalConfig.Bind("_UI Options", "Toggle UI Key", "K");
-            NormaliseScrapValueDisplay = generalConfig.Bind("_UI Options", "Normlize scrap value display number?", true, "In game default value is 0.4, having this set to true will multiply the 'displayed value' by 2.5 so it looks normal.");
-            EnableUI = generalConfig.Bind("_UI Options", "Enable UI?", true);
-            ShowUILetterBox = generalConfig.Bind("_UI Options", "Display UI Letter Box?", true);
-            ShowExtraProperties = generalConfig.Bind("_UI Options", "Display extra properties", true, "Display extra properties on UI such as scrap value and amount multipliers.");
-            PopUpUI = generalConfig.Bind("_UI Options", "PopUp UI?", true, "Will the UI popup whenever you start the day?");
+            UIKey = uiConfig.Bind("UI Options", "Toggle UI Key", "K");
+            NormaliseScrapValueDisplay = uiConfig.Bind("UI Options", "Normlize scrap value display number?", true, "In game default value is 0.4, having this set to true will multiply the 'displayed value' by 2.5 so it looks normal.");
+            EnableUI = uiConfig.Bind("UI Options", "Enable UI?", true);
+            ShowUILetterBox = uiConfig.Bind("UI Options", "Display UI Letter Box?", true);
+            ShowExtraProperties = uiConfig.Bind("UI Options", "Display extra properties", true, "Display extra properties on UI such as scrap value and amount multipliers.");
+            PopUpUI = uiConfig.Bind("UI Options", "PopUp UI?", true, "Will the UI popup whenever you start the day?");
 
             // Event settings
-
             foreach (MEvent e in EventManager.events)
             {
                 eventWeights.Add(eventConfig.Bind(e.Name(), "Custom Weight", e.Weight, "If you want to use custom weights change 'Use custom weights'? setting in '__Event Settings' to true."));
@@ -160,8 +168,7 @@ namespace BrutalCompanyMinus
                 Dictionary<ScaleType, Scale> scales = new Dictionary<ScaleType, Scale>();
                 foreach (KeyValuePair<ScaleType, Scale> obj in e.ScaleList)
                 {
-                    float[] ScaleValues = ParseValuesFromString(eventConfig.Bind(e.Name(), obj.Key.ToString(), $"{obj.Value.Base}, {obj.Value.Increment}, {obj.Value.MinCap}, {obj.Value.MaxCap}", ScaleInfoList[obj.Key] + "   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
-                    scales.Add(obj.Key, new Scale(ScaleValues[0], ScaleValues[1], ScaleValues[2], ScaleValues[3]));
+                    scales.Add(obj.Key, getScale(eventConfig.Bind(e.Name(), obj.Key.ToString(), $"{obj.Value.Base}, {obj.Value.Increment}, {obj.Value.MinCap}, {obj.Value.MaxCap}", ScaleInfoList[obj.Key] + "   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value));
                 }
                 eventScales.Add(scales);
             }
@@ -295,17 +302,22 @@ namespace BrutalCompanyMinus
         [HarmonyPatch(typeof(TimeOfDay), "Awake")]
         private static void OnTimeDayStart(ref TimeOfDay __instance)
         {
-            enableQuotaChanges = generalConfig.Bind("Quota Settings", "_Enable Quota Changes", true);
+            enableQuotaChanges = difficultyConfig.Bind("Quota Settings", "_Enable Quota Changes", true);
             if(enableQuotaChanges.Value)
             {
-                __instance.quotaVariables.deadlineDaysAmount = generalConfig.Bind("Quota Settings", "Deadline Days Amount", __instance.quotaVariables.deadlineDaysAmount).Value;
-                __instance.quotaVariables.startingCredits = generalConfig.Bind("Quota Settings", "Starting Credits", __instance.quotaVariables.startingCredits).Value;
-                __instance.quotaVariables.startingQuota = generalConfig.Bind("Quota Settings", "Starting Quota", __instance.quotaVariables.startingQuota).Value;
-                __instance.quotaVariables.baseIncrease = generalConfig.Bind("Quota Settings", "Base Increase", __instance.quotaVariables.baseIncrease).Value;
-                __instance.quotaVariables.increaseSteepness = generalConfig.Bind("Quota Settings", "Increase Steepness", __instance.quotaVariables.increaseSteepness).Value;
+                __instance.quotaVariables.deadlineDaysAmount = difficultyConfig.Bind("Quota Settings", "Deadline Days Amount", __instance.quotaVariables.deadlineDaysAmount).Value;
+                __instance.quotaVariables.startingCredits = difficultyConfig.Bind("Quota Settings", "Starting Credits", __instance.quotaVariables.startingCredits).Value;
+                __instance.quotaVariables.startingQuota = difficultyConfig.Bind("Quota Settings", "Starting Quota", __instance.quotaVariables.startingQuota).Value;
+                __instance.quotaVariables.baseIncrease = difficultyConfig.Bind("Quota Settings", "Base Increase", __instance.quotaVariables.baseIncrease).Value;
+                __instance.quotaVariables.increaseSteepness = difficultyConfig.Bind("Quota Settings", "Increase Steepness", __instance.quotaVariables.increaseSteepness).Value;
             }
         }
 
+        private static Scale getScale(string from)
+        {
+            float[] values = ParseValuesFromString(from);
+            return new Scale(values[0], values[1], values[2], values[3]);
+        }
 
         private static float[] ParseValuesFromString(string from)
         {
