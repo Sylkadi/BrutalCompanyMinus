@@ -251,7 +251,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private void OnTriggerEnter(Collider other)
         {
-            if (hasExploded || pressMineDebounceTimer > 0f || mineGrabbed)
+            if (hasExploded || pressMineDebounceTimer > 0f || mineGrabbed || Events.GrabbableLandmines.LandmineDisabled)
             {
                 return;
             }
@@ -300,7 +300,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private void OnTriggerExit(Collider other)
         {
-            if (hasExploded || !mineActivated || mineGrabbed)
+            if (hasExploded || !mineActivated || mineGrabbed || Events.GrabbableLandmines.LandmineDisabled)
             {
                 return;
             }
@@ -345,7 +345,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [ServerRpc(RequireOwnership = false)]
         public void ExplodeMineServerRpc()
         {
-            if (!onBlowUpSchedule || Events.GrabbableLandmines.LandmineDisabled) return;
             ExplodeMineClientRpc();
         }
 
@@ -364,7 +363,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public void SetOffMineAnimation()
         {
-            if (!onBlowUpSchedule || Events.GrabbableLandmines.LandmineDisabled) return;
             hasExploded = true;
             mineAnimator.SetTrigger("detonate");
             mineAudio.PlayOneShot(mineTrigger, 1f);
