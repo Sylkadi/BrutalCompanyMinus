@@ -25,6 +25,6 @@ namespace BrutalCompanyMinus.Minus.Events
             ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(3.0f, 0.084f, 3.0f, 8.0f));
         }
 
-        public override void Execute() => Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.CircuitBee), UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy)), 10.0f);
+        public override void Execute() => Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.CircuitBee), UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1), 10.0f);
     }
 }

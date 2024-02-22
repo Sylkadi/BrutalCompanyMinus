@@ -177,7 +177,7 @@ namespace BrutalCompanyMinus
                 Instance.UpdateCurrentWeatherMultipliersServerRpc();
 
                 // If called on server
-                if (RoundManager.Instance.IsServer) // Why did i write if is Server?? just gona leave this here.
+                if (RoundManager.Instance.IsServer) // Why did i write if is Server when i already check if host?? just gona leave this here.
                 {
                     Instance.currentWeatherEffects.Clear(); // Clear weather effects
                     Instance.outsideObjectsToSpawn.Clear();

@@ -27,6 +27,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.TransmuteScrapSmall(),
             new Events.SmallDeilvery(),
             new Events.ScarceOutsideScrap(),
+            new Events.FragileEnemies(),
             // Neutral
             new Events.Nothing(),
             new Events.Locusts(),
@@ -53,6 +54,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.ShipmentFees(),
             new Events.GrabbableLandmines(),
             new Events.GrabbableTurrets(),
+            new Events.StrongEnemies(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),

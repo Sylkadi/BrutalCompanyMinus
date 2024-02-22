@@ -44,6 +44,7 @@ namespace BrutalCompanyMinus.Minus
         internal static int randomItemsToSpawnOutsideCount = 0;
         internal static int bonusEnemyHp = 0;
         internal static int bonusMaxInsidePowerCount = 0, bonusMaxOutsidePowerCount = 0;
+        internal static int minEnemiesToSpawnInside = 0, minEnemiestoSpawnOutside = 0;
         internal static float spawnChanceMultiplier = 1.0f;
 
         internal static bool transmuteScrap = false;
@@ -60,6 +61,7 @@ namespace BrutalCompanyMinus.Minus
                 List<Vector3> spawnDenialPoints = Functions.GetSpawnDenialNodes();
 
                 int count = (int)Functions.Range(density * terrainArea, 0, objectCap); // Compute amount
+                Log.LogInfo(string.Format("Spawning: {0}, Count:{1}", obj.name, count));
                 for (int i = 0; i < count; i++)
                 {
                     randomSeedValue++;
@@ -400,9 +402,36 @@ namespace BrutalCompanyMinus.Minus
         public static void MultiplySpawnChance(SelectableLevel currentLevel, float by)
         {
             spawnChanceMultiplier *= by;
-            for(int i = 0; i < currentLevel.enemySpawnChanceThroughoutDay.keys.Length; i++) currentLevel.enemySpawnChanceThroughoutDay.keys[i].value *= by;
-            for(int i = 0; i < currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length; i++) currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value *= by;
-            for(int i = 0; i < currentLevel.daytimeEnemySpawnChanceThroughDay.keys.Length; i++) currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value *= by;
+
+            // Inside
+            Keyframe[] insideKeyFrames = new Keyframe[currentLevel.enemySpawnChanceThroughoutDay.keys.Length];
+            for (int i = 0; i < currentLevel.enemySpawnChanceThroughoutDay.keys.Length; i++)
+            {
+                float value = currentLevel.enemySpawnChanceThroughoutDay.keys[i].value;
+                if (currentLevel.enemySpawnChanceThroughoutDay.keys[i].value > 0.0f) value *= by;
+                insideKeyFrames[i] = new Keyframe(currentLevel.enemySpawnChanceThroughoutDay.keys[i].time, value);
+            }
+            currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(insideKeyFrames);
+
+            // Outside
+            Keyframe[] outsideKeyFrames = new Keyframe[currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length];
+            for (int i = 0; i < currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length; i++)
+            {
+                float value = currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value;
+                if (currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value > 0.0f) value *= by;
+                insideKeyFrames[i] = new Keyframe(currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].time, value);
+            }
+            currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve(outsideKeyFrames);
+
+            // Daytime
+            Keyframe[] daytimeKeyFrames = new Keyframe[currentLevel.daytimeEnemySpawnChanceThroughDay.keys.Length];
+            for (int i = 0; i < currentLevel.daytimeEnemySpawnChanceThroughDay.keys.Length; i++)
+            {
+                float value = currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value;
+                if (currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value > 0.0f) value *= by;
+                insideKeyFrames[i] = new Keyframe(currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].time, value);
+            }
+            currentLevel.daytimeEnemySpawnChanceThroughDay = new AnimationCurve(daytimeKeyFrames);
         }
 
         public static void PayCredits(int amount)
@@ -449,6 +478,16 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(RoundManager), "ResetEnemySpawningVariables")]
+        private static void OnResetEnemySpawningVariables()
+        {
+            //RoundManager.Instance.minEnemiesToSpawn += minEnemiesToSpawnInside;
+            //RoundManager.Instance.minOutsideEnemiesToSpawn += minEnemiestoSpawnOutside;
+            //minEnemiesToSpawnInside = 0;
+            //minEnemiestoSpawnOutside = 0;
+        }
+        
         // Set days passed
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]

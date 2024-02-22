@@ -345,6 +345,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [ServerRpc(RequireOwnership = false)]
         public void ExplodeMineServerRpc()
         {
+            if (!onBlowUpSchedule || Events.GrabbableLandmines.LandmineDisabled) return;
             ExplodeMineClientRpc();
         }
 
@@ -363,6 +364,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public void SetOffMineAnimation()
         {
+            if (!onBlowUpSchedule || Events.GrabbableLandmines.LandmineDisabled) return;
             hasExploded = true;
             mineAnimator.SetTrigger("detonate");
             mineAudio.PlayOneShot(mineTrigger, 1f);

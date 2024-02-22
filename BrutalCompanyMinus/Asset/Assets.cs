@@ -76,10 +76,11 @@ namespace BrutalCompanyMinus
         internal static List<float> factorySizeMultiplierList = new List<float>();
         internal static List<float> averageScrapValueList = new List<float>();
         internal static List<AnimationCurve> insideSpawnChanceCurves = new List<AnimationCurve>(), outsideSpawnChanceCurves = new List<AnimationCurve>(), daytimeSpawnChanceCurves = new List<AnimationCurve>();
+        internal static List<int> insideMaxPowerCounts = new List<int>(), outsideMaxPowerCounts = new List<int>(), daytimeMaxPowerCounts = new List<int>();
 
 
         // Custom Assets
-        internal static EnemyType antiCoilHead, nutSlayer;
+        internal static EnemyType antiCoilHead, nutSlayer, kamikazieBug;
         internal static Item slayerShotgun, grabbableTurret, grabbableLandmine;
 
         [HarmonyPostfix]
@@ -268,6 +269,12 @@ namespace BrutalCompanyMinus
                 insideSpawnChanceCurves.Add(newInsideSpawnChanceCurve);
                 outsideSpawnChanceCurves.Add(newOutsideSpawnChanceCurve);
                 daytimeSpawnChanceCurves.Add(newDaytimeSpawnChanceCurve);
+
+                // enemyPowerCounts
+                insideMaxPowerCounts.Add(level.maxEnemyPowerCount);
+                outsideMaxPowerCounts.Add(level.maxOutsideEnemyPowerCount);
+                daytimeMaxPowerCounts.Add(level.maxDaytimeEnemyPowerCount);
+
             }
             
             generatedLevelScrapLists = true;

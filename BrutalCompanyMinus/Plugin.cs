@@ -164,10 +164,10 @@ namespace BrutalCompanyMinus
                     HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
                 }
             }
-
+            
             // Apply maxPower counts
-            RoundManager.Instance.currentMaxInsidePower += Manager.bonusMaxInsidePowerCount;
-            RoundManager.Instance.currentOutsideEnemyPower += Manager.bonusMaxOutsidePowerCount;
+            RoundManager.Instance.currentLevel.maxEnemyPowerCount += Manager.bonusMaxInsidePowerCount;
+            RoundManager.Instance.currentMaxOutsidePower += Manager.bonusMaxOutsidePowerCount;
 
             // Spawn outside scrap
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);

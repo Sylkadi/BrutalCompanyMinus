@@ -11,6 +11,7 @@ namespace BrutalCompanyMinus.Minus.Events
     internal class GrabbableLandmines : MEvent
     {
         public static bool Active = false;
+        public static bool LandmineDisabled = false;
         public override string Name() => nameof(GrabbableLandmines);
 
         public override void Initalize()
@@ -23,10 +24,20 @@ namespace BrutalCompanyMinus.Minus.Events
             ScaleList.Add(ScaleType.Rarity, new Scale(0.4f, 0.0084f, 0.4f, 0.9f));
         }
 
-        public override void Execute() => Active = true;
+        public override void Execute() {
+            Active = true;
+            LandmineDisabled = false;
+        } 
 
-        public override void OnShipLeave() => Active = false;
+        public override void OnShipLeave() {
+            Active = false;
+            LandmineDisabled = true;
+        } 
 
-        public override void OnGameStart() => Active = false;
+        public override void OnGameStart()
+        {
+            Active = false;
+            LandmineDisabled = false;
+        }
     }
 }

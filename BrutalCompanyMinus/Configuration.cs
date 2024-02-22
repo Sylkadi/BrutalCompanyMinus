@@ -16,6 +16,7 @@ using System.Diagnostics;
 using HarmonyLib;
 using System.Numerics;
 using UnityEngine;
+using System.Collections.Concurrent;
 
 namespace BrutalCompanyMinus
 {
@@ -93,7 +94,7 @@ namespace BrutalCompanyMinus
             spawnChanceMultiplierScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn chance multiplier scale", "0.8, 0.0284, 0.8, 2.5", "This will multiply the spawn chance by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Inside Max Enemy Power Count", "0, 0.84, 0, 50", "Added max enemy power count for inside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Outside Max Enemy Power Count", "0, 0.5, 0, 30", "Added max enemy power count for outside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
-            enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus hp", "0, 0.067, 0, 4", "Added hp to all enemies,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus hp", "0, 0.084, 0, 5", "Added hp to all enemies,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             goodEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
             badEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
 
@@ -178,6 +179,7 @@ namespace BrutalCompanyMinus
         internal static void GenerateLevelConfigurations(StartOfRound instance)
         {
             if (bindedLevelConfigurations || !enableCustomWeights.Value) return;
+            if (!customEnemyWeights.Value && !customScrapWeights.Value) return;
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -190,75 +192,83 @@ namespace BrutalCompanyMinus
                 if (item.Value.isScrap) scrapNameList.Add(item.Key);
             }
 
+            int levelCount = instance.levels.Length;
+
+            Dictionary<string, int>[]
+                insideEnemyList = new Dictionary<string, int>[levelCount],
+                outsideEnemyList = new Dictionary<string, int>[levelCount],
+                daytimeEnemyList = new Dictionary<string, int>[levelCount],
+                scrapList = new Dictionary<string, int>[levelCount];
+
             // Multi thread cause this is fucking slow otherwise
-            Parallel.ForEach(instance.levels, level =>
+            Parallel.For(0, levelCount, i =>
             {
-                Log.LogInfo(string.Format("Generating and binding Enemy + Scrap rarity config for {0}", level.name));
+                Log.LogInfo(string.Format("Generating and binding Enemy + Scrap rarity config for {0}", instance.levels[i].name));
 
                 // Create configFile for particular moon
-                ConfigFile levelConfig = new ConfigFile(string.Format("{0}\\BrutalCompanyMinus\\Levels\\{1}_Weights.cfg", Paths.ConfigPath, level.name), true);
-
-                Dictionary<string, int>
-                    insideEnemyList = new Dictionary<string, int>(),
-                    outsideEnemyList = new Dictionary<string, int>(),
-                    daytimeEnemyList = new Dictionary<string, int>(),
-                    scrapList = new Dictionary<string, int>();
+                ConfigFile levelConfig = new ConfigFile(string.Format("{0}\\BrutalCompanyMinus\\Levels\\{1}_Weights.cfg", Paths.ConfigPath, instance.levels[i].name), true);
+                
+                // Initalize Lists
+                insideEnemyList[i] = new Dictionary<string, int>();
+                outsideEnemyList[i] = new Dictionary<string, int>();
+                daytimeEnemyList[i] = new Dictionary<string, int>();
+                scrapList[i] = new Dictionary<string, int>();
 
                 // Assign rarities to lists
                 // Enemies
-                if(customEnemyWeights.Value)
+                if (customEnemyWeights.Value)
                 {
                     // Add all enemies with rarity 0
                     foreach (KeyValuePair<string, EnemyType> enemy in Assets.EnemyList)
                     {
-                        insideEnemyList.Add(enemy.Key, 0);
-                        outsideEnemyList.Add(enemy.Key, 0);
-                        daytimeEnemyList.Add(enemy.Key, 0);
+                        insideEnemyList[i].Add(enemy.Key, 0);
+                        outsideEnemyList[i].Add(enemy.Key, 0);
+                        daytimeEnemyList[i].Add(enemy.Key, 0);
                     }
 
                     // Inside enemies
-                    foreach (SpawnableEnemyWithRarity enemy in level.Enemies)
+                    foreach (SpawnableEnemyWithRarity enemy in instance.levels[i].Enemies)
                     {
                         if (enemy == null || enemy.enemyType == null)
                         {
-                            Log.LogError(string.Format("Null entry on {0} in level.Enemies", level.name));
+                            Log.LogError(string.Format("Null entry on {0} in level.Enemies", instance.levels[i].name));
                             continue; // Skip entry
                         }
-                        insideEnemyList[enemy.enemyType.name] = enemy.rarity;
+                        insideEnemyList[i][enemy.enemyType.name] = enemy.rarity;
                     }
-                    foreach (KeyValuePair<string, int> enemy in insideEnemyList.ToList())
+                    foreach (KeyValuePair<string, int> enemy in insideEnemyList[i].ToList())
                     {
-                        insideEnemyList[enemy.Key] = levelConfig.Bind("_Inside Enemies", enemy.Key, enemy.Value).Value;
+                        insideEnemyList[i][enemy.Key] = levelConfig.Bind("_Inside Enemies", enemy.Key, enemy.Value).Value;
                     }
 
                     // Outside enemies
-                    foreach (SpawnableEnemyWithRarity enemy in level.OutsideEnemies)
+                    foreach (SpawnableEnemyWithRarity enemy in instance.levels[i].OutsideEnemies)
                     {
                         if (enemy == null || enemy.enemyType == null)
                         {
-                            Log.LogError(string.Format("Null entry on {0} in level.OutsideEnemies", level.name));
+                            Log.LogError(string.Format("Null entry on {0} in level.OutsideEnemies", instance.levels[i].name));
                             continue; // Skip entry
                         }
-                        outsideEnemyList[enemy.enemyType.name] = enemy.rarity;
+                        outsideEnemyList[i][enemy.enemyType.name] = enemy.rarity;
                     }
-                    foreach (KeyValuePair<string, int> enemy in outsideEnemyList.ToList())
+                    foreach (KeyValuePair<string, int> enemy in outsideEnemyList[i].ToList())
                     {
-                        outsideEnemyList[enemy.Key] = levelConfig.Bind("_Outside Enemies", enemy.Key, enemy.Value).Value;
+                        outsideEnemyList[i][enemy.Key] = levelConfig.Bind("_Outside Enemies", enemy.Key, enemy.Value).Value;
                     }
 
                     // Daytime enemies
-                    foreach (SpawnableEnemyWithRarity enemy in level.DaytimeEnemies)
+                    foreach (SpawnableEnemyWithRarity enemy in instance.levels[i].DaytimeEnemies)
                     {
                         if (enemy == null || enemy.enemyType == null)
                         {
-                            Log.LogError(string.Format("Null entry on {0} in level.DaytimeEnemies", level.name));
+                            Log.LogError(string.Format("Null entry on {0} in level.DaytimeEnemies", instance.levels[i].name));
                             continue; // Skip entry
                         }
-                        daytimeEnemyList[enemy.enemyType.name] = enemy.rarity;
+                        daytimeEnemyList[i][enemy.enemyType.name] = enemy.rarity;
                     }
-                    foreach (KeyValuePair<string, int> enemy in daytimeEnemyList.ToList())
+                    foreach (KeyValuePair<string, int> enemy in daytimeEnemyList[i].ToList())
                     {
-                        daytimeEnemyList[enemy.Key] = levelConfig.Bind("Daytime Enemies", enemy.Key, enemy.Value).Value;
+                        daytimeEnemyList[i][enemy.Key] = levelConfig.Bind("Daytime Enemies", enemy.Key, enemy.Value).Value;
                     }
                 }
 
@@ -268,29 +278,33 @@ namespace BrutalCompanyMinus
                     // Add all scrap with rarity 0
                     foreach (string scrapName in scrapNameList)
                     {
-                        scrapList.Add(scrapName, 0);
+                        scrapList[i].Add(scrapName, 0);
                     }
 
-                    foreach (SpawnableItemWithRarity scrap in level.spawnableScrap)
+                    foreach (SpawnableItemWithRarity scrap in instance.levels[i].spawnableScrap)
                     {
                         if (scrap == null || scrap.spawnableItem == null)
                         {
-                            Log.LogError(string.Format("Null entry on {0} in level.spawnableScrap", level.name));
+                            Log.LogError(string.Format("Null entry on {0} in level.spawnableScrap", instance.levels[i].name));
                             continue; // Skip Entry
                         }
-                        scrapList[scrap.spawnableItem.name] = scrap.rarity;
+                        scrapList[i][scrap.spawnableItem.name] = scrap.rarity;
                     }
-                    foreach (KeyValuePair<string, int> scrap in scrapList.ToList())
+                    foreach (KeyValuePair<string, int> scrap in scrapList[i].ToList())
                     {
-                        scrapList[scrap.Key] = levelConfig.Bind("Scrap", scrap.Key, scrap.Value).Value;
+                        scrapList[i][scrap.Key] = levelConfig.Bind("Scrap", scrap.Key, scrap.Value).Value;
                     }
                 }
-
-                outsideEnemyRarityList.Add(level.name, outsideEnemyList);
-                insideEnemyRarityList.Add(level.name, insideEnemyList);
-                daytimeEnemyRarityList.Add(level.name, daytimeEnemyList);
-                scrapRarityList.Add(level.name, scrapList);
             });
+
+            for(int i = 0; i < levelCount; i++) // This is done for thread safety
+            {
+                string levelName = instance.levels[i].name;
+                insideEnemyRarityList.Add(levelName, insideEnemyList[i]);
+                outsideEnemyRarityList.Add(levelName, outsideEnemyList[i]);
+                daytimeEnemyRarityList.Add(levelName, daytimeEnemyList[i]);
+                scrapRarityList.Add(levelName, scrapList[i]);
+            }
 
             stopWatch.Stop();
             Log.LogInfo(string.Format("Took {0}ms", stopWatch.ElapsedMilliseconds));

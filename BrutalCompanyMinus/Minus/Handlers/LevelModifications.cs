@@ -24,6 +24,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public static void ModifyEnemyScrapSpawns(StartOfRound instance)
         {
             if (modifiedEnemySpawns || !Configuration.enableCustomWeights.Value) return;
+            if (!Configuration.customEnemyWeights.Value && !Configuration.customScrapWeights.Value) return;
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -93,6 +94,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                         if (Configuration.enableAllScrap.Value && rarity == 0) rarity = Configuration.allScrapDefaultWeight.Value;
                         if (scrap.Value == 0) continue; // Skip Entry
                         instance.levels[i].spawnableScrap.Add(new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(scrap.Key), rarity = scrap.Value });
+
                     }
                 } else
                 {
@@ -167,9 +169,15 @@ namespace BrutalCompanyMinus.Minus.Handlers
             foreach (Keyframe key in Assets.outsideSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.outsideEnemySpawnChanceThroughDay.AddKey(key);
             foreach (Keyframe key in Assets.daytimeSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.daytimeEnemySpawnChanceThroughDay.AddKey(key);
 
+            RoundManager.Instance.currentLevel.maxEnemyPowerCount = Assets.insideMaxPowerCounts[Manager.GetLevelIndex()];
+            RoundManager.Instance.currentLevel.maxOutsideEnemyPowerCount = Assets.outsideMaxPowerCounts[Manager.GetLevelIndex()];
+            RoundManager.Instance.currentLevel.maxDaytimeEnemyPowerCount = Assets.daytimeMaxPowerCounts[Manager.GetLevelIndex()];
+
             // Reset bonus hp
             Manager.bonusEnemyHp = 0;
             Manager.spawnChanceMultiplier = 1.0f;
+            Manager.bonusMaxInsidePowerCount = 0;
+            Manager.bonusMaxOutsidePowerCount = 0;
 
             // Reset multipliers
             try
