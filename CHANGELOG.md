@@ -1,5 +1,37 @@
 # ChangeLog
 <details>
+  <summary>0.9.0</summary>
+
+  - Redid all the scaling for all events (Mostly nerfed sizably) (Sizable nerf to insideTurrets and insideLandmines also)
+  - Added minCap and maxCap to scales.
+  - Added new difficulty scalings.
+  - Added spawn rate multiplier scale default:(Scales from day:0 => x0.8 to day:60 => x2.5)
+  - Added hp bonus scale default:(Scales from day:0 => +0hp to day:60 => +5hp)
+  - Added maxInsideEnemyPower scale default:(Scales from day:0 => +0 to day:60 => +60)
+  - Added maxOutsideEnemyPower scale default:(Scales from day:0 => +0 to day:60 => +30)
+  - Changed extra event chance to weights => (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events...
+  - TLDR: should be much easier at start but will now scale harder than it used to (In theory).
+  - Upated Icon
+  - Added 2 new events(Not interesting):
+  - (Good)Fragile Enemies: Decreased enemy hp.
+  - (Bad)Strong Enemies: Increased enemy hp.
+  - Fixed weather effects disapearring when entering/exiting facility.
+  - GrabbableLandmines will now longer be steppable on after ship leave(Stepping is enabled again on LoadNewLevel)
+  - Added a 250 spawn cap to outsideLandmines and outsideTurrets so it should no longer lag the game when spawning on a big map, and added a 1000 cap to other object.
+  - Generating and binding enemy + scrap configs should now be thread-safe (I hope).
+  - Next patches will be new unique events.
+</details>
+<details>
+  <summary>0.8.4</summary>
+  
+  - Changed how scrap is handled in this mod, should no longer cause compatibility issues.
+  - Event default amount is now set 2 to but.
+  - There is now a default chance of 50% to add another event up to 4. (Can be configured)
+  - There is now 10 temp custom monster events at the bottom of the events config. (Haven't tested these too much)
+  - Made nutslayer much more harsh...
+  - Added config options for nutslayer, slayer shotgun, grabbable landmines and grabbable turrets.
+</details>
+<details>
   <summary>0.8.3</summary>
   
   - Added Quota config options

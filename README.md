@@ -10,7 +10,7 @@
 <details>
   <summary><b>Event Mechanics</b></summary>
     
-  - Whenever you land on a moon, a couple of events will be chosen, these events will appear in the UI in the top right hand corner of your screen, this can be open and closed by pressing 'k' or a custom set value in the config.
+  - Whenever you land on a moon, a couple of events will be chosen (Between 2 to 5 by default), these events will appear in the UI in the top right hand corner of your screen, this can be open and closed by pressing 'k' or a custom set value in the config.
 ![Screenshot](https://i.imgur.com/wjsVK7b.jpg)
 
   - Events will come in 6 main types and are categorized by color
@@ -39,19 +39,6 @@
 | Foggy      | 1.20        | 1.10         | 1.00         |
 | Flooded    | 1.30        | 1.15         | 1.00         |
 | Eclipsed   | 1.50        | 1.25         | 1.00         |
-</details>
-
-<details>
-  <summary><b>Custom Weights / Quota Settings</b></summary>
-  
-  - You can change the following quota settings in the config.
-  - DeadLine Days Amount, Starting Credits, Starting Quota, Base Increase and Increase Steepness.
-
-  - This mod will also generate a weight setting for every moon for every enemy (Including modded ones) and for every scrap (Has to be enabled in config)
-![Screenshot](https://i.imgur.com/Bi97D1P.png)
-
-asdasdasdas
-
 </details>
 
 <details>
@@ -88,6 +75,7 @@ asdasdasdas
 | Transmute Scrap Small | Takes any one-handed scrap in map scrap pool and only spawns that |
 | Small Delivery | Spawns a shipment with some items |
 | Scarce Outside Scrap | Spawns scrap outside |
+| Fragile Enemies | Decreases enemy hp |
   </details>
 
   <details>
@@ -153,6 +141,7 @@ asdasdasdas
 | Grabbable Turrets | Turns some of the turrets on the map into scrap |
 | Grabbable Mines | Turns some of the mines on the map into scrap |
 | Shipment Fees | Any shipment's on given moon will deduct credits as a fee |
+| Strong Enemies | Increases enemy hp |
   </details>
 
   <details>
@@ -180,3 +169,4 @@ asdasdasdas
   </details>
   
 </details>
+
