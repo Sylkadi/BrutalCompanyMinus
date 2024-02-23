@@ -419,7 +419,7 @@ namespace BrutalCompanyMinus.Minus
             {
                 float value = currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value;
                 if (currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value > 0.0f) value *= by;
-                insideKeyFrames[i] = new Keyframe(currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].time, value);
+                outsideKeyFrames[i] = new Keyframe(currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].time, value);
             }
             currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve(outsideKeyFrames);
 
@@ -429,7 +429,7 @@ namespace BrutalCompanyMinus.Minus
             {
                 float value = currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value;
                 if (currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value > 0.0f) value *= by;
-                insideKeyFrames[i] = new Keyframe(currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].time, value);
+                daytimeKeyFrames[i] = new Keyframe(currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].time, value);
             }
             currentLevel.daytimeEnemySpawnChanceThroughDay = new AnimationCurve(daytimeKeyFrames);
         }

@@ -92,8 +92,8 @@ namespace BrutalCompanyMinus
             // Difficulty scaling
             ignoreScaleCap = difficultyConfig.Bind("Difficulty Scaling", "Ignore minCap, maxCap", false, "Ignore caps that limit scaling.");
             spawnChanceMultiplierScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn chance multiplier scale", "0.8, 0.0284, 0.8, 2.5", "This will multiply the spawn chance by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
-            insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Inside Max Enemy Power Count", "0, 1, 0, 60", "Added max enemy power count for inside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
-            outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Outside Max Enemy Power Count", "0, 0.5, 0, 30", "Added max enemy power count for outside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Inside Max Enemy Power Count", "0, 0.67, 0, 40", "Added max enemy power count for inside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Outside Max Enemy Power Count", "0, 0.34, 0, 20", "Added max enemy power count for outside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus hp", "0, 0.084, 0, 5", "Added hp to all enemies,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             goodEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
             badEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
@@ -203,6 +203,11 @@ namespace BrutalCompanyMinus
             // Multi thread cause this is fucking slow otherwise
             Parallel.For(0, levelCount, i =>
             {
+                if (instance.levels[i] == null)
+                {
+                    Log.LogError("Null entry in levels list");
+                    return;
+                }
                 Log.LogInfo(string.Format("Generating and binding Enemy + Scrap rarity config for {0}", instance.levels[i].name));
 
                 // Create configFile for particular moon
