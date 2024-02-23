@@ -14,6 +14,7 @@ using System.Reflection;
 using DigitalRuby.ThunderAndLightning;
 using System.IO;
 using UnityEngine.Events;
+using System.Globalization;
 
 namespace BrutalCompanyMinus.Minus
 {

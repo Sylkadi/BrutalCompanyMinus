@@ -13,6 +13,7 @@ using UnityEngine.InputSystem.HID;
 using Discord;
 using System.Diagnostics;
 using BepInEx.Configuration;
+using System.Globalization;
 
 namespace BrutalCompanyMinus
 {
@@ -22,8 +23,10 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.9.1";
+        private const string VERSION = "0.9.2";
         private static readonly Harmony harmony = new Harmony(GUID);
+
+        internal static CultureInfo en = new CultureInfo("en-US");
 
         void Awake()
         {
@@ -165,7 +168,8 @@ namespace BrutalCompanyMinus
                     HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
                 }
             }
-            
+           
+
             // Apply maxPower counts
             RoundManager.Instance.currentLevel.maxEnemyPowerCount += Manager.bonusMaxInsidePowerCount;
             RoundManager.Instance.currentMaxOutsidePower += Manager.bonusMaxOutsidePowerCount;
@@ -174,7 +178,7 @@ namespace BrutalCompanyMinus
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
 
             // Sync values to all clients
-            Net.Instance.SyncValuesClientRpc(Manager.currentLevel.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier);
+            Net.Instance.SyncValuesClientRpc(Manager.currentLevel.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier, Manager.bonusEnemyHp);
 
             // Apply UI
             UI.GenerateText(currentEvents);

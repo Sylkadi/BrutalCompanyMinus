@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using HarmonyLib;
 using GameNetcodeStuff;
+using System.Globalization;
 
 namespace BrutalCompanyMinus
 {

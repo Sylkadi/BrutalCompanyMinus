@@ -91,11 +91,12 @@ namespace BrutalCompanyMinus
         }
 
         [ClientRpc]
-        public void SyncValuesClientRpc(float factorySizeMultiplier, float scrapValueMultiplier, float scrapAmountMultiplier)
+        public void SyncValuesClientRpc(float factorySizeMultiplier, float scrapValueMultiplier, float scrapAmountMultiplier, int bonusMaxHp)
         {
             RoundManager.Instance.currentLevel.factorySizeMultiplier = factorySizeMultiplier;
             RoundManager.Instance.scrapValueMultiplier = scrapValueMultiplier;
             RoundManager.Instance.scrapAmountMultiplier = scrapAmountMultiplier;
+            Manager.bonusEnemyHp = bonusMaxHp;
         }
 
         [ServerRpc]

@@ -17,6 +17,7 @@ using HarmonyLib;
 using System.Numerics;
 using UnityEngine;
 using System.Collections.Concurrent;
+using System.Globalization;
 
 namespace BrutalCompanyMinus
 {
@@ -71,14 +72,16 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<bool> nutSlayerImmortal;
 
         public static ConfigEntry<int>
-            slayerShotgunMinValue, slayerShotgunMaxValue;  
+            slayerShotgunMinValue, slayerShotgunMaxValue;
+
+        private static CultureInfo en = new CultureInfo("en-US"); // This is important, no touchy
 
         public static void Initalize()
         {
             // Event settings
             useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
             eventsToSpawn = difficultyConfig.Bind("_Event Settings", "Event count", 2);
-            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events", "40, 40, 15, 5", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
+            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events", "40", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
             showEventsInChat = difficultyConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
 
             // eventType weights
@@ -169,7 +172,7 @@ namespace BrutalCompanyMinus
                 Dictionary<ScaleType, Scale> scales = new Dictionary<ScaleType, Scale>();
                 foreach (KeyValuePair<ScaleType, Scale> obj in e.ScaleList)
                 {
-                    scales.Add(obj.Key, getScale(eventConfig.Bind(e.Name(), obj.Key.ToString(), $"{obj.Value.Base}, {obj.Value.Increment}, {obj.Value.MinCap}, {obj.Value.MaxCap}", ScaleInfoList[obj.Key] + "   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value));
+                    scales.Add(obj.Key, getScale(eventConfig.Bind(e.Name(), obj.Key.ToString(), $"{obj.Value.Base.ToString(en)}, {obj.Value.Increment.ToString(en)}, {obj.Value.MinCap.ToString(en)}, {obj.Value.MaxCap.ToString(en)}", ScaleInfoList[obj.Key] + "   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value));
                 }
                 eventScales.Add(scales);
             }
@@ -314,6 +317,8 @@ namespace BrutalCompanyMinus
             stopWatch.Stop();
             Log.LogInfo(string.Format("Took {0}ms", stopWatch.ElapsedMilliseconds));
 
+
+            
             bindedLevelConfigurations = true;
         }
 
@@ -340,7 +345,7 @@ namespace BrutalCompanyMinus
 
         private static float[] ParseValuesFromString(string from)
         {
-            return from.Split(',').Select(float.Parse).ToArray();
+            return from.Split(',').Select(x => float.Parse(x, en)).ToArray();
         }
     }
 }
