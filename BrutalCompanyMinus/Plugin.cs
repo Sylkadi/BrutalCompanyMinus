@@ -129,6 +129,7 @@ namespace BrutalCompanyMinus
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
 
+            Minus.Events.GrabbableLandmines.LandmineDisabled = false;
             LevelModifications.ResetValues(StartOfRound.Instance);
 
             // Apply weather multipliers

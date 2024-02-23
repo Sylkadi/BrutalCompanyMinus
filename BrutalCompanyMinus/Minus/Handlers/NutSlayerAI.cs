@@ -929,8 +929,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public override void HitEnemy(int force = 1, PlayerControllerB playerWhoHit = null, bool playHitSFX = false)
         {
-            base.HitEnemy(force, playerWhoHit, playHitSFX);
             if (Immortal) return;
+            base.HitEnemy(force, playerWhoHit, playHitSFX);
             if (!isEnemyDead)
             {
                 if (isInspecting || currentBehaviourStateIndex == 2)
@@ -958,6 +958,12 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public override void KillEnemy(bool destroy = false)
         {
+            if (Immortal) return;
+            if(Lives > 0)
+            {
+                Lives--;
+                return;
+            }
             base.KillEnemy(destroy);
             targetTorsoDegrees = 0;
             StopInspection();
