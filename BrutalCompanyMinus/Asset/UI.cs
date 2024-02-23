@@ -115,13 +115,13 @@ namespace BrutalCompanyMinus
                 text += 
                     $"<br>Difficulty:" +
                     $"<br> -Day: {Manager.daysPassed}" +
+                    $"<br><br> -Scrap Amount: x{RoundManager.Instance.scrapAmountMultiplier:F2}" +
+                    $"<br> -Scrap Value: x{ScrapValueMultiplier:F2}" +
+                    $"<br> -Factory Size: x{RoundManager.Instance.currentLevel.factorySizeMultiplier:F2}" +
                     $"<br> -SpawnChance: x{Manager.spawnChanceMultiplier:F2}" +
                     $"<br> -Max inside power: {plusMinus(Manager.bonusMaxInsidePowerCount)}" +
                     $"<br> -Max outside power: {plusMinus(Manager.bonusMaxOutsidePowerCount)}" +
-                    $"<br> -Bonus enemy hp: {plusMinus(Manager.bonusEnemyHp)}" +
-                    $"<br><br> -Scrap Amount: x{RoundManager.Instance.scrapAmountMultiplier:F2}" +
-                    $"<br> -Scrap Value: x{ScrapValueMultiplier:F2}" +
-                    $"<br> -Factory Size: x{RoundManager.Instance.currentLevel.factorySizeMultiplier:F2}";
+                    $"<br> -Bonus enemy hp: {plusMinus(Manager.bonusEnemyHp)}";
             }
 
             Net.Instance.textUI.Value = new FixedString4096Bytes(text);
