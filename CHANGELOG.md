@@ -10,7 +10,8 @@
     
   - (Bad)Kamikazie Bugs: Spawns kamikazie bugs inside
   - (Bad)Reality Warp: Attempting to pick up any spawned scrap will transform it into something else, something a turret or landmine.
-  - (Bad)FacilityGhost(Used to be DoorGlitch): Will now open/close big doors and normal doors, will flicker lights, will mess with breaker and can rarely lock/unlock doors. The ghost will sometimes go crazy and cause alot of things to happen.
+  - (Bad)FacilityGhost(Used to be DoorGlitch): Will now open/close big doors and normal doors, will flicker lights,
+     will mess with breaker and can rarely lock/unlock doors. The ghost will sometimes go crazy and cause alot of things to happen.
   - (VeryBad)Hell: Great reward, but at what cost.
     
   - Update default values for events
