@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(ChineseProduce);
 
+        public static ChineseProduce Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Everything here is made cheaply...";
             ColorHex = "#800000";

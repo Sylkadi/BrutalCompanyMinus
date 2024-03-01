@@ -13,8 +13,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(OutsideTurrets);
 
+        public static OutsideTurrets Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 3;
             Description = "The turrets blend in with the trees...";
             ColorHex = "#FF0000";

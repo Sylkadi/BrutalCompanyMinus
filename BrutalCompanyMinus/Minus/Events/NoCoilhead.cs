@@ -12,14 +12,18 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(NoCoilhead);
 
+        public static NoCoilhead Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Nothing to stare at today";
             ColorHex = "#008000";
             Type = EventType.Remove;
 
-            EventsToRemove = new List<string>() { nameof(Coilhead), nameof(AntiCoilhead) };
+            EventsToRemove = new List<string>() { nameof(Coilhead), nameof(AntiCoilhead), nameof(Hell) };
         }
 
         public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.CoilHead]);

@@ -18,6 +18,7 @@ using System.Numerics;
 using UnityEngine;
 using System.Collections.Concurrent;
 using System.Globalization;
+using BrutalCompanyMinus.Minus.Events;
 
 namespace BrutalCompanyMinus
 {
@@ -51,13 +52,14 @@ namespace BrutalCompanyMinus
 
         public static ConfigEntry<string> UIKey;
         public static ConfigEntry<bool> NormaliseScrapValueDisplay, EnableUI, ShowUILetterBox, ShowExtraProperties, PopUpUI;
+        public static ConfigEntry<float> UITime;
 
         public static ConfigEntry<bool> customScrapWeights, customEnemyWeights, enableAllEnemies, enableAllScrap, enableCustomWeights;
         public static ConfigEntry<int> allEnemiesDefaultWeight, allScrapDefaultWeight;
 
         public static ConfigEntry<bool> enableQuotaChanges;
         public static ConfigEntry<int> deadLineDaysAmount, startingCredits, startingQuota, baseIncrease, increaseSteepness;
-        public static Scale spawnChanceMultiplierScaling = new Scale(), insideEnemyMaxPowerCountScaling = new Scale(), outsideEnemyPowerCountScaling = new Scale(), enemyBonusHpScaling = new Scale();
+        public static Scale spawnChanceMultiplierScaling = new Scale(), insideEnemyMaxPowerCountScaling = new Scale(), outsideEnemyPowerCountScaling = new Scale(), enemyBonusHpScaling = new Scale(), spawnCapMultiplier = new Scale();
         public static ConfigEntry<bool> ignoreScaleCap;
 
         public static Dictionary<string, Dictionary<string, int>>  // Level name => Enemy/Scrap name => Rarity
@@ -74,14 +76,14 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<int>
             slayerShotgunMinValue, slayerShotgunMaxValue;
 
-        private static CultureInfo en = new CultureInfo("en-US"); // This is important, no touchy
+        public static CultureInfo en = new CultureInfo("en-US"); // This is important, no touchy
 
         public static void Initalize()
         {
             // Event settings
             useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
             eventsToSpawn = difficultyConfig.Bind("_Event Settings", "Event count", 2);
-            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events", "40", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
+            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events.", "40, 40, 15, 5", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
             showEventsInChat = difficultyConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
 
             // eventType weights
@@ -94,19 +96,20 @@ namespace BrutalCompanyMinus
 
             // Difficulty scaling
             ignoreScaleCap = difficultyConfig.Bind("Difficulty Scaling", "Ignore minCap, maxCap", false, "Ignore caps that limit scaling.");
-            spawnChanceMultiplierScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn chance multiplier scale", "0.8, 0.0284, 0.8, 2.5", "This will multiply the spawn chance by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
-            insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Inside Max Enemy Power Count", "0, 0.67, 0, 40", "Added max enemy power count for inside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
-            outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus Outside Max Enemy Power Count", "0, 0.34, 0, 20", "Added max enemy power count for outside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
-            enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Bonus hp", "0, 0.084, 0, 5", "Added hp to all enemies,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            spawnChanceMultiplierScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn chance multiplier scale", "1.0, 0.017, 1.0, 2.0", "This will multiply the spawn chance by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            spawnCapMultiplier = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn cap multipler scale", "1.0, 0.017, 1.0, 2.0", "This will multiply outside and inside power counts by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Additional Inside Max Enemy Power Count", "0, 0, 0, 0", "Added max enemy power count for inside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Additional Outside Max Enemy Power Count", "0, 0, 0, 0", "Added max enemy power count for outside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Additional hp", "0, 0.084, 0, 5", "Added hp to all enemies,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             goodEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
             badEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
 
             // Level Enemy/Scrap settings
             customScrapWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Generate and use scrap weights?", false, "This will generate customizable scrap weights for each level (This can become slow if you have alot of modded scraps)");
-            customEnemyWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Generate and use enemy weights?", true, "This will generate customizable enemy weights for each level");
+            customEnemyWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Generate and use enemy weights?", false, "This will generate customizable enemy weights for each level");
             enableAllEnemies = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Enable all enemies on all moons", false, "This will enable all insideEnemies to spawn inside.., you need to have generate and use enemy weights enabled.");
             enableAllScrap = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Enable all scrap on all moons", false, "This will enable for all scraps to spawn on all moons, you need to have generate and use scrap weights enabled.");
-            enableCustomWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "_Enable?", true);
+            enableCustomWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "_Enable?", false);
             allEnemiesDefaultWeight = customAssetsConfig.Bind("_Custom enemy and scrap weights", "All enemies on all moons weight", 2, "If there is any enemy with weight 0, it will be set to this weight enabling them to spawn.");
             allEnemiesDefaultWeight = customAssetsConfig.Bind("_Custom enemy and scrap weights", "All scrap on all moons weight", 2, "If there is any scrap with weight 0, it will be set to this weight enabling them to spawn.");
 
@@ -151,13 +154,14 @@ namespace BrutalCompanyMinus
             floodedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Flooded, 1.3f, 1.15f, 1.00f));
             eclipsedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Eclipsed, 1.5f, 1.25f, 1.00f));
 
-            // UI Key
+            // UI Settings
             UIKey = uiConfig.Bind("UI Options", "Toggle UI Key", "K");
             NormaliseScrapValueDisplay = uiConfig.Bind("UI Options", "Normlize scrap value display number?", true, "In game default value is 0.4, having this set to true will multiply the 'displayed value' by 2.5 so it looks normal.");
             EnableUI = uiConfig.Bind("UI Options", "Enable UI?", true);
             ShowUILetterBox = uiConfig.Bind("UI Options", "Display UI Letter Box?", true);
             ShowExtraProperties = uiConfig.Bind("UI Options", "Display extra properties", true, "Display extra properties on UI such as scrap value and amount multipliers.");
             PopUpUI = uiConfig.Bind("UI Options", "PopUp UI?", true, "Will the UI popup whenever you start the day?");
+            UITime = uiConfig.Bind("UI Options", "PopUp UI time.", 45.0f, "UI popup time");
 
             // Event settings
             foreach (MEvent e in EventManager.events)
@@ -176,6 +180,24 @@ namespace BrutalCompanyMinus
                 }
                 eventScales.Add(scales);
             }
+
+            // Specific event settings
+            Minus.Handlers.FacilityGhost.actionTimeCooldown = eventConfig.Bind(nameof(FacilityGhost), "Normal Action Time Interval", 15.0f, "How often does it take for the ghost to make a decision?").Value;
+            Minus.Handlers.FacilityGhost.ghostCrazyActionInterval = eventConfig.Bind(nameof(FacilityGhost), "Crazy Action Time Interval", 0.1f, "How often does it take for the ghost to make a decision while going crazy?").Value;
+            Minus.Handlers.FacilityGhost.ghostCrazyPeriod = eventConfig.Bind(nameof(FacilityGhost), "Crazy Period", 3.0f, "How long will the ghost go crazy for?").Value;
+            Minus.Handlers.FacilityGhost.crazyGhostChance = eventConfig.Bind(nameof(FacilityGhost), "Crazy Chance", 0.1f, "Whenever the ghost makes a decision, what is the chance that it will go crazy?").Value;
+            Minus.Handlers.FacilityGhost.DoNothingWeight = eventConfig.Bind(nameof(FacilityGhost), "Do Nothing Weight", 50, "Whenever the ghost makes a decision, what is the weight to do nothing?").Value;
+            Minus.Handlers.FacilityGhost.OpenCloseBigDoorsWeight = eventConfig.Bind(nameof(FacilityGhost), "Open and close big doors weight", 20, "Whenever the ghost makes a decision, what is the weight for ghost to open and close big doors?").Value;
+            Minus.Handlers.FacilityGhost.MessWithLightsWeight = eventConfig.Bind(nameof(FacilityGhost), "Mess with lights weight", 16, "Whenever the ghost makes a decision, what is the weight to mess with lights?").Value;
+            Minus.Handlers.FacilityGhost.MessWithBreakerWeight = eventConfig.Bind(nameof(FacilityGhost), "Mess with breaker weight", 4, "Whenever the ghost makes a decision, what is the weight to mess with the breaker?").Value;
+            Minus.Handlers.FacilityGhost.OpenCloseDoorsWeight = eventConfig.Bind(nameof(FacilityGhost), "Open and close normal doors weight", 9, "Whenever the ghost makes a decision, what is the weight to attempt to open and close normal doors.").Value;
+            Minus.Handlers.FacilityGhost.lockUnlockDoorsWeight = eventConfig.Bind(nameof(FacilityGhost), "Lock and unlock normal doors weight", 3, "Whenever the ghost makes a decision, what is the weight to attempt to lock and unlock normal doors.").Value;
+            Minus.Handlers.FacilityGhost.chanceToOpenCloseDoor = eventConfig.Bind(nameof(FacilityGhost), "Chance to open and close normal doors", 0.3f, "Whenever the ghosts decides to open and close doors, what is the chance for each individual door that it will do that.").Value;
+            Minus.Handlers.FacilityGhost.chanceToLockUnlockDoor = eventConfig.Bind(nameof(FacilityGhost), "Chance to lock and unlock normal doors", 0.1f, "Whenever the ghosts decides to lock and unlock doors, what is the chance for each individual door that it will do that.").Value;
+
+            Minus.Handlers.RealityShift.normalScrapWeight = eventConfig.Bind(nameof(RealityShift), "Normal transmutation weight", 80, "Weight for transforming scrap into some other scrap?").Value;
+            Minus.Handlers.RealityShift.grabbableLandmineWeight = eventConfig.Bind(nameof(RealityShift), "Grabbable landmine transmutation weight", 10, "Weight for transforming scrap into a grabbable landmine?").Value;
+            Minus.Handlers.RealityShift.grabbableTurretWeight = eventConfig.Bind(nameof(RealityShift), "Grabbable turret transmutation weight", 10, "Weight for transforming scrap into a grabbable turret?").Value;
         }
 
         private static bool bindedLevelConfigurations = false;

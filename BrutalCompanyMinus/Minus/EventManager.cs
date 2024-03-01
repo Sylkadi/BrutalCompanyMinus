@@ -48,13 +48,15 @@ namespace BrutalCompanyMinus.Minus
             new Events.Turrets(),
             new Events.Spiders(),
             new Events.SnareFleas(),
-            new Events.DoorGlitch(),
+            new Events.FacilityGhost(),
             new Events.OutsideTurrets(),
             new Events.OutsideLandmines(),
             new Events.ShipmentFees(),
             new Events.GrabbableLandmines(),
             new Events.GrabbableTurrets(),
             new Events.StrongEnemies(),
+            new Events.KamikazieBugs(),
+            new Events.RealityShift(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),
@@ -68,10 +70,11 @@ namespace BrutalCompanyMinus.Minus
             new Events.ChineseProduce(),
             new Events.TransmuteScrapBig(),
             new Events.Warzone(),
-            new Events.GypsyColony(),
+            new Events.BugHorde(),
             new Events.ForestGiant(),
             new Events.InsideBees(),
             new Events.NutSlayer(),
+            new Events.Hell(),
             // NoEnemy
             new Events.NoBaboons(),
             new Events.NoBracken(),
@@ -80,7 +83,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.NoGiants(),
             new Events.NoHoardingBugs(),
             new Events.NoJester(),
-            new Events.NoLittleGirl(),
+            new Events.NoGhosts(),
             new Events.NoLizards(),
             new Events.NoNutcracker(),
             new Events.NoSpiders(),
@@ -173,15 +176,6 @@ namespace BrutalCompanyMinus.Minus
                 }
             }
 
-            // Remove incompatible events
-            for (int i = 0; i < eventsToSpawnWith.Count; i++)
-            {
-                foreach (string eventToRemove in eventsToSpawnWith[i].EventsToRemove)
-                {
-                    eventsToSpawnWith.RemoveAll(x => x.Name() == eventToRemove);
-                }
-            }
-
             // Remove disabledEvents from EventsToSpawnWith List
             foreach (MEvent e in disabledEvents)
             {
@@ -196,9 +190,15 @@ namespace BrutalCompanyMinus.Minus
 
         internal static void ApplyEvents(List<MEvent> currentEvents)
         {
-            foreach (MEvent e in currentEvents) e.Execute();
+            foreach (MEvent e in currentEvents)
+            {
+                if(!e.Executed)
+                {
+                    e.Executed = true;
+                    e.Execute();
+                }
+            }
         }
-
 
         internal static void UpdateAllEventWeights()
         {
@@ -248,6 +248,7 @@ namespace BrutalCompanyMinus.Minus
 
             float VeryGoodWeight = (Sum / fix(VeryGoodCount)) * veryGoodProbability, GoodWeight = (Sum / fix(GoodCount)) * goodProbablity, NeutralWeight = (Sum / fix(NeutralCount)) * neutralProbability,
                   RemoveWeight = (Sum / fix(RemoveCount)) * removeEnemyProbability, BadWeight = (Sum / fix(BadCount)) * badProbability, VeryBadWeight = (Sum / fix(VeryBadCount)) * veryBadProbability;
+
 
             foreach (MEvent e in events)
             {

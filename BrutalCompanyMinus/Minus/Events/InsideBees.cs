@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(InsideBees);
 
+        public static InsideBees Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "BEES!! wait...";
             ColorHex = "#800000";

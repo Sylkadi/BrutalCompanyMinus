@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(BigDelivery);
 
+        public static BigDelivery Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "The company has ordered a big delivery on this planet.";
             ColorHex = "#00FF00";

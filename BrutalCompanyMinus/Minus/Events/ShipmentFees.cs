@@ -13,8 +13,12 @@ namespace BrutalCompanyMinus.Minus.Events
         public static bool Active = false;
         public override string Name() => nameof(ShipmentFees);
 
+        public static ShipmentFees Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 3;
             Description = "The company is now incurring a fee for shipments!";
             ColorHex = "#FF0000";

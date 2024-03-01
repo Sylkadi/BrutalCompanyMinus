@@ -12,14 +12,18 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(Arachnophobia);
 
+        public static Arachnophobia Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Nightmare Facility";
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            EventsToRemove = new List<string>() { nameof(Trees), nameof(LeaflessBrownTrees) };
+            EventsToRemove = new List<string>() { nameof(Trees), nameof(LeaflessBrownTrees), nameof(Spiders) };
             EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees) };
 
             ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(50.0f, 0.84f, 50.0f, 100.0f));

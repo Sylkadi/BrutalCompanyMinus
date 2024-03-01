@@ -32,7 +32,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
             if(Events.ShipmentFees.Active)
             {
-                MEvent shipmentEvent = MEvent.GetEvent(nameof(Events.ShipmentFees));
+                MEvent shipmentEvent = Events.ShipmentFees.Instance;
                 float min = shipmentEvent.Getf(MEvent.ScaleType.MinCash);
                 float max = shipmentEvent.Getf(MEvent.ScaleType.MaxCash);
 

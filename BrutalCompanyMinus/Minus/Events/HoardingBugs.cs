@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(HoardingBugs);
 
+        public static HoardingBugs Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 3;
             Description = "They look cute.";
             ColorHex = "#FF0000";

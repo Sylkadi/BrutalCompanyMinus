@@ -16,8 +16,12 @@ namespace BrutalCompanyMinus.Minus.Events
         public static bool Active = false;
         public override string Name() => nameof(Bounty);
 
+        public static Bounty Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 2;
             Description = "The company is now paying for kills";
             ColorHex = "#008000";

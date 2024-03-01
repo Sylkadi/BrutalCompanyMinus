@@ -36,6 +36,7 @@ namespace BrutalCompanyMinus
         {
             Instance = this;
 
+            showCaseEventTime = Configuration.UITime.Value;
             Net.Instance.textUI.OnValueChanged += (previous, current) => panelText.text = current.ToString(); // For Text update
 
             Component[] components = UI.eventUIObject.GetComponentsInChildren<Component>(true);
@@ -116,12 +117,11 @@ namespace BrutalCompanyMinus
                 text += 
                     $"<br>Difficulty:" +
                     $"<br> -Day: {Manager.daysPassed}" +
-                    $"<br><br> -Scrap Amount: x{RoundManager.Instance.scrapAmountMultiplier:F2}" +
                     $"<br> -Scrap Value: x{ScrapValueMultiplier:F2}" +
+                    $"<br> -Scrap Amount: x{RoundManager.Instance.scrapAmountMultiplier:F2}" +
                     $"<br> -Factory Size: x{RoundManager.Instance.currentLevel.factorySizeMultiplier:F2}" +
-                    $"<br> -SpawnChance: x{Manager.spawnChanceMultiplier:F2}" +
-                    $"<br> -Max inside power: {plusMinus(Manager.bonusMaxInsidePowerCount)}" +
-                    $"<br> -Max outside power: {plusMinus(Manager.bonusMaxOutsidePowerCount)}" +
+                    $"<br> -Spawn Chance: x{Manager.spawnChanceMultiplier:F2}" +
+                    $"<br> -Spawn Cap: x{Manager.spawncapMultipler:F2}" +
                     $"<br> -Bonus enemy hp: {plusMinus(Manager.bonusEnemyHp)}";
             }
 

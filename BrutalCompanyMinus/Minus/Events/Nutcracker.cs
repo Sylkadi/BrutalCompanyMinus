@@ -12,10 +12,14 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(Nutcracker);
 
+        public static Nutcracker Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
-            Description = "Average american school experience";
+            Description = "This facility is armed.";
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 

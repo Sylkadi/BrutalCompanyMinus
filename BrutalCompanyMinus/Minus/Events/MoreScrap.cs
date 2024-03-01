@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(MoreScrap);
 
+        public static MoreScrap Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 2;
             Description = "There is slighly more scrap in the facility!";
             ColorHex = "#008000";

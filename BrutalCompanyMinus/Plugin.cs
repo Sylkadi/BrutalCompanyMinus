@@ -23,10 +23,8 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.9.2";
+        private const string VERSION = "0.10.0";
         private static readonly Harmony harmony = new Harmony(GUID);
-
-        internal static CultureInfo en = new CultureInfo("en-US");
 
         void Awake()
         {
@@ -47,11 +45,13 @@ namespace BrutalCompanyMinus
                     }
                 }
             }
+
             // Load assets
             Assets.Load();
 
             // Patch all
             harmony.PatchAll();
+            harmony.PatchAll(typeof(GrabObjectTranspiler));
 
             Log.LogInfo(NAME + " " + VERSION + " " + "is done patching.");
         }
@@ -70,7 +70,8 @@ namespace BrutalCompanyMinus
                 Configuration.customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
 
                 // Custom enemy events
-                for (int i = 0; i < 10; i++)
+                int customEventCount = Configuration.eventConfig.Bind("_Temp Custom Monster Event Count", "How many events to generate in config?", 10, "This is temporary for the time being.").Value;
+                for (int i = 0; i < customEventCount; i++)
                 {
                     MEvent e = new Minus.Events.CustomMonsterEvent();
                     e.Enabled = false;
@@ -113,6 +114,16 @@ namespace BrutalCompanyMinus
 
                 if (!Configuration.useCustomWeights.Value) EventManager.UpdateAllEventWeights();
 
+                int[] counts = new int[6] { 0, 0, 0, 0, 0, 0 };
+                foreach(MEvent e in EventManager.events) counts[(int)e.Type]++;
+                Log.LogInfo(
+                    $"\n\nTotal Events:{EventManager.events.Count},   Disabled Events:{EventManager.disabledEvents.Count},   Total Events - Remove Count:{EventManager.events.Count - counts[5]}\n" +
+                    $"Very Bad:{counts[0]}\n" +
+                    $"Bad:{counts[1]}\n" +
+                    $"Neutral:{counts[2]}\n" +
+                    $"Good:{counts[3]}\n" +
+                    $"Very Good:{counts[4]}\n");
+
                 Initalized = true;
             }
         }
@@ -123,7 +134,7 @@ namespace BrutalCompanyMinus
         {
             Manager.currentLevel = newLevel;
             Manager.currentTerminal = FindObjectOfType<Terminal>();
-            Manager.daysPassed++;
+            Manager.daysPassed = StartOfRound.Instance.gameStats.daysSpent;
 
             Configuration.GenerateLevelConfigurations(StartOfRound.Instance); // Bind 
             LevelModifications.ModifyEnemyScrapSpawns(StartOfRound.Instance); // Set
@@ -132,7 +143,6 @@ namespace BrutalCompanyMinus
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
 
-            Minus.Events.GrabbableLandmines.LandmineDisabled = false;
             LevelModifications.ResetValues(StartOfRound.Instance);
 
             // Apply weather multipliers
@@ -149,6 +159,7 @@ namespace BrutalCompanyMinus
             // Difficulty modifications
             Manager.AddEnemyHp((int)MEvent.Scale.Compute(Configuration.enemyBonusHpScaling));
             Manager.MultiplySpawnChance(newLevel, MEvent.Scale.Compute(Configuration.spawnChanceMultiplierScaling));
+            Manager.MultiplySpawnCap(MEvent.Scale.Compute(Configuration.spawnCapMultiplier));
             Manager.AddInsidePower((int)MEvent.Scale.Compute(Configuration.insideEnemyMaxPowerCountScaling));
             Manager.AddOutsidePower((int)MEvent.Scale.Compute(Configuration.outsideEnemyPowerCountScaling));
 
@@ -168,18 +179,17 @@ namespace BrutalCompanyMinus
                     HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
                 }
             }
-           
 
             // Apply maxPower counts
-            RoundManager.Instance.currentLevel.maxEnemyPowerCount += Manager.bonusMaxInsidePowerCount;
-            RoundManager.Instance.currentMaxOutsidePower += Manager.bonusMaxOutsidePowerCount;
+            RoundManager.Instance.currentLevel.maxEnemyPowerCount = (int)((RoundManager.Instance.currentLevel.maxEnemyPowerCount + Manager.bonusMaxInsidePowerCount) * Manager.spawncapMultipler);
+            RoundManager.Instance.currentLevel.maxOutsideEnemyPowerCount = (int)((RoundManager.Instance.currentLevel.maxOutsideEnemyPowerCount + Manager.bonusMaxOutsidePowerCount) * Manager.spawncapMultipler);
 
             // Spawn outside scrap
             Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
 
             // Sync values to all clients
             Net.Instance.SyncValuesClientRpc(Manager.currentLevel.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier, Manager.bonusEnemyHp);
-
+            
             // Apply UI
             UI.GenerateText(currentEvents);
 

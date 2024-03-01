@@ -1,5 +1,6 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
+using System.Collections;
 using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.Handlers
@@ -12,6 +13,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch(nameof(EnemyAI.MeetsStandardPlayerCollisionConditions))]
         private static void OnMeetsStandardPlayerCollisionConditions(ref PlayerControllerB __result, ref Collider other, ref EnemyType ___enemyType, ref bool ___isEnemyDead, ref bool inKillAnimation, ref float ___stunNormalizedTimer) // This fix works, maybe theres a better way
         {
+            // Why am i doing this again? just gona leave it here since nothing breaks.
             PlayerControllerB controller = other.gameObject.GetComponent<PlayerControllerB>();
             if (controller != null)
             {
@@ -26,7 +28,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch("Start")]
         private static void OnStart(ref EnemyAI __instance) // Set isOutside and scale hp
         {
-            __instance.enemyHP = (int)Functions.Range(__instance.enemyHP + Manager.bonusEnemyHp, 1.1f, 99999999.0f);
+            __instance.StartCoroutine(UpdateHP(__instance));
             
             try
             {
@@ -63,6 +65,12 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 Log.LogError("Failed to set isOutside on EnemyAI.Start");
             }
+        }
+
+        private static IEnumerator UpdateHP(EnemyAI __instance)
+        {
+            yield return new WaitUntil(() => Net.Instance.receivedSyncedValues);
+            __instance.enemyHP = (int)Functions.Range(__instance.enemyHP + Manager.bonusEnemyHp, 1.1f, 99999999.0f);
         }
 
     }

@@ -12,21 +12,27 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(TransmuteScrapSmall);
 
+        public static TransmuteScrapSmall Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 2;
             Description = "All the scrap has transmuted into something small...";
             ColorHex = "#008000";
             Type = EventType.Good;
 
-            EventsToRemove = new List<string>() { nameof(TransmuteScrapBig), nameof(Dentures), nameof(Pickles), nameof(GoldenFacility), nameof(Honk), nameof(GoldenBars)};
+            EventsToRemove = new List<string>() { nameof(RealityShift) };
         }
 
         public override bool AddEventIfOnly() // If one-handed item exists in item pool
         {
             foreach (SpawnableItemWithRarity item in RoundManager.Instance.currentLevel.spawnableScrap)
             {
-                if (!item.spawnableItem.twoHanded) return true;
+                if (item.spawnableItem.twoHanded || Manager.transmuteScrap) continue;
+                Manager.transmuteScrap = true;
+                return true;
             }
             return false;
         }

@@ -169,6 +169,9 @@ namespace BrutalCompanyMinus.Minus.Handlers
             foreach (Keyframe key in Assets.outsideSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.outsideEnemySpawnChanceThroughDay.AddKey(key);
             foreach (Keyframe key in Assets.daytimeSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.daytimeEnemySpawnChanceThroughDay.AddKey(key);
 
+            Events.GrabbableLandmines.LandmineDisabled = false;
+            foreach (MEvent e in EventManager.events) e.Executed = false;
+
             RoundManager.Instance.currentLevel.maxEnemyPowerCount = Assets.insideMaxPowerCounts[Manager.GetLevelIndex()];
             RoundManager.Instance.currentLevel.maxOutsideEnemyPowerCount = Assets.outsideMaxPowerCounts[Manager.GetLevelIndex()];
             RoundManager.Instance.currentLevel.maxDaytimeEnemyPowerCount = Assets.daytimeMaxPowerCounts[Manager.GetLevelIndex()];
@@ -176,6 +179,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             // Reset bonus hp
             Manager.bonusEnemyHp = 0;
             Manager.spawnChanceMultiplier = 1.0f;
+            Manager.spawncapMultipler = 1.0f;
             Manager.bonusMaxInsidePowerCount = 0;
             Manager.bonusMaxOutsidePowerCount = 0;
 
@@ -266,6 +270,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 netObj.Spawn();
                 newNetObjects.Add(netObj);
             }
+
             // Replace spawnedScrap, scrapValues
             spawnedScrap = newNetObjects.ToArray();
             scrapValues = newScrapValues.ToArray();

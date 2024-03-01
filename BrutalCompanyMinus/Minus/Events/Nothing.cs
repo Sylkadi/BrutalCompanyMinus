@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(Nothing);
 
+        public static Nothing Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 8;
             Description = "--Nothing--";
             ColorHex = "#FFFFFF";

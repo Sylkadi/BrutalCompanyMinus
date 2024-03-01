@@ -8,10 +8,10 @@ namespace BrutalCompanyMinus.Minus.Handlers
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(EnemyAI.KillEnemyOnOwnerClient))]
-        static void PayOnkill()
+        static void PayOnkill(ref EnemyAI __instance)
         {
-            if (!Events.Bounty.Active) return;
-            MEvent bountEvent = MEvent.GetEvent(nameof(Events.Bounty));
+            if (!Events.Bounty.Active || __instance.isEnemyDead) return;
+            MEvent bountEvent = Events.Bounty.Instance;
             Manager.PayCredits(UnityEngine.Random.Range(bountEvent.Get(MEvent.ScaleType.MinValue), bountEvent.Get(MEvent.ScaleType.MaxValue) + 1));
         }
     }

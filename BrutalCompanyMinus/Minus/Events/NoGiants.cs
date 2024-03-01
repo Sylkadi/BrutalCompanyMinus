@@ -12,14 +12,18 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(NoGiants);
 
+        public static NoGiants Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "No stomping";
             ColorHex = "#008000";
             Type = EventType.Remove;
 
-            EventsToRemove = new List<string>() { nameof(ForestGiant) };
+            EventsToRemove = new List<string>() { nameof(ForestGiant), nameof(Hell) };
         }
 
         public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.ForestKeeper]);

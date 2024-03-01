@@ -46,7 +46,7 @@ namespace BrutalCompanyMinus.Minus
         internal static int bonusEnemyHp = 0;
         internal static int bonusMaxInsidePowerCount = 0, bonusMaxOutsidePowerCount = 0;
         internal static int minEnemiesToSpawnInside = 0, minEnemiestoSpawnOutside = 0;
-        internal static float spawnChanceMultiplier = 1.0f;
+        internal static float spawnChanceMultiplier = 1.0f, spawncapMultipler = 1.0f;
 
         internal static bool transmuteScrap = false;
         internal static List<SpawnableItemWithRarity> ScrapToTransmuteTo = new List<SpawnableItemWithRarity>();
@@ -198,7 +198,7 @@ namespace BrutalCompanyMinus.Minus
                 for (int i = 0; i < ScrapAmount; i++)
                 {
                     Item pickedScrap = r.currentLevel.spawnableScrap[r.GetRandomWeightedIndex(weights, rng)].spawnableItem;
-                    ScrapToSpawn.Add(Assets.GetItem(pickedScrap.name)); // Get scrap safely
+                    ScrapToSpawn.Add(Assets.GetItem(pickedScrap.name));
                 }
                 // Spawn Scrap
                 List<NetworkObjectReference> ScrapSpawnsNet = new List<NetworkObjectReference>();
@@ -269,6 +269,8 @@ namespace BrutalCompanyMinus.Minus
         public static void AddEnemyHp(int amount) => bonusEnemyHp += amount;
         public static void AddInsidePower(int amount) => bonusMaxInsidePowerCount += amount;
         public static void AddOutsidePower(int amount) => bonusMaxOutsidePowerCount += amount;
+
+        public static void MultiplySpawnCap(float multiplier) => spawncapMultipler *= multiplier;
 
         internal static void SampleMap()
         {
@@ -408,9 +410,7 @@ namespace BrutalCompanyMinus.Minus
             Keyframe[] insideKeyFrames = new Keyframe[currentLevel.enemySpawnChanceThroughoutDay.keys.Length];
             for (int i = 0; i < currentLevel.enemySpawnChanceThroughoutDay.keys.Length; i++)
             {
-                float value = currentLevel.enemySpawnChanceThroughoutDay.keys[i].value;
-                if (currentLevel.enemySpawnChanceThroughoutDay.keys[i].value > 0.0f) value *= by;
-                insideKeyFrames[i] = new Keyframe(currentLevel.enemySpawnChanceThroughoutDay.keys[i].time, value);
+                insideKeyFrames[i] = new Keyframe(currentLevel.enemySpawnChanceThroughoutDay.keys[i].time, currentLevel.enemySpawnChanceThroughoutDay.keys[i].value * by);
             }
             currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(insideKeyFrames);
 
@@ -418,9 +418,7 @@ namespace BrutalCompanyMinus.Minus
             Keyframe[] outsideKeyFrames = new Keyframe[currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length];
             for (int i = 0; i < currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length; i++)
             {
-                float value = currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value;
-                if (currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value > 0.0f) value *= by;
-                outsideKeyFrames[i] = new Keyframe(currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].time, value);
+                outsideKeyFrames[i] = new Keyframe(currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].time, currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value * by);
             }
             currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve(outsideKeyFrames);
 
@@ -428,9 +426,7 @@ namespace BrutalCompanyMinus.Minus
             Keyframe[] daytimeKeyFrames = new Keyframe[currentLevel.daytimeEnemySpawnChanceThroughDay.keys.Length];
             for (int i = 0; i < currentLevel.daytimeEnemySpawnChanceThroughDay.keys.Length; i++)
             {
-                float value = currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value;
-                if (currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value > 0.0f) value *= by;
-                daytimeKeyFrames[i] = new Keyframe(currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].time, value);
+                daytimeKeyFrames[i] = new Keyframe(currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].time, currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value * by);
             }
             currentLevel.daytimeEnemySpawnChanceThroughDay = new AnimationCurve(daytimeKeyFrames);
         }
@@ -478,29 +474,6 @@ namespace BrutalCompanyMinus.Minus
                 Spawn.DoSpawnOutsideEnemies();
             }
         }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(RoundManager), "ResetEnemySpawningVariables")]
-        private static void OnResetEnemySpawningVariables()
-        {
-            //RoundManager.Instance.minEnemiesToSpawn += minEnemiesToSpawnInside;
-            //RoundManager.Instance.minOutsideEnemiesToSpawn += minEnemiestoSpawnOutside;
-            //minEnemiesToSpawnInside = 0;
-            //minEnemiestoSpawnOutside = 0;
-        }
-        
-        // Set days passed
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(GameNetworkManager), "Start")]
-        private static void SetDaysPassed(ref string ___currentSaveFileName) => daysPassed = ES3.Load("Stats_DaysSpent", ___currentSaveFileName, 0) - 1;
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(SaveFileUISlot), nameof(SaveFileUISlot.SetFileToThis))]
-        private static void _SetDaysPassed(ref string ___fileString) => daysPassed = ES3.Load("Stats_DaysSpent", ___fileString, 0) - 1;
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(StartOfRound), "OnDisable")]
-        private static void __SetDaysPassed() => daysPassed = -1;
 
         internal struct ObjectInfo
         {

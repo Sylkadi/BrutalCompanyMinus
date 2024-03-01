@@ -13,8 +13,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(Warzone);
 
+        public static Warzone Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Landmines? Turrets? all of it";
             ColorHex = "#800000";

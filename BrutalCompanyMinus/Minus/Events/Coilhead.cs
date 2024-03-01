@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(Coilhead);
 
+        public static Coilhead Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Coilheads detected in the facility!";
             ColorHex = "#800000";

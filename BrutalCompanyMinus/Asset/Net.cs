@@ -22,6 +22,8 @@ namespace BrutalCompanyMinus
 
         public NetworkVariable<FixedString4096Bytes> textUI = new NetworkVariable<FixedString4096Bytes>();
 
+        public bool receivedSyncedValues = false;
+
         void Awake()
         {
             // Initalize or it will break
@@ -97,6 +99,7 @@ namespace BrutalCompanyMinus
             RoundManager.Instance.scrapValueMultiplier = scrapValueMultiplier;
             RoundManager.Instance.scrapAmountMultiplier = scrapAmountMultiplier;
             Manager.bonusEnemyHp = bonusMaxHp;
+            receivedSyncedValues = true;
         }
 
         [ServerRpc]
@@ -146,6 +149,147 @@ namespace BrutalCompanyMinus
             currentWeatherMultipliers = Weather.RandomizeWeatherMultipliers(currentWeatherMultipliers);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void SetRecievedServerRpc(bool state) => SetRecievedClientRpc(state);
+
+        [ClientRpc]
+        public void SetRecievedClientRpc(bool state) => receivedSyncedValues = state;
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SetRealityShiftActiveServerRpc(bool state) => SetRealityShiftActiveClientRpc(state);
+
+        [ClientRpc]
+        public void SetRealityShiftActiveClientRpc(bool state) => Minus.Events.RealityShift.Active = state;
+
+        [ServerRpc(RequireOwnership = false)]
+        public void MessWithLightsServerRpc() => MessWithLightsClientRpc();
+
+        [ClientRpc]
+        public void MessWithLightsClientRpc() => RoundManager.Instance.FlickerLights(true, true);
+
+        [ServerRpc(RequireOwnership = false)]
+        public void MessWithBreakerServerRpc(bool state) => MessWithBreakerClientRpc(state);
+
+        [ClientRpc]
+        public void MessWithBreakerClientRpc(bool state)
+        {
+            BreakerBox breakerBox = GameObject.FindObjectOfType<BreakerBox>();
+            if (breakerBox != null)
+            {
+                breakerBox.SetSwitchesOff();
+                RoundManager.Instance.TurnOnAllLights(state);
+            }
+        }
+
+        private int _seed = 0;
+        [ServerRpc(RequireOwnership = false)]
+        public void MessWithDoorsServerRpc(float openCloseChance, bool messWithLock = false, float messWithLockChance = 0.0f)
+        {
+            if (_seed == 0) _seed = StartOfRound.Instance.randomMapSeed;
+            _seed++;
+            MessWithDoorsClientRpc(openCloseChance, _seed, messWithLock, messWithLockChance);
+        }
+
+        [ClientRpc]
+        public void MessWithDoorsClientRpc(float openCloseChance, int seed, bool messWithLock, float messWithLockChance)
+        {
+            DoorLock[] doors = GameObject.FindObjectsOfType<DoorLock>();
+            System.Random rng = new System.Random(seed);
+            foreach(DoorLock door in doors)
+            {
+                if (door == null) continue;
+                if (rng.NextDouble() <= openCloseChance) continue;
+
+                if(messWithLock && rng.NextDouble() <= messWithLockChance)
+                {
+                    if(rng.Next(0, 2) == 0)
+                    {
+                        door.LockDoor();
+                    } else
+                    {
+                        door.UnlockDoor();
+                    }
+                    return;
+                }
+
+                if (!door.isLocked)
+                {
+                    door.gameObject.GetComponent<AnimatedObjectTrigger>().TriggerAnimationNonPlayer(false, true);
+                    door.SetDoorAsOpen(Convert.ToBoolean(rng.Next(0, 2)));
+                }
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void ShiftServerRpc(NetworkObjectReference networkObject)
+        {
+            if (Minus.Handlers.RealityShift.shiftList.Count == 0) return;
+            if (Minus.Handlers.RealityShift.shiftList[0] == null) return;
+
+            NetworkObject netObj = null;
+            networkObject.TryGet(out netObj);
+            if(netObj == null)
+            {
+                Log.LogError("NetworkObject in ShiftServerRpc() is null.");
+                return;
+            }
+            GrabbableObject instance = netObj.GetComponent<GrabbableObject>();
+
+            GameObject scrap = GameObject.Instantiate(Minus.Handlers.RealityShift.shiftList[0], instance.transform.position, Quaternion.identity);
+            GrabbableObject grabbableObject = scrap.GetComponent<GrabbableObject>();
+            if (grabbableObject == null)
+            {
+                Log.LogFatal("GrabbableObject is null in ShiftServerRpc()");
+                return;
+            }
+
+            grabbableObject.targetFloorPosition = grabbableObject.GetItemFloorPosition(instance.transform.position);
+
+            grabbableObject.SetScrapValue(Minus.Handlers.RealityShift.shiftListValues[0]);
+            grabbableObject.NetworkObject.Spawn();
+            SyncScrapValueClientRpc(grabbableObject.NetworkObject, Minus.Handlers.RealityShift.shiftListValues[0]);
+
+            NetworkObject oldNetObject = instance.GetComponent<NetworkObject>();
+            if (oldNetObject != null)
+            {
+                oldNetObject.Despawn(true);
+            }
+            else
+            {
+                Log.LogError("NetworkObject is null in ShiftServerRpc(), destroying on client instead.");
+                GameObject.Destroy(instance);
+            }
+
+            if (scrap != null)
+            {
+                Minus.Handlers.RealityShift.shiftListValues.RemoveAt(0);
+                Minus.Handlers.RealityShift.shiftList.RemoveAt(0);
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void GenerateShiftableObjectsListServerRpc(NetworkObjectReference[] spawnedScrap) => GenerateShiftableObjectsListClientRpc(spawnedScrap);
+
+        [ClientRpc]
+        public void GenerateShiftableObjectsListClientRpc(NetworkObjectReference[] spawnedScrap)
+        {
+            Minus.Handlers.RealityShift.ShiftableObjects.Clear();
+            foreach (NetworkObjectReference netRef in spawnedScrap)
+            {
+                NetworkObject netObj = null;
+                netRef.TryGet(out netObj);
+
+                if (netObj != null)
+                {
+                    Minus.Handlers.RealityShift.ShiftableObjects.Add(netObj.gameObject.GetInstanceID());
+                }
+                else
+                {
+                    Log.LogError("Scrap spawn has null NetworkObject");
+                }
+            }
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
         private static void InitalizeServerObject()
@@ -176,6 +320,8 @@ namespace BrutalCompanyMinus
             {
                 // Randomize weather multipliers
                 Instance.UpdateCurrentWeatherMultipliersServerRpc();
+
+                Instance.SetRecievedServerRpc(false);
 
                 // If called on server
                 if (RoundManager.Instance.IsServer) // Why did i write if is Server when i already check if host?? just gona leave this here.

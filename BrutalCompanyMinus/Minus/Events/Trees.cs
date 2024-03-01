@@ -13,8 +13,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(Trees);
 
+        public static Trees Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 8;
             Description = "Trees!!";
             ColorHex = "#FFFFFF";
@@ -28,6 +32,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override void Execute()
         {
+            if (LeaflessTrees.Instance.Executed || LeaflessBrownTrees.Instance.Executed) return;
+
             Net.Instance.outsideObjectsToSpawn.Add(new OutsideObjectsToSpawn(UnityEngine.Random.Range(Getf(ScaleType.MinDensity), Getf(ScaleType.MaxDensity)), (int)Assets.ObjectName.Tree));
         }
     }

@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(ScrapGalore);
 
+        public static ScrapGalore Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Scrap here is plentiful and of high quality.";
             ColorHex = "#00FF00";
@@ -21,6 +25,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
             ScaleList.Add(ScaleType.ScrapValue, new Scale(1.35f, 0.0117f, 1.35f, 2.05f));
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.35f, 0.0117f, 1.35f, 2.05f));
+
+            EventsToRemove = new List<string>() { nameof(HigherScrapValue), nameof(MoreScrap) };
         }
 
         public override void Execute()

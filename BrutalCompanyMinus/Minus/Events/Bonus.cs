@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(Bonus);
 
+        public static Bonus Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 2;
             Description = "Corporate is feeling good today.";
             ColorHex = "#008000";

@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(Birds);
 
+        public static Birds Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 8;
             Description = "Its bird migration season";
             ColorHex = "#FFFFFF";

@@ -13,8 +13,12 @@ namespace BrutalCompanyMinus.Minus.Events
         public static bool Active = false;
         public override string Name() => nameof(GrabbableTurrets);
 
+        public static GrabbableTurrets Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 3;
             Description = "Some turrets have turned into scrap...";
             ColorHex = "#FF0000";

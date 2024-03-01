@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(PlentyOutsideScrap);
 
+        public static PlentyOutsideScrap Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "There is some scrap to be found outside.";
             ColorHex = "#00FF00";

@@ -13,8 +13,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(OutsideLandmines);
 
+        public static OutsideLandmines Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 3;
             Description = "There are landmines, Outside.";
             ColorHex = "#FF0000";

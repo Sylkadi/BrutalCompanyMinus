@@ -959,11 +959,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public override void KillEnemy(bool destroy = false)
         {
             if (Immortal) return;
-            if(Lives > 0)
-            {
-                Lives--;
-                return;
-            }
             base.KillEnemy(destroy);
             targetTorsoDegrees = 0;
             StopInspection();

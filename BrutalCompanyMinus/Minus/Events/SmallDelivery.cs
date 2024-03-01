@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(SmallDeilvery);
 
+        public static SmallDeilvery Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 2;
             Description = "The company has decided to give you a present.";
             ColorHex = "#008000";

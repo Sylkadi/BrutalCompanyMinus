@@ -12,14 +12,18 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(NoBaboons);
 
+        public static NoBaboons Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
-            Description = "No gypsies";
+            Description = "No gangs";
             ColorHex = "#008000";
             Type = EventType.Remove;
 
-            EventsToRemove = new List<string>() { nameof(BaboonHorde) };
+            EventsToRemove = new List<string>() { nameof(BaboonHorde), nameof(Hell) };
         }
 
         public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.BaboonHawk]);

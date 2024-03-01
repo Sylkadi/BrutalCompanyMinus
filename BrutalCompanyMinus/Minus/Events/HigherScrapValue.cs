@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(HigherScrapValue);
 
+        public static HigherScrapValue Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 2;
             Description = "Everything is worth slightly more!";
             ColorHex = "#008000";

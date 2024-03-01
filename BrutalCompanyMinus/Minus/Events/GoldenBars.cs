@@ -13,16 +13,30 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(GoldenBars);
 
+        public static GoldenBars Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Bling bling";
             ColorHex = "#00FF00";
             Type = EventType.VeryGood;
 
-            EventsToRemove = new List<string>() { nameof(TransmuteScrapBig), nameof(TransmuteScrapSmall), nameof(Dentures), nameof(Pickles), nameof(GoldenFacility), nameof(Honk)};
+            EventsToRemove = new List<string>() { nameof(RealityShift) };
 
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
+        }
+
+        public override bool AddEventIfOnly()
+        {
+            if (!Manager.transmuteScrap)
+            {
+                Manager.transmuteScrap = true;
+                return true;
+            }
+            return false;
         }
 
         public override void Execute()

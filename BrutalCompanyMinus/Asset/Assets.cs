@@ -82,6 +82,7 @@ namespace BrutalCompanyMinus
         // Custom Assets
         internal static EnemyType antiCoilHead, nutSlayer, kamikazieBug;
         internal static Item slayerShotgun, grabbableTurret, grabbableLandmine;
+        internal static GameObject stretchyWeb;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
@@ -89,6 +90,7 @@ namespace BrutalCompanyMinus
         {
             antiCoilHead = (EnemyType)customAssetBundle.LoadAsset("AntiCoilHead");
             nutSlayer = (EnemyType)customAssetBundle.LoadAsset("NutSlayer");
+            kamikazieBug = (EnemyType)customAssetBundle.LoadAsset("KamikazieBug");
 
             slayerShotgun = (Item)customAssetBundle.LoadAsset("SlayerShotgun");
             grabbableTurret = (Item)customAssetBundle.LoadAsset("GrabbableTurret");
@@ -96,6 +98,8 @@ namespace BrutalCompanyMinus
 
             NetworkManager.Singleton.AddNetworkPrefab(antiCoilHead.enemyPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(nutSlayer.enemyPrefab);
+            NetworkManager.Singleton.AddNetworkPrefab(kamikazieBug.enemyPrefab);
+
             NetworkManager.Singleton.AddNetworkPrefab(slayerShotgun.spawnPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(grabbableTurret.spawnPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(grabbableLandmine.spawnPrefab);
@@ -111,11 +115,11 @@ namespace BrutalCompanyMinus
 
         internal static void Load()
         {
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.asset"))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.bcm_assets"))
             {
                 bundle = AssetBundle.LoadFromStream(stream);
             }
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.customassets"))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BrutalCompanyMinus.Asset.bcm_customassets"))
             {
                 customAssetBundle = AssetBundle.LoadFromStream(stream);
             }

@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(SnareFleas);
 
+        public static SnareFleas Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 3;
             Description = "Ceiling campers!";
             ColorHex = "#FF0000";

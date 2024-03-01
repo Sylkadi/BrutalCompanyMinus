@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using Unity.Netcode;
 using UnityEngine;
@@ -69,33 +70,36 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             if(Events.GrabbableLandmines.Active && RoundManager.Instance.IsHost)
             {
-                MEvent _event = MEvent.GetEvent(nameof(Events.GrabbableLandmines));
-
-                float rarity = _event.Getf(MEvent.ScaleType.Rarity);
-
-                if(UnityEngine.Random.Range(0.0f, 1.0f) - rarity <= 0.0f)
-                {
-                    GameObject grabbableLandmine = Instantiate(Assets.grabbableLandmine.spawnPrefab, __instance.transform.position, Quaternion.identity);
-                    NetworkObject netObject = grabbableLandmine.GetComponent<NetworkObject>();
-                    netObject.Spawn();
-
-                    __instance.StartCoroutine(destroySelf(__instance, netObject)); // destroy
-                }
+                __instance.StartCoroutine(destroySelfAndReplace(__instance));
             }
         }
 
-        private static IEnumerator destroySelf(Landmine __instance, NetworkObjectReference netObject)
+        private static int seed = 0;
+        private static IEnumerator destroySelfAndReplace(Landmine __instance)
         {
-            yield return new WaitForSeconds(7.0f);
+            MEvent _event = Events.GrabbableLandmines.Instance;
 
-            Net.Instance.SyncScrapValueServerRpc(netObject, (int)(UnityEngine.Random.Range(Assets.grabbableLandmine.minValue, Assets.grabbableLandmine.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier));
+            float rarity = _event.Getf(MEvent.ScaleType.Rarity);
 
-            try
+            seed++;
+            System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + seed);
+            if (rng.NextDouble() <= rarity)
             {
-                __instance.transform.parent.gameObject.GetComponent<NetworkObject>().Despawn(destroy: true);
-            } catch
-            {
+                GameObject grabbableLandmine = Instantiate(Assets.grabbableLandmine.spawnPrefab, __instance.transform.position, Quaternion.identity);
+                NetworkObject netObject = grabbableLandmine.GetComponent<NetworkObject>();
+                netObject.Spawn();
 
+                Net.Instance.SyncScrapValueServerRpc(netObject, (int)(UnityEngine.Random.Range(Assets.grabbableLandmine.minValue, Assets.grabbableLandmine.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier));
+
+                yield return new WaitForSeconds(5.0f);
+
+                try
+                {
+                    __instance.transform.parent.gameObject.GetComponent<NetworkObject>().Despawn(destroy: true);
+                } catch
+                {
+
+                }
             }
         }
 
@@ -103,6 +107,9 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             StartCoroutine(StartIdleAnimation());
             base.Start();
+
+            dropSafetyTime = 2.0f;
+            mineGrabbed = true;
         }
 
         public override void Update()
@@ -363,6 +370,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public void SetOffMineAnimation()
         {
+            if (dropSafetyTime > 0.0f) return;
             hasExploded = true;
             mineAnimator.SetTrigger("detonate");
             mineAudio.PlayOneShot(mineTrigger, 1f);
@@ -381,6 +389,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public void Detonate()
         {
+            if (dropSafetyTime > 0.0f) return;
             mineAudio.pitch = UnityEngine.Random.Range(0.93f, 1.07f);
             mineAudio.PlayOneShot(mineDetonate, 1f);
             SpawnExplosion(base.transform.position + Vector3.up, spawnExplosionEffect: false, 5.7f, 6.4f);

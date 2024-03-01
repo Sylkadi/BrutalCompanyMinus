@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(ScarceOutsideScrap);
 
+        public static ScarceOutsideScrap Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "There is a scarce amount of scrap outside.";
             ColorHex = "#008000";

@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(SmallerMap);
 
+        public static SmallerMap Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 2;
             Description = "This facility is smaller.";
             ColorHex = "#008000";

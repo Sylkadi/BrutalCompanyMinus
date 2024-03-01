@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(ForestGiant);
 
+        public static ForestGiant Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Eddie hall in the facility?";
             ColorHex = "#800000";

@@ -22,32 +22,36 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             if (Events.GrabbableTurrets.Active && RoundManager.Instance.IsHost)
             {
-                MEvent _event = MEvent.GetEvent(nameof(Events.GrabbableTurrets));
-
-                float rarity = _event.Getf(MEvent.ScaleType.Rarity);
-
-                if (UnityEngine.Random.Range(0.0f, 1.0f) - rarity <= 0.0f)
-                {
-                    GameObject grabbableTurret = Instantiate(Assets.grabbableTurret.spawnPrefab, __instance.transform.position, __instance.transform.rotation);
-                    NetworkObject netObject = grabbableTurret.GetComponent<NetworkObject>();
-                    netObject.Spawn();
-
-                    __instance.StartCoroutine(destroySelf(__instance, netObject)); // destroy
-                }
+                __instance.StartCoroutine(destroySelfAndReplace(__instance));
             }
         }
 
-        private static IEnumerator destroySelf(Turret __instance, NetworkObjectReference netObject)
+        private static int seed = 0;
+        private static IEnumerator destroySelfAndReplace(Turret __instance) 
         {
-            yield return new WaitForSeconds(7.0f);
+            MEvent _event = Events.GrabbableTurrets.Instance;
 
-            Net.Instance.SyncScrapValueServerRpc(netObject, (int)(UnityEngine.Random.Range(Assets.grabbableTurret.minValue, Assets.grabbableTurret.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier));
-            try
-            {
-                __instance.transform.parent.gameObject.GetComponent<NetworkObject>().Despawn(destroy: true);
-            } catch
-            {
+            float rarity = _event.Getf(MEvent.ScaleType.Rarity);
 
+            seed++;
+            System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + seed);
+            if (rng.NextDouble() <= rarity)
+            {
+                GameObject grabbableTurret = Instantiate(Assets.grabbableTurret.spawnPrefab, __instance.transform.position, __instance.transform.rotation);
+                NetworkObject netObject = grabbableTurret.GetComponent<NetworkObject>();
+                netObject.Spawn();
+
+                Net.Instance.SyncScrapValueServerRpc(netObject, (int)(UnityEngine.Random.Range(Assets.grabbableTurret.minValue, Assets.grabbableTurret.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier));
+
+                yield return new WaitForSeconds(5.0f);
+
+                try
+                {
+                    __instance.transform.parent.gameObject.GetComponent<NetworkObject>().Despawn(destroy: true);
+                } catch
+                {
+
+                }
             }
         }
         

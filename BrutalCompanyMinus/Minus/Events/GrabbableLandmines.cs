@@ -14,8 +14,12 @@ namespace BrutalCompanyMinus.Minus.Events
         public static bool LandmineDisabled = false;
         public override string Name() => nameof(GrabbableLandmines);
 
+        public static GrabbableLandmines Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 3;
             Description = "Some mines have turned into scrap...";
             ColorHex = "#FF0000";

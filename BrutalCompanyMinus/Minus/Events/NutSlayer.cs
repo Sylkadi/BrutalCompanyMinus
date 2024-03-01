@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(NutSlayer);
 
+        public static NutSlayer Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "The nut slayer is inside the facility...";
             ColorHex = "#280000";

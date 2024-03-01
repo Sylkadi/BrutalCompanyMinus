@@ -12,8 +12,13 @@ namespace BrutalCompanyMinus.Minus.Events
     internal class Bracken : MEvent
     {
         public override string Name() => nameof(Bracken);
+
+        public static Bracken Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "Your neck tingles";
             ColorHex = "#800000";

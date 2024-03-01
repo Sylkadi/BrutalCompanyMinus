@@ -13,8 +13,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(HeavyRain);
 
+        public static HeavyRain Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 8;
             Description = "Id rather stay inside";
             ColorHex = "#FFFFFF";

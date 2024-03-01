@@ -6,18 +6,20 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="cd C:\NetcodePatcher&#xD;&#xA;NetcodePatcher.dll &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\bin\Release\netstandard2.1&quot; deps/&#xD;&#xA;xcopy &quot;$(SolutionDir)BrutalCompanyMinus\bin\Release\netstandard2.1\$(ProjectName).dll&quot; &quot;C:\Users\klagu\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Mod Testing\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;$(SolutionDir)BrutalCompanyMinus\bin\Release\netstandard2.1\$(ProjectName).dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset\asset&quot; &quot;C:\Users\klagu\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Mod Testing\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset\asset&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset\customassets&quot; &quot;C:\Users\klagu\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Mod Testing\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset\customassets&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins&quot; /Y /I&#xD;&#xA;" />
+    <Exec Command="cd C:\NetcodePatcher&#xD;&#xA;NetcodePatcher.dll &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\bin\Release\netstandard2.1&quot; deps/&#xD;&#xA;xcopy &quot;$(SolutionDir)BrutalCompanyMinus\bin\Release\netstandard2.1\$(ProjectName).dll&quot; &quot;C:\Users\klagu\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Mod Testing\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;$(SolutionDir)BrutalCompanyMinus\bin\Release\netstandard2.1\$(ProjectName).dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset\bcm_assets&quot; &quot;C:\Users\klagu\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Mod Testing\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset\bcm_assets&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset\bcm_customassets&quot; &quot;C:\Users\klagu\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Mod Testing\BepInEx\plugins&quot; /Y /I&#xD;&#xA;xcopy &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset\bcm_customassets&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins&quot; /Y /I&#xD;&#xA;" />
   </Target>
 
   <ItemGroup>
     <None Remove="Asset\asset" />
+    <None Remove="Asset\bcm_assets" />
+    <None Remove="Asset\bcm_customassets" />
     <None Remove="Asset\customassets" />
     <None Remove="Asset\customenemies" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Asset\asset" />
-    <EmbeddedResource Include="Asset\customassets" />
+    <EmbeddedResource Include="Asset\bcm_assets" />
+    <EmbeddedResource Include="Asset\bcm_customassets" />
   </ItemGroup>
 
   <ItemGroup>
@@ -85,7 +87,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="xcopy &quot;C:\Users\klagu\LethalRipped\Assets\output\customassets&quot; &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset&quot; /Y /I" />
+    <Exec Command="xcopy &quot;C:\Users\klagu\LethalRipped\Assets\output\bcm_customassets&quot; &quot;C:\Users\klagu\source\repos\BrutalCompanyMinus\BrutalCompanyMinus\Asset&quot; /Y /I" />
   </Target>
 
 </Project>

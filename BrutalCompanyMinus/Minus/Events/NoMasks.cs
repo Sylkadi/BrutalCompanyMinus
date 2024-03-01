@@ -16,8 +16,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override string Name() => nameof(NoMasks);
 
+        public static NoMasks Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 1;
             Description = "No masks";
             ColorHex = "#008000";

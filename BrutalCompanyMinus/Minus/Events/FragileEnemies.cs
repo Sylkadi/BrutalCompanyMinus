@@ -12,8 +12,12 @@ namespace BrutalCompanyMinus.Minus.Events
     {
         public override string Name() => nameof(FragileEnemies);
 
+        public static FragileEnemies Instance;
+
         public override void Initalize()
         {
+            Instance = this;
+
             Weight = 3;
             Description = "Enemies here are a little more fragile than usual.";
             ColorHex = "#008000";
