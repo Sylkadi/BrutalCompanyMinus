@@ -135,13 +135,15 @@
 | Turrets | Increased rates of turrets inside |
 | Spiders | Spawns Bunker Spiders outside and inside, comes with Leafless Brown Trees |
 | Snare Fleas | Spawns Snare Fleas inside |
-| Door Glitch | Makes big doors inside the facility open and close randomly |
+| Facility Ghost | The ghost can open/close bigdoors and doors, mess with lights, mess with the breaker and can lock/unlock doors(Rare) |
 | Outside Turrets | Spawns turrets outside, comes with Trees |
 | Outside Landmines | Spawns Landmines outside |
 | Grabbable Turrets | Turns some of the turrets on the map into scrap |
 | Grabbable Mines | Turns some of the mines on the map into scrap |
 | Shipment Fees | Any shipment's on given moon will deduct credits as a fee |
 | Strong Enemies | Increases enemy hp |
+| Reality Warp | Attempting to grab scrap will make it transform into something else, sometimes a landmine or turret |
+| Kamikazie Bugs | Hoarding bugs will now blow up when angered | 
   </details>
 
   <details>
@@ -161,12 +163,185 @@
 | Chinese Produce | Decreased Scrap Value but Increased Scrap Amount |
 | Transmute Scrap Big | Takes any two-handed scrap in map scrap pool and only spawns that |
 | War Zone | Acts as Quad event including Turrets, Landmines, Outside Turrets and Outside Landmines |
-| Gypsy Colony | Spawns a load of Hoarding Bugs outside and inside, comes with Scarce Outside Scrap |
+| Bug Horde | Spawns a load of Hoarding Bugs outside and inside, comes with Scarce Outside Scrap |
 | Forest Giant | Spawns a Forest Keeper inside |
 | Inside Bees | Spawns Bees outside and inside |
 | Nutslayer | Spawns the Nutslayer inside the facility, kills everything... comes with gloomy. |
+| Hell | Great reward, but at what cost... |
     
   </details>
   
 </details>
 
+# Configuration
+Alot of options in the config will contain a **scale**, a scale will contain a **Base**, **Increment**, **MinCap** and **MaxCap**.
+
+This is used to scale the game harder the more days pass.
+
+The formula used to compute the scale is `Base + (DaysPassed * Increment)`.
+
+Min cap is the value that the computed value wont go below.
+
+Max cap is the value that the computed value wont go above.
+
+# Config overview
+## Difficulty Config 
+Location: `BrutalCompanyMinus\Difficulty_Settings.cfg`
+
+`Ignore Scale Cap`: This will ignore **MinCap** and **MaxCap** allowing for infinite scaling.
+
+`Spawn Chance Multiplier`: A **scale** that multiplys the spawn rate.
+
+`Spawn Cap Multiplier`: A **scale** that multiplys the spawn caps, this allows for a higher maximum amount of enemies to spawn outside and inside.
+
+`Additional Inside Max Enemy Power`: A **scale** that adds to the inside max enemy power count.
+
+`Additional Outside Max Enemy Power`: A **scale** that adds to the outside max enemy power count.
+
+`Addional hp`: A **scale** that adds bonus hp to enemies.
+
+`Good event increment multiplier`: A global multiplier that will multiply all **Good** and **Very Good** increments.
+
+`Bad event increment multiplier`: A global multiplier that will multiply all **Bad** and **Very Bad** increments.
+
+`Events to spawn`: The amount of events to spawn.
+
+`Weights for extra events`: Weights for additionaly events, "40, 40, 15, 5" is equivalent to (+0, +1, +2, +3) events, this can be expanded.
+
+`Show events in chat`: Show events in chat?
+
+`Use custom weights`: If enabled, Custom weights will be used otherwise EventType weights will be used.
+
+#### Event Type Weights
+
+`Very Good Weight`: The weight for **VeryGood** event to be chosen
+
+**...**
+
+`Very Bad Weight`: The weight for **VeryBad** event to be chosen
+
+## Weather config
+Location: `BrutalCompanyMinus\Weather_Settings.cfg`
+
+`Enable Weather Multipliers`: Enable weather multipliers?
+
+`Enable Terminal Text`: Enable terminal text?
+
+`Randomize Weather Multipliers`: This will randomize **ScrapValue**, **ScrapAmount** and **FactorySize** multipliers for every weather after every day.
+
+`Random Weather Multiplier Min Inclusive`: Lower bound of random value for **ScrapValue**, **ScrapAmount** and **FactorySize**.
+
+`Random Weather Multiplier Max Inclusive`: Upper bound of random value for **ScrapValue**, **ScrapAmount** and **FactorySize**.
+
+#### None
+
+`Value Multiplier`:  Multiply scrap value by.
+
+`Amount Multiplier`: Multiply scrap amount by.
+
+`Factory Size Multiplier`: Multiply factory size by.
+
+**...**
+
+#### Eclipsed
+
+`Value Multiplier`:  Multiply scrap value by.
+
+`Amount Multiplier`: Multiply scrap amount by.
+
+`Factory Size Multiplier`: Multiply factory size by.
+
+## UI config
+Location: `BrutalCompanyMinus\UI_Settings.cfg`
+
+`UI Key`: They key used to toggle the UI.
+
+`Normalize Scrap Value Display`: In game default scrap value multiplier is 0.4, having this enabled will multiply the display value by 2.5 to make it look normal.
+
+`Enable UI`: Enable UI?
+
+`Show UI Letter Box`: Show UI Letter box that contains the key?
+
+`Show Extra Properties`: Show additional info in the UI that is **DaysPassed**, **ScrapValue**, **ScrapAmount**, **FactorySize**, **SpawnChance**, **SpawnCap** and **BonusEnemyHp**
+
+`Pop Up UI`: Will the UI popup when landing on a new moon?
+
+`UI Time`: The time the UI will appear for when popped up.
+
+## Custom Enemy/Scrapw weights config.
+Location: `BrutalCompanyMinus\Enemy_Scrap_Weights_Settings.cfg`
+
+`Enable`: Enable generation of enemy/scrap weight configs?
+
+`Custom Enemy Weights`: Generate configs of weights for every enemy on every moon?
+
+`Custom Scrap Weights`: Generate configs of weights for every scrap on every moon?
+
+`Enable All Enemies`: Will enable all enemies to spawn on every moon, requires **Custom Enemy Weights** to be enabled.
+
+`Enable All Scrap`: Will enable all scrap to spawn on every moon, requires **Custom Scrap Weights** to be enabled.
+
+`All Enemies Default Weights`: The weight for if an enemy dosen't exist on the moon to be set to.
+
+`All Scrap Default Weights`: The weight for if a scrap dosen't exist on the moon to be set to.
+
+## Events
+Location: `BrutalCompanyMinus\Events.cfg`
+
+This will contain conifgurable options for every single event.
+
+`_Temp Custom Monster Event Count`: How many **Temp custom monster event** to generate in the config, this is temporary.
+
+#### AntiCoilHead
+
+`Custom Weight`: Requires **Use Custom Weights** enabled to be used.
+
+`Description`: What will be outputted into the UI.
+
+`Color Hex`: The color that the description will be displayed in.
+
+`Event Type`: This can be eiter **VeryBad**, **Bad**, **Neutral**, **Good**, **Very Good**, **Remove**
+
+`Event Enabled`: Will the event be enabled?
+
+`Inside Enemy Rarity`: A **scale** that describes the chance for the enemy to spawn inside
+
+`Outside Enemy Rarity`: A **scale** that describes the chance for the enemy to spawn outside
+
+`Min Inside Enemy`: The minimum amount of enemies garunteed to spawn inside.
+
+`Max Inside Enemy`: The maximum amount of enemies garunteed to spawn inside.
+
+`Min Outside Enemy`: The minimum amount of enemies garunteed to spawn outside.
+
+`Max Outside Enemy`: The maximum amount of enemies garunteed to spawn outside.
+
+**...**
+
+#### Higher Scrap Value
+
+`Custom Weight`: Requires **Use Custom Weights** enabled to be used.
+
+`Description`: What will be outputted into the UI.
+
+`Color Hex`: The color that the description will be displayed in.
+
+`Event Type`: This can be eiter **VeryBad**, **Bad**, **Neutral**, **Good**, **Very Good**, **Remove**
+
+`Event Enabled`: Will the event be enabled?
+
+`Scrap Value`: A **scale** that multiplies the scrap value.
+
+**...**
+
+#### WarZone
+
+`Custom Weight`: Requires **Use Custom Weights** enabled to be used.
+
+`Description`: What will be outputted into the UI.
+
+`Color Hex`: The color that the description will be displayed in.
+
+`Event Type`: This can be eiter **VeryBad**, **Bad**, **Neutral**, **Good**, **Very Good**, **Remove**
+
+`Event Enabled`: Will the event be enabled?
