@@ -5,11 +5,14 @@
   - Changed spawn rate multiplier default:(day:0 => x1.0 to day:60 => x2.0)
   - Added spawn cap multiplier default:(day0 => x1.0, day:60 => x2.0)
   - Set insideEnemyPowerCountScaling and outsideEnemyPowerCountScaling to 0, 0, 0, 0 by default
+    
   - Added 4 new events(1 is reworked but it's pratically new):
+    
   - (Bad)Kamikazie Bugs: Spawns kamikazie bugs inside
   - (Bad)Reality Warp: Attempting to pick up any spawned scrap will transform it into something else, something a turret or landmine.
   - (Bad)FacilityGhost(Used to be DoorGlitch): Will now open/close big doors and normal doors, will flicker lights, will mess with breaker and can rarely lock/unlock doors. The ghost will sometimes go crazy and cause alot of things to happen.
   - (VeryBad)Hell: Great reward, but at what cost.
+    
   - Update default values for events
   - Updated some eventNames and descriptions
   - Fixed some things
