@@ -178,11 +178,11 @@ Alot of options in the config will contain a **scale**, a scale will contain a *
 
 This is used to scale the game harder the more days pass.
 
-The formula used to compute the scale is `Base + (DaysPassed * Increment)`.
+The formula used to compute the **scale** is `Base + (DaysPassed * Increment)`.
 
-Min cap is the value that the computed value wont go below.
+**MinCap** is the value that the computed value wont go below.
 
-Max cap is the value that the computed value wont go above.
+**MaxCap** is the value that the computed value wont go above.
 
 # Config overview
 ## Difficulty Config 
@@ -268,7 +268,7 @@ Location: `BrutalCompanyMinus\UI_Settings.cfg`
 
 `UI Time`: The time the UI will appear for when popped up.
 
-## Custom Enemy/Scrapw weights config.
+## Custom Enemy/Scrap weights config.
 Location: `BrutalCompanyMinus\Enemy_Scrap_Weights_Settings.cfg`
 
 `Enable`: Enable generation of enemy/scrap weight configs?
@@ -308,13 +308,13 @@ This will contain conifgurable options for every single event.
 
 `Outside Enemy Rarity`: A **scale** that describes the chance for the enemy to spawn outside
 
-`Min Inside Enemy`: The minimum amount of enemies garunteed to spawn inside.
+`Min Inside Enemy`: A **scale** that describes the minimum amount of enemies garunteed to spawn inside.
 
-`Max Inside Enemy`: The maximum amount of enemies garunteed to spawn inside.
+`Max Inside Enemy`: A **scale** that describes the maximum amount of enemies garunteed to spawn inside.
 
-`Min Outside Enemy`: The minimum amount of enemies garunteed to spawn outside.
+`Min Outside Enemy`: A **scale** that describes the minimum amount of enemies garunteed to spawn outside.
 
-`Max Outside Enemy`: The maximum amount of enemies garunteed to spawn outside.
+`Max Outside Enemy`: A **scale** that describes the maximum amount of enemies garunteed to spawn outside.
 
 **...**
 
