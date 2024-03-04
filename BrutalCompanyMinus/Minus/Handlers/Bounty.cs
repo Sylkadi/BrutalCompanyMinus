@@ -13,7 +13,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch(nameof(EnemyAI.KillEnemyOnOwnerClient))]
         static void PayOnkill(ref EnemyAI __instance)
         {
-            if (!Events.Bounty.Active || __instance.isEnemyDead) return;
+            if (!Events.Bounty.Active) return;
             foreach(int id in enemyObjectIDs)
             {
                 if (__instance.gameObject.GetInstanceID() == id) return;
