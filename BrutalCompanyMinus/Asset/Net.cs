@@ -96,8 +96,6 @@ namespace BrutalCompanyMinus
         public void SyncValuesClientRpc(float factorySizeMultiplier, float scrapValueMultiplier, float scrapAmountMultiplier, int bonusMaxHp)
         {
             RoundManager.Instance.currentLevel.factorySizeMultiplier = factorySizeMultiplier;
-            RoundManager.Instance.scrapValueMultiplier = scrapValueMultiplier;
-            RoundManager.Instance.scrapAmountMultiplier = scrapAmountMultiplier;
             Manager.bonusEnemyHp = bonusMaxHp;
             receivedSyncedValues = true;
         }
@@ -239,7 +237,7 @@ namespace BrutalCompanyMinus
             GrabbableObject grabbableObject = scrap.GetComponent<GrabbableObject>();
             if (grabbableObject == null)
             {
-                Log.LogFatal("GrabbableObject is null in ShiftServerRpc()");
+                Log.LogError("GrabbableObject is null in ShiftServerRpc()");
                 return;
             }
 

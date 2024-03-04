@@ -112,13 +112,13 @@ namespace BrutalCompanyMinus
             // Extra properties
             if (Configuration.ShowExtraProperties.Value)
             {
-                float ScrapValueMultiplier = RoundManager.Instance.scrapValueMultiplier;
+                float ScrapValueMultiplier = RoundManager.Instance.scrapValueMultiplier * Manager.scrapValueMultiplier;
                 if (Configuration.NormaliseScrapValueDisplay.Value) ScrapValueMultiplier *= 2.5f;
                 text += 
                     $"<br>Difficulty:" +
                     $"<br> -Day: {Manager.daysPassed}" +
                     $"<br> -Scrap Value: x{ScrapValueMultiplier:F2}" +
-                    $"<br> -Scrap Amount: x{RoundManager.Instance.scrapAmountMultiplier:F2}" +
+                    $"<br> -Scrap Amount: x{(RoundManager.Instance.scrapAmountMultiplier * Manager.scrapAmountMultiplier):F2}" +
                     $"<br> -Factory Size: x{RoundManager.Instance.currentLevel.factorySizeMultiplier:F2}" +
                     $"<br> -Spawn Chance: x{Manager.spawnChanceMultiplier:F2}" +
                     $"<br> -Spawn Cap: x{Manager.spawncapMultipler:F2}" +

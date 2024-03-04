@@ -15,6 +15,7 @@ using DigitalRuby.ThunderAndLightning;
 using System.IO;
 using UnityEngine.Events;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace BrutalCompanyMinus.Minus
 {
@@ -39,7 +40,7 @@ namespace BrutalCompanyMinus.Minus
         internal static List<ObjectInfo> insideObjectsToSpawnOutside = new List<ObjectInfo>();
 
         internal static float factorySizeMultiplier = 1f;
-        internal static float scrapValueMultiplier = 0.4f;
+        internal static float scrapValueMultiplier = 1f;
         internal static float scrapAmountMultiplier = 1f;
 
         internal static int randomItemsToSpawnOutsideCount = 0;
@@ -174,14 +175,128 @@ namespace BrutalCompanyMinus.Minus
                 enemiesToSpawnInside.Clear();
             }
 
-            internal static void DoSpawnScrapOutside(int Amount = -1)
+            internal static ScrapSpawnInfo DoSpawnScrapOutside(int Amount)
             {
+                if (Amount <= 0) return new ScrapSpawnInfo(new NetworkObjectReference[] { }, new int[] { });
+
                 RoundManager r = RoundManager.Instance;
                 System.Random rng = new System.Random();
+
                 // Generate Scrap To Spawn
-                int ScrapAmount = (int)(Amount * r.scrapAmountMultiplier);
-                List<Item> ScrapToSpawn = new List<Item>();
+                List<Item> ScrapToSpawn = GetScrapToSpawn((int)(Amount * r.scrapAmountMultiplier * scrapAmountMultiplier));
                 List<int> ScrapValues = new List<int>();
+
+                // Spawn Scrap
+                List<NetworkObjectReference> ScrapSpawnsNet = new List<NetworkObjectReference>();
+                List<Vector3> OutsideNodes = Functions.GetOutsideNodes();
+
+                Log.LogInfo($"Spawning {ScrapToSpawn.Count} outside");
+                for (int i = 0; i < ScrapToSpawn.Count; i++)
+                {
+                    if (ScrapToSpawn[i] == null)
+                    {
+                        Log.LogError("Found null element in list ScrapToSpawn. Skipping it.");
+                        continue;
+                    }
+                    Vector3 position = r.GetRandomNavMeshPositionInBoxPredictable(OutsideNodes[UnityEngine.Random.Range(0, OutsideNodes.Count)], 10.0f, r.navHit, rng);
+                    GameObject obj = UnityEngine.Object.Instantiate(ScrapToSpawn[i].spawnPrefab, position, Quaternion.identity, r.spawnedScrapContainer);
+                    GrabbableObject grabbableObject = obj.GetComponent<GrabbableObject>();
+                    grabbableObject.transform.rotation = Quaternion.Euler(grabbableObject.itemProperties.restingRotation);
+                    grabbableObject.fallTime = 0.0f;
+                    ScrapValues.Add((int)(UnityEngine.Random.Range(ScrapToSpawn[i].minValue, ScrapToSpawn[i].maxValue + 1) * r.scrapValueMultiplier * scrapValueMultiplier));  
+                    grabbableObject.scrapValue = ScrapValues[ScrapValues.Count - 1];
+                    NetworkObject netObj = obj.GetComponent<NetworkObject>();
+                    netObj.Spawn();
+                    ScrapSpawnsNet.Add(netObj);
+                }
+                
+                return new ScrapSpawnInfo(ScrapSpawnsNet.ToArray(), ScrapValues.ToArray());
+            }
+
+            internal static ScrapSpawnInfo DoSpawnScrapInside(int Amount) 
+            {
+                if (Amount <= 0) return new ScrapSpawnInfo(new NetworkObjectReference[] { }, new int[] { });
+
+                RoundManager r = RoundManager.Instance;
+                System.Random rng = new System.Random();
+
+                RandomScrapSpawn randomScrapSpawn = null;
+                RandomScrapSpawn[] source = UnityEngine.Object.FindObjectsOfType<RandomScrapSpawn>();
+                List<RandomScrapSpawn> usedSpawns = new List<RandomScrapSpawn>();
+                List<Item> ScrapToSpawn = GetScrapToSpawn(Amount);
+
+                List<int> ScrapValues = new List<int>();
+                List<NetworkObjectReference> NetScrapList = new List<NetworkObjectReference>();
+
+                Log.LogInfo($"Spawning {ScrapToSpawn.Count} inside");
+                for (int i = 0; i < ScrapToSpawn.Count; i++)
+                {
+                    if (ScrapToSpawn[i] == null)
+                    {
+                        Log.LogError("Null entry in scrapToSpawn, skipping entry");
+                        continue;
+                    }
+                    List<RandomScrapSpawn> scrapSpawnPositions = ((ScrapToSpawn[i].spawnPositionTypes != null && ScrapToSpawn[i].spawnPositionTypes.Count != 0) ? source.Where((RandomScrapSpawn x) => ScrapToSpawn[i].spawnPositionTypes.Contains(x.spawnableItems) && !x.spawnUsed).ToList() : source.ToList());
+                    if(scrapSpawnPositions.Count <= 0)
+                    {
+                        Log.LogError("No positions to spawn scrap: " + ScrapToSpawn[i].itemName);
+                        continue;
+                    }
+                    if(usedSpawns.Count > 0 && scrapSpawnPositions.Contains(randomScrapSpawn))
+                    {
+                        scrapSpawnPositions.RemoveAll((RandomScrapSpawn x) => usedSpawns.Contains(x));
+                        if(scrapSpawnPositions.Count <= 0)
+                        {
+                            usedSpawns.Clear();
+                            i--;
+                            continue;
+                        }
+                    }
+
+                    randomScrapSpawn = scrapSpawnPositions[rng.Next(0, scrapSpawnPositions.Count)];
+                    usedSpawns.Add(randomScrapSpawn);
+
+                    Vector3 pos;
+                    if(randomScrapSpawn.spawnedItemsCopyPosition)
+                    {
+                        randomScrapSpawn.spawnUsed = true;
+                        pos = randomScrapSpawn.transform.position;
+                    } else
+                    {
+                        pos = r.GetRandomNavMeshPositionInBoxPredictable(randomScrapSpawn.transform.position, randomScrapSpawn.itemSpawnRange, r.navHit, rng) + Vector3.up * ScrapToSpawn[i].verticalOffset;
+                    }
+
+                    if (ScrapToSpawn[i].spawnPrefab.GetComponent<GrabbableObject>() == null)
+                    {
+                        Log.LogError("GrabbableObject is null in scrapToSpawn, skipping entry.");
+                        continue;
+                    }
+
+                    GameObject scrap = GameObject.Instantiate(ScrapToSpawn[i].spawnPrefab, pos, Quaternion.identity, r.spawnedScrapContainer);
+                    GrabbableObject grabbableObject = scrap.GetComponent<GrabbableObject>();
+                    grabbableObject.transform.rotation = Quaternion.Euler(grabbableObject.itemProperties.restingRotation);
+                    grabbableObject.fallTime = 0.0f;
+
+                    int ScrapValue = (int)(UnityEngine.Random.Range(ScrapToSpawn[i].minValue, ScrapToSpawn[i].maxValue + 1) * r.scrapValueMultiplier * scrapValueMultiplier);
+                    ScrapValues.Add(ScrapValue);
+                    grabbableObject.scrapValue = ScrapValue;
+
+                    NetworkObject netObj = scrap.GetComponent<NetworkObject>();
+                    netObj.Spawn();
+                    NetScrapList.Add(netObj);
+                }
+
+                return new ScrapSpawnInfo(NetScrapList.ToArray(), ScrapValues.ToArray());
+            }
+
+            private static int seed = 0;
+            private static List<Item> GetScrapToSpawn(int Amount)
+            {
+                RoundManager r = RoundManager.Instance;
+                System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + seed);
+                seed++;
+
+                List<Item> ScrapToSpawn = new List<Item>();
                 List<int> ScrapWeights = new List<int>();
                 for (int i = 0; i < r.currentLevel.spawnableScrap.Count; i++)
                 {
@@ -195,39 +310,13 @@ namespace BrutalCompanyMinus.Minus
                     }
                 }
                 int[] weights = ScrapWeights.ToArray();
-                for (int i = 0; i < ScrapAmount; i++)
+                for (int i = 0; i < Amount; i++)
                 {
                     Item pickedScrap = r.currentLevel.spawnableScrap[r.GetRandomWeightedIndex(weights, rng)].spawnableItem;
                     ScrapToSpawn.Add(Assets.GetItem(pickedScrap.name));
                 }
-                // Spawn Scrap
-                List<NetworkObjectReference> ScrapSpawnsNet = new List<NetworkObjectReference>();
-                List<Vector3> OutsideNodes = Functions.GetOutsideNodes();
-                for (int i = 0; i < ScrapAmount; i++)
-                {
-                    if (ScrapToSpawn[i] == null)
-                    {
-                        Log.LogError("Found null element in list ScrapToSpawn. Skipping it.");
-                        continue;
-                    }
-                    Vector3 position = r.GetRandomNavMeshPositionInBoxPredictable(OutsideNodes[UnityEngine.Random.Range(0, OutsideNodes.Count)], 10.0f, r.navHit, rng);
-                    GameObject obj = UnityEngine.Object.Instantiate(ScrapToSpawn[i].spawnPrefab, position, Quaternion.identity, r.spawnedScrapContainer);
-                    GrabbableObject grabbableObject = obj.GetComponent<GrabbableObject>();
-                    grabbableObject.transform.rotation = Quaternion.Euler(grabbableObject.itemProperties.restingRotation);
-                    grabbableObject.fallTime = 0.0f;
-                    ScrapValues.Add((int)(UnityEngine.Random.Range(ScrapToSpawn[i].minValue, ScrapToSpawn[i].maxValue + 1) * r.scrapValueMultiplier));  
-                    grabbableObject.scrapValue = ScrapValues[ScrapValues.Count - 1];
-                    NetworkObject netObj = obj.GetComponent<NetworkObject>();
-                    netObj.Spawn();
-                    ScrapSpawnsNet.Add(netObj);
-                }
-                r.StartCoroutine(waitForScrapToSpawnToSync(ScrapSpawnsNet.ToArray(), ScrapValues.ToArray()));
-            }
 
-            internal static IEnumerator waitForScrapToSpawnToSync(NetworkObjectReference[] spawnedScrap, int[] scrapValues)
-            {
-                yield return new WaitForSeconds(11.0f);
-                RoundManager.Instance.SyncScrapValuesClientRpc(spawnedScrap, scrapValues);
+                return ScrapToSpawn;
             }
         }
 
@@ -512,6 +601,18 @@ namespace BrutalCompanyMinus.Minus
                 this.density = density;
                 this.radius = radius;
                 this.count = count;
+            }
+        }
+
+        internal struct ScrapSpawnInfo
+        {
+            public NetworkObjectReference[] netObjects;
+            public int[] scrapPrices;
+
+            public ScrapSpawnInfo(NetworkObjectReference[] netObjects, int[] scrapPrices)
+            {
+                this.netObjects = netObjects;
+                this.scrapPrices = scrapPrices;
             }
         }
     }

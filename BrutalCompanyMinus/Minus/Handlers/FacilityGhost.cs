@@ -50,7 +50,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 if (ghostCrazyCurrentTime > 0.0f)
                 {
                     weights[0] = 0; // Wont attempt to do nothing when going crazy
-                    weights[5] = 0; // Wont attempt to open or close doors when going crazy
+                    weights[5] = 0; // Wont attempt to lock or unlock doors when going crazy
                 }
                 int ghostDecision = RoundManager.Instance.GetRandomWeightedIndex(weights, new System.Random());
 

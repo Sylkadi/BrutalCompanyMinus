@@ -55,7 +55,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         }
 
         [HarmonyPrefix]
-        [HarmonyPriority(Priority.First)]
+        [HarmonyPriority(Priority.Last)]
         [HarmonyPatch(typeof(RoundManager), "waitForScrapToSpawnToSync")]
         public static void OnwaitForScrapToSpawnToSync(ref NetworkObjectReference[] spawnedScrap) 
         {
@@ -97,7 +97,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 }
 
                 shiftList.Add(spawnableItem.spawnPrefab);
-                shiftListValues.Add((int)(UnityEngine.Random.Range(spawnableItem.minValue, spawnableItem.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier));
+                shiftListValues.Add((int)(UnityEngine.Random.Range(spawnableItem.minValue, spawnableItem.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier * Manager.scrapValueMultiplier));
             }
         }
     }

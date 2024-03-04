@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Netcode;
+using Unity.XR.OpenVR;
 using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.Events
@@ -31,7 +32,11 @@ namespace BrutalCompanyMinus.Minus.Events
             ScaleList.Add(ScaleType.MaxValue, new Scale(30.0f, 0.5f, 30.0f, 60.0f));
         }
 
-        public override void Execute() => Active = true;
+        public override void Execute()
+        {
+            Handlers.Bounty.enemyObjectIDs.Clear();
+            Active = true;
+        }
 
         public override void OnShipLeave() => Active = false;
 

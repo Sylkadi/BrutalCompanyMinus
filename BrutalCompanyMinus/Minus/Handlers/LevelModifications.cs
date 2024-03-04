@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
@@ -192,7 +193,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 Manager.currentLevel.factorySizeMultiplier = 1f;
             }
             Manager.scrapAmountMultiplier = 1.0f;
-            Manager.scrapValueMultiplier = 0.4f; // Default value is 0.4 not 1.0
+            Manager.scrapValueMultiplier = 1.0f;
             Manager.randomItemsToSpawnOutsideCount = 0;
 
             Manager.transmuteScrap = false;
@@ -204,8 +205,37 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(RoundManager), "waitForScrapToSpawnToSync")]
-        public static void OnwaitForScrapToSpawnToSync(ref NetworkObjectReference[] spawnedScrap, ref int[] scrapValues) // Scrap transmutation
+        public static void OnwaitForScrapToSpawnToSync(ref NetworkObjectReference[] spawnedScrap, ref int[] scrapValues) // Scrap transmutation + Scrap multipliers
         {
+            for(int i = 0; i < scrapValues.Length; i++)
+            {
+                scrapValues[i] = (int)(scrapValues[i] * Manager.scrapValueMultiplier);
+            }
+
+            Manager.ScrapSpawnInfo insideScrap = Manager.Spawn.DoSpawnScrapInside((int)(spawnedScrap.Length * (Manager.scrapAmountMultiplier - 1)));
+            Manager.ScrapSpawnInfo outsideScrap = Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
+
+            List<NetworkObjectReference> newSpawnedScrapList = new List<NetworkObjectReference>();
+            List<int> newScrapValuesList = new List<int>();
+
+            for(int i = 0; i < spawnedScrap.Length; i++)
+            {
+                newSpawnedScrapList.Add(spawnedScrap[i]);
+                newScrapValuesList.Add(scrapValues[i]);
+            }
+            for (int i = 0; i < insideScrap.netObjects.Length; i++)
+            {
+                newSpawnedScrapList.Add(insideScrap.netObjects[i]);
+                newScrapValuesList.Add(insideScrap.scrapPrices[i]);
+            }
+            for (int i = 0; i < outsideScrap.netObjects.Length; i++)
+            {
+                newSpawnedScrapList.Add(outsideScrap.netObjects[i]);
+                newScrapValuesList.Add(outsideScrap.scrapPrices[i]);
+            }
+            spawnedScrap = newSpawnedScrapList.ToArray();
+            scrapValues = newScrapValuesList.ToArray();
+
             if (!Manager.transmuteScrap) return;
             if(Manager.ScrapToTransmuteTo.Count == 0)
             {

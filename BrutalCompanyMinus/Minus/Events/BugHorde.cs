@@ -27,9 +27,9 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToSpawnWith = new List<string> { nameof(ScarceOutsideScrap), nameof(KamikazieBugs) };
 
             ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(50.0f, 0.84f, 50.0f, 100.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(10.0f, 0.34f, 50.0f, 30.0f));
+            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(10.0f, 0.34f, 10.0f, 30.0f));
             ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(10.0f, 0.167f, 10.0f, 20.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(15.0f, 0.167f, 10.0f, 25.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(15.0f, 0.167f, 15.0f, 25.0f));
             ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(2.0f, 0.034f, 2.0f, 4.0f));
             ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(3.0f, 0.05f, 3.0f, 6.0f));
         }

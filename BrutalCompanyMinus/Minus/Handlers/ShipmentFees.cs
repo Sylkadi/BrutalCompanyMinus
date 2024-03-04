@@ -33,8 +33,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
             if(Events.ShipmentFees.Active)
             {
                 MEvent shipmentEvent = Events.ShipmentFees.Instance;
-                float min = shipmentEvent.Getf(MEvent.ScaleType.MinCash);
-                float max = shipmentEvent.Getf(MEvent.ScaleType.MaxCash);
+                float min = shipmentEvent.Getf(MEvent.ScaleType.MinCut);
+                float max = shipmentEvent.Getf(MEvent.ScaleType.MaxCut);
 
                 int feeIncured = 0;
                 foreach(int i in Manager.currentTerminal.orderedItemsFromTerminal)
