@@ -1,5 +1,15 @@
 # ChangeLog
 <details>
+  <summary>0.10.1</summary>
+
+  - Changed how the mod handles scrapAmount and scrapValue multipliers for comptability reasons.
+  - Reality Shift will now work on outside spawned scrap.
+  - Bounty should no longer be claimed multiplie times on a single enemy.
+  - Fixed some default scales for events.
+  - Shipment fee's should now be working
+
+</details>
+<details>
   <summary>0.10.0</summary>
 
   - Changed spawn rate multiplier default:(day:0 => x1.0 to day:60 => x2.0)
