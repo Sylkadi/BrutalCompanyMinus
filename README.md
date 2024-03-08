@@ -220,6 +220,18 @@ Location: `BrutalCompanyMinus\Difficulty_Settings.cfg`
 
 `Very Bad Weight`: The weight for **VeryBad** event to be chosen
 
+#### Quota Settings
+
+`Deadline Days Amount`: Deadline
+
+`Starting credits`: Default is 60
+
+`Starting quota`: It's in the name
+
+`Base Increase`: Quota scaling
+
+`Increase Steepness`: Quota scaling
+
 ## Weather config
 Location: `BrutalCompanyMinus\Weather_Settings.cfg`
 
