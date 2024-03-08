@@ -212,13 +212,32 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 scrapValues[i] = (int)(scrapValues[i] * Manager.scrapValueMultiplier);
             }
 
-            Manager.ScrapSpawnInfo insideScrap = Manager.Spawn.DoSpawnScrapInside((int)(spawnedScrap.Length * (Manager.scrapAmountMultiplier - 1)));
+            int scrapDiffernce = (int)(spawnedScrap.Length * (Manager.scrapAmountMultiplier - 1));
+            int amountRemoved = 0;
+            Manager.ScrapSpawnInfo insideScrap = new Manager.ScrapSpawnInfo(new NetworkObjectReference[] { }, new int[] { });
+            if(scrapDiffernce >= 0) // Add more scrap if multiplier >= x1.0
+            {
+                insideScrap = Manager.Spawn.DoSpawnScrapInside(scrapDiffernce);
+            } else // Remove scrap if multiplier < x1.0
+            {
+                amountRemoved = (int)Functions.Range(scrapDiffernce * -1, 0, scrapValues.Length - 1);
+                Log.LogInfo($"Removing {amountRemoved} scrap.");
+                for (int i = spawnedScrap.Length - 1; i >= spawnedScrap.Length - amountRemoved; i--)
+                {
+                    NetworkObject netObject = null;
+                    spawnedScrap[i].TryGet(out netObject);
+                    if(netObject != null)
+                    {
+                        netObject.Despawn(destroy: true);
+                    }
+                }
+            }
             Manager.ScrapSpawnInfo outsideScrap = Manager.Spawn.DoSpawnScrapOutside(Manager.randomItemsToSpawnOutsideCount);
 
             List<NetworkObjectReference> newSpawnedScrapList = new List<NetworkObjectReference>();
             List<int> newScrapValuesList = new List<int>();
 
-            for(int i = 0; i < spawnedScrap.Length; i++)
+            for(int i = 0; i < spawnedScrap.Length - amountRemoved; i++)
             {
                 newSpawnedScrapList.Add(spawnedScrap[i]);
                 newScrapValuesList.Add(scrapValues[i]);
@@ -291,7 +310,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 grabObj.fallTime = 0.0f;
 
                 // Generate scrap value
-                int scrapValue = (int)(UnityEngine.Random.Range(chosenItem.spawnableItem.minValue, chosenItem.spawnableItem.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier);
+                int scrapValue = (int)(UnityEngine.Random.Range(chosenItem.spawnableItem.minValue, chosenItem.spawnableItem.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier * Manager.scrapValueMultiplier);
 
                 newScrapValues.Add(scrapValue);
                 grabObj.scrapValue = scrapValue;
