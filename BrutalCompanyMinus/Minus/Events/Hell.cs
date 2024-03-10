@@ -38,8 +38,8 @@ namespace BrutalCompanyMinus.Minus.Events
         {
             Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Exclipsed], true);
 
-            RoundManager.Instance.currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(new Keyframe(0f, 1.0f), new Keyframe(1.0f, 3.0f));
-            RoundManager.Instance.currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve(new Keyframe(0f, -10f), new Keyframe(0.15f, -10.0f), new Keyframe(0.16f, 1.0f), new Keyframe(1.0f, 3.0f));
+            RoundManager.Instance.currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(new Keyframe(0f, 1.0f), new Keyframe(1.0f, 8.0f));
+            RoundManager.Instance.currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve(new Keyframe(0f, -10f), new Keyframe(0.15f, -10.0f), new Keyframe(0.16f, 1.0f), new Keyframe(1.0f, 8.0f));
 
             Manager.scrapValueMultiplier *= Getf(ScaleType.ScrapValue);
             Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);

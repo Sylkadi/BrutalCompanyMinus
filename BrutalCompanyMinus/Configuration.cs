@@ -45,7 +45,7 @@ namespace BrutalCompanyMinus
 
         public static ConfigEntry<bool> useWeatherMultipliers, randomizeWeatherMultipliers, enableTerminalText;
 
-        public static ConfigEntry<int> veryGoodWeight, goodWeight, neutralWeight, badWeight, veryBadWeight, removeEnemyWeight;
+        public static Scale[] eventTypeScales = new Scale[6];
         public static ConfigEntry<float> weatherRandomRandomMinInclusive, weatherRandomRandomMaxInclusive;
 
         public static Weather noneMultiplier, dustCloudMultiplier, rainyMultiplier, stormyMultiplier, foggyMultiplier, floodedMultiplier, eclipsedMultiplier;
@@ -87,12 +87,15 @@ namespace BrutalCompanyMinus
             showEventsInChat = difficultyConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
 
             // eventType weights
-            veryGoodWeight = difficultyConfig.Bind("_EventType Weights", "VeryGood event weight", 6);
-            goodWeight = difficultyConfig.Bind("_EventType Weights", "Good event weight", 18);
-            neutralWeight = difficultyConfig.Bind("_EventType Weights", "Neutral event weight", 15);
-            badWeight = difficultyConfig.Bind("_EventType Weights", "Bad event weight", 33);
-            veryBadWeight = difficultyConfig.Bind("_EventType Weights", "VeryBad event weight", 13);
-            removeEnemyWeight = difficultyConfig.Bind("_EventType Weights", "Remove event weight", 15, "These events remove something");
+            eventTypeScales = new Scale[6]
+            {
+                getScale(difficultyConfig.Bind("_EventType Weights", "VeryBad event weight scale", "8, 0, 8, 8", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Bad event weight scale", "40, 0, 40, 40", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Neutral event weight scale", "15, 0, 15, 15", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Good event weight scale", "18, 0, 18, 18", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event weight scale", "6, 0, 6, 6", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Remove event weight scale", "13, 0, 13, 13", "These events remove something   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value)
+            };
 
             // Difficulty scaling
             ignoreScaleCap = difficultyConfig.Bind("Difficulty Scaling", "Ignore minCap, maxCap", false, "Ignore caps that limit scaling.");

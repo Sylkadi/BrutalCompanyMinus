@@ -61,71 +61,70 @@ namespace BrutalCompanyMinus
         [HarmonyPatch(typeof(Terminal), "Awake")]
         private static void OnTerminalAwake()
         {
-            if(!Initalized)
+            if (Initalized) return;
+
+            Configuration.uiConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\UI_Settings.cfg", true);
+            Configuration.difficultyConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Difficulty_Settings.cfg", true);
+            Configuration.eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
+            Configuration.weatherConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Settings.cfg", true);
+            Configuration.customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
+
+            // Custom enemy events
+            int customEventCount = Configuration.eventConfig.Bind("_Temp Custom Monster Event Count", "How many events to generate in config?", 10, "This is temporary for the time being.").Value;
+            for (int i = 0; i < customEventCount; i++)
             {
-                Configuration.uiConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\UI_Settings.cfg", true);
-                Configuration.difficultyConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Difficulty_Settings.cfg", true);
-                Configuration.eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
-                Configuration.weatherConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Settings.cfg", true);
-                Configuration.customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
-
-                // Custom enemy events
-                int customEventCount = Configuration.eventConfig.Bind("_Temp Custom Monster Event Count", "How many events to generate in config?", 10, "This is temporary for the time being.").Value;
-                for (int i = 0; i < customEventCount; i++)
-                {
-                    MEvent e = new Minus.Events.CustomMonsterEvent();
-                    e.Enabled = false;
-                    EventManager.AddEvents(e);
-                }
-
-                // Initalize Events
-                foreach (MEvent e in EventManager.events) e.Initalize();
-
-                Manager.currentTerminal = FindObjectOfType<Terminal>();
-
-                // Config
-                Configuration.Initalize();
-
-                // Use config settings
-                for (int i = 0; i != EventManager.events.Count; i++)
-                {
-                    EventManager.events[i].Weight = Configuration.eventWeights[i].Value;
-                    EventManager.events[i].Description = Configuration.eventDescriptions[i].Value;
-                    EventManager.events[i].ColorHex = Configuration.eventColorHexes[i].Value;
-                    EventManager.events[i].Type = Configuration.eventTypes[i].Value;
-                    EventManager.events[i].ScaleList = Configuration.eventScales[i];
-                    EventManager.events[i].Enabled = Configuration.eventEnables[i].Value;
-                }
-
-                // Create disabled events list and update
-                List<MEvent> newEvents = new List<MEvent>();
-                foreach (MEvent e in EventManager.events)
-                {
-                    if (!e.Enabled)
-                    {
-                        EventManager.disabledEvents.Add(e);
-                    }
-                    else
-                    {
-                        newEvents.Add(e);
-                    }
-                }
-                EventManager.events = newEvents;
-
-                if (!Configuration.useCustomWeights.Value) EventManager.UpdateAllEventWeights();
-
-                int[] counts = new int[6] { 0, 0, 0, 0, 0, 0 };
-                foreach(MEvent e in EventManager.events) counts[(int)e.Type]++;
-                Log.LogInfo(
-                    $"\n\nTotal Events:{EventManager.events.Count},   Disabled Events:{EventManager.disabledEvents.Count},   Total Events - Remove Count:{EventManager.events.Count - counts[5]}\n" +
-                    $"Very Bad:{counts[0]}\n" +
-                    $"Bad:{counts[1]}\n" +
-                    $"Neutral:{counts[2]}\n" +
-                    $"Good:{counts[3]}\n" +
-                    $"Very Good:{counts[4]}\n");
-
-                Initalized = true;
+                MEvent e = new Minus.Events.CustomMonsterEvent();
+                e.Enabled = false;
+                EventManager.AddEvents(e);
             }
+
+            // Initalize Events
+            foreach (MEvent e in EventManager.events) e.Initalize();
+
+            Manager.currentTerminal = FindObjectOfType<Terminal>();
+
+            // Config
+            Configuration.Initalize();
+
+            // Use config settings
+            for (int i = 0; i != EventManager.events.Count; i++)
+            {
+                EventManager.events[i].Weight = Configuration.eventWeights[i].Value;
+                EventManager.events[i].Description = Configuration.eventDescriptions[i].Value;
+                EventManager.events[i].ColorHex = Configuration.eventColorHexes[i].Value;
+                EventManager.events[i].Type = Configuration.eventTypes[i].Value;
+                EventManager.events[i].ScaleList = Configuration.eventScales[i];
+                EventManager.events[i].Enabled = Configuration.eventEnables[i].Value;
+            }
+
+            // Create disabled events list and update
+            List<MEvent> newEvents = new List<MEvent>();
+            foreach (MEvent e in EventManager.events)
+            {
+                if (!e.Enabled)
+                {
+                    EventManager.disabledEvents.Add(e);
+                }
+                else
+                {
+                    newEvents.Add(e);
+                }
+            }
+            EventManager.events = newEvents;
+
+            EventManager.UpdateEventTypeCounts();
+            if (!Configuration.useCustomWeights.Value) EventManager.UpdateAllEventWeights();
+
+            Log.LogInfo(
+                $"\n\nTotal Events:{EventManager.events.Count},   Disabled Events:{EventManager.disabledEvents.Count},   Total Events - Remove Count:{EventManager.events.Count - EventManager.eventTypeCount[5]}\n" +
+                $"Very Bad:{EventManager.eventTypeCount[0]}\n" +
+                $"Bad:{EventManager.eventTypeCount[1]}\n" +
+                $"Neutral:{EventManager.eventTypeCount[2]}\n" +
+                $"Good:{EventManager.eventTypeCount[3]}\n" +
+                $"Very Good:{EventManager.eventTypeCount[4]}\n" +
+                $"Remove:{EventManager.eventTypeCount[5]}\n");
+
+            Initalized = true;
         }
 
         [HarmonyPrefix]
@@ -179,8 +178,6 @@ namespace BrutalCompanyMinus
                     HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
                 }
             }
-
-            Manager.Spawn.ScrapOutside(200);
 
             // Apply maxPower counts
             RoundManager.Instance.currentLevel.maxEnemyPowerCount = (int)((RoundManager.Instance.currentLevel.maxEnemyPowerCount + Manager.bonusMaxInsidePowerCount) * Manager.spawncapMultipler);

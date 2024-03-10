@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BrutalCompanyMinus.Minus
@@ -98,6 +99,9 @@ namespace BrutalCompanyMinus.Minus
         internal static List<MEvent> disabledEvents = new List<MEvent>();
 
         internal static List<MEvent> currentEvents = new List<MEvent>();
+
+        internal static float eventTypeSum = 0;
+        internal static float[] eventTypeCount = new float[] { };
 
         public static void AddEvents(params MEvent[] _event) => events.AddRange(_event);
 
@@ -208,89 +212,35 @@ namespace BrutalCompanyMinus.Minus
                 return value;
             }
 
-            float eventTypeWeightSum = fix(Configuration.veryGoodWeight.Value + Configuration.goodWeight.Value + Configuration.neutralWeight.Value + Configuration.badWeight.Value + Configuration.veryBadWeight.Value + Configuration.removeEnemyWeight.Value);
+            int eventTypeAmount = Configuration.eventTypeScales.Length;
 
-            float veryGoodProbability = Configuration.veryGoodWeight.Value / eventTypeWeightSum;
-            float goodProbablity = Configuration.goodWeight.Value / eventTypeWeightSum;
-            float neutralProbability = Configuration.neutralWeight.Value / eventTypeWeightSum;
-            float removeEnemyProbability = Configuration.removeEnemyWeight.Value / eventTypeWeightSum;
-            float badProbability = Configuration.badWeight.Value / eventTypeWeightSum;
-            float veryBadProbability = Configuration.veryBadWeight.Value / eventTypeWeightSum;
+            float eventTypeWeightSum = 0;
+            for (int i = 0; i < eventTypeAmount; i++) eventTypeWeightSum += MEvent.Scale.Compute(Configuration.eventTypeScales[i]);
+            eventTypeWeightSum = fix(eventTypeWeightSum);
 
+            float[] eventTypeProbabilities = new float[eventTypeAmount];
+            for(int i = 0; i < eventTypeAmount; i++) eventTypeProbabilities[i] = MEvent.Scale.Compute(Configuration.eventTypeScales[i]) / eventTypeWeightSum;
 
-            // Update all weights on events
-            float VeryGoodCount = 0, GoodCount = 0, NeutralCount = 0, RemoveCount = 0, BadCount = 0, VeryBadCount = 0, Sum = 0;
-            foreach (MEvent e in events)
+            int[] newEventWeights = new int[eventTypeAmount];
+            for (int i = 0; i < eventTypeAmount; i++)
             {
-                switch (e.Type)
-                {
-                    case MEvent.EventType.VeryGood:
-                        VeryGoodCount++;
-                        break;
-                    case MEvent.EventType.Good:
-                        GoodCount++;
-                        break;
-                    case MEvent.EventType.Neutral:
-                        NeutralCount++;
-                        break;
-                    case MEvent.EventType.Remove:
-                        RemoveCount++;
-                        break;
-                    case MEvent.EventType.Bad:
-                        BadCount++;
-                        break;
-                    case MEvent.EventType.VeryBad:
-                        VeryBadCount++;
-                        break;
-                }
+                newEventWeights[i] = (int)((eventTypeSum / fix(eventTypeCount[i])) * eventTypeProbabilities[i] * 1000.0f);
+                Log.LogInfo($"Set eventType weight for {((MEvent.EventType)Enum.ToObject(typeof(MEvent.EventType), i)).ToString()} to {newEventWeights[i]}");
             }
-            Sum = VeryBadCount + GoodCount + NeutralCount + RemoveCount + BadCount + VeryBadCount;
 
-            float VeryGoodWeight = (Sum / fix(VeryGoodCount)) * veryGoodProbability, GoodWeight = (Sum / fix(GoodCount)) * goodProbablity, NeutralWeight = (Sum / fix(NeutralCount)) * neutralProbability,
-                  RemoveWeight = (Sum / fix(RemoveCount)) * removeEnemyProbability, BadWeight = (Sum / fix(BadCount)) * badProbability, VeryBadWeight = (Sum / fix(VeryBadCount)) * veryBadProbability;
-
-
-            foreach (MEvent e in events)
-            {
-                switch (e.Type)
-                {
-                    case MEvent.EventType.VeryGood:
-                        e.Weight = (int)(VeryGoodWeight * 1000f);
-                        if (VeryGoodCount == 0) e.Weight = 0;
-                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
-                        break;
-                    case MEvent.EventType.Good:
-                        e.Weight = (int)(GoodWeight * 1000f);
-                        if (GoodCount == 0) e.Weight = 0;
-                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
-                        break;
-                    case MEvent.EventType.Neutral:
-                        e.Weight = (int)(NeutralWeight * 1000f);
-                        if (NeutralCount == 0) e.Weight = 0;
-                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
-                        break;
-                    case MEvent.EventType.Remove:
-                        e.Weight = (int)(RemoveWeight * 1000f);
-                        if (RemoveCount == 0) e.Weight = 0;
-                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
-                        break;
-                    case MEvent.EventType.Bad:
-                        e.Weight = (int)(BadWeight * 1000f);
-                        if (BadCount == 0) e.Weight = 0;
-                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
-                        break;
-                    case MEvent.EventType.VeryBad:
-                        e.Weight = (int)(VeryBadWeight * 1000f);
-                        if (VeryBadCount == 0) e.Weight = 0;
-                        Log.LogInfo(string.Format("Set weight for {0} to {1}", e.Name(), e.Weight));
-                        break;
-                }
-                switch (e.Name())
-                {
-                    case nameof(Events.RealityShift): e.Weight = 100000000; break;
-                }
-            }
+            foreach(MEvent e in events) e.Weight = newEventWeights[(int)e.Type];
         }
 
+        internal static void UpdateEventTypeCounts()
+        {
+            int eventTypeAmount = Configuration.eventTypeScales.Length;
+
+            eventTypeCount = new float[eventTypeAmount];
+            for (int i = 0; i < eventTypeAmount; i++) eventTypeCount[i] = 0.0f;
+            foreach (MEvent e in events) eventTypeCount[(int)e.Type]++;
+
+            eventTypeSum = 0.0f;
+            for (int i = 0; i < eventTypeAmount; i++) eventTypeSum += eventTypeCount[i];
+        }
     }
 }
