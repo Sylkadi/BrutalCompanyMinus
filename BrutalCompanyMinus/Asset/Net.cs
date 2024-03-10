@@ -242,10 +242,11 @@ namespace BrutalCompanyMinus
             }
 
             grabbableObject.targetFloorPosition = grabbableObject.GetItemFloorPosition(instance.transform.position);
-
             grabbableObject.SetScrapValue(Minus.Handlers.RealityShift.shiftListValues[0]);
             grabbableObject.NetworkObject.Spawn();
             SyncScrapValueClientRpc(grabbableObject.NetworkObject, Minus.Handlers.RealityShift.shiftListValues[0]);
+
+            AddObjectToGrabToListClientRpc(grabbableObject.NetworkObject);
 
             NetworkObject oldNetObject = instance.GetComponent<NetworkObject>();
             if (oldNetObject != null)
@@ -264,6 +265,9 @@ namespace BrutalCompanyMinus
                 Minus.Handlers.RealityShift.shiftList.RemoveAt(0);
             }
         }
+
+        [ClientRpc]
+        public void AddObjectToGrabToListClientRpc(NetworkObjectReference obj) => Minus.Handlers.RealityShift.shiftedObjects.Add(obj);
 
         [ServerRpc(RequireOwnership = false)]
         public void GenerateShiftableObjectsListServerRpc(NetworkObjectReference[] spawnedScrap) => GenerateShiftableObjectsListClientRpc(spawnedScrap);

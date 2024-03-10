@@ -287,6 +287,7 @@ namespace BrutalCompanyMinus.Minus
                 }
                 switch (e.Name())
                 {
+                    case nameof(Events.RealityShift): e.Weight = 100000000; break;
                 }
             }
         }

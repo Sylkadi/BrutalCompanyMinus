@@ -23,7 +23,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.10.2";
+        private const string VERSION = "0.11.0";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -179,6 +179,8 @@ namespace BrutalCompanyMinus
                     HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
                 }
             }
+
+            Manager.Spawn.ScrapOutside(200);
 
             // Apply maxPower counts
             RoundManager.Instance.currentLevel.maxEnemyPowerCount = (int)((RoundManager.Instance.currentLevel.maxEnemyPowerCount + Manager.bonusMaxInsidePowerCount) * Manager.spawncapMultipler);

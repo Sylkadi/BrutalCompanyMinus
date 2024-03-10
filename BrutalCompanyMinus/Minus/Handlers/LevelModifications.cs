@@ -195,7 +195,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
             Manager.scrapAmountMultiplier = 1.0f;
             Manager.scrapValueMultiplier = 1.0f;
             Manager.randomItemsToSpawnOutsideCount = 0;
-
             Manager.transmuteScrap = false;
             Manager.ScrapToTransmuteTo.Clear();
 

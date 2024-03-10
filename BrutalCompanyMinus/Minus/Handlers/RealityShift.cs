@@ -1,11 +1,13 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using Unity.Netcode;
@@ -21,10 +23,17 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public static List<GameObject> shiftList = new List<GameObject>();
         public static List<int> shiftListValues = new List<int>();
 
-        public static int normalScrapWeight = 80, grabbableLandmineWeight = 10, grabbableTurretWeight = 10;
+        public static int normalScrapWeight = 85, grabbableLandmineWeight = 15, grabbableTurretWeight = 0;
 
         public static List<int> ShiftableObjects = new List<int>();
 
+        public static List<NetworkObjectReference> shiftedObjects = new List<NetworkObjectReference>();
+
+        public static MethodInfo grabObjectServerRpc = typeof(PlayerControllerB).GetMethod("GrabObjectServerRpc", BindingFlags.NonPublic | BindingFlags.Instance);
+        public static MethodInfo firstEmptyItemSlot = typeof(PlayerControllerB).GetMethod("FirstEmptyItemSlot", BindingFlags.NonPublic| BindingFlags.Instance);
+        public static MethodInfo setSpecialGrabAnimationBool = typeof(PlayerControllerB).GetMethod("SetSpecialGrabAnimationBool", BindingFlags.NonPublic | BindingFlags.Instance);
+        public static FieldInfo grabObjectCoroutine = typeof(PlayerControllerB).GetField("grabObjectCoroutine", BindingFlags.NonPublic | BindingFlags.Instance);
+        public static FieldInfo currentlyGrabbingObject = typeof(PlayerControllerB).GetField("currentlyGrabbingObject", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public static bool invalidateGrab = false;
         [HarmonyPrefix]
@@ -39,6 +48,11 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 return;
             }
+            if((int)firstEmptyItemSlot.Invoke(__instance, null) == -1)
+            {
+                return;
+            } 
+
             GrabbableObject grabbableObject = hit.collider.gameObject.GetComponent<GrabbableObject>();
             if (grabbableObject != null && grabbableObject.NetworkObject != null)
             {
@@ -48,10 +62,68 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     {
                         invalidateGrab = true;
                         Net.Instance.ShiftServerRpc(grabbableObject.NetworkObject);
+
+                        __instance.StopCoroutine(GrabShiftedObject(__instance));
+                        __instance.StartCoroutine(GrabShiftedObject(__instance));
                         break;
                     }
                 }
             }
+        }
+
+        public static IEnumerator GrabShiftedObject(PlayerControllerB instance)
+        {
+            yield return new WaitUntil(() => shiftedObjects.Count > 0);
+
+            NetworkObject networkObject = null;
+            if (!shiftedObjects[0].TryGet(out networkObject))
+            {
+                Log.LogError("Null network object in GrabShiftedObject()");
+                yield break;
+            }
+
+            GrabbableObject newObject = networkObject.GetComponent<GrabbableObject>();
+            currentlyGrabbingObject.SetValue(instance, newObject);
+
+            newObject.InteractItem();
+            if(newObject.grabbable)
+            {
+                instance.playerBodyAnimator.SetBool("GrabInvalidated", value: false);
+                instance.playerBodyAnimator.SetBool("GrabValidated", value: false);
+                instance.playerBodyAnimator.SetBool("cancelHolding", value: false);
+                instance.playerBodyAnimator.ResetTrigger("Throw");
+                setSpecialGrabAnimationBool.Invoke(instance, new object[] { true, newObject } );
+                instance.isGrabbingObjectAnimation = true;
+                instance.cursorIcon.enabled = false;
+                instance.cursorTip.text = "";
+                instance.twoHanded = newObject.itemProperties.twoHanded;
+                instance.carryWeight += Mathf.Clamp(newObject.itemProperties.weight - 1f, 0f, 10f);
+                if (newObject.itemProperties.grabAnimationTime > 0f)
+                {
+                    instance.grabObjectAnimationTime = newObject.itemProperties.grabAnimationTime;
+                }
+                else
+                {
+                    instance.grabObjectAnimationTime = 0.4f;
+                }
+
+                if (grabObjectCoroutine.GetValue(instance) != null)
+                {
+                    instance.StopCoroutine("GrabObject");
+                }
+                grabObjectCoroutine.SetValue(instance, instance.StartCoroutine("GrabObject"));
+            }
+
+            grabObjectServerRpc.Invoke(instance, new object[] { shiftedObjects[0] });
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(PlayerControllerB), "GrabObjectClientRpc")]
+        public static void OnGrabObjectClientRpc()
+        {
+
+            
+            shiftedObjects.Clear();
         }
 
         [HarmonyPrefix]
@@ -106,13 +178,12 @@ namespace BrutalCompanyMinus.Minus.Handlers
     {
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(PlayerControllerB), "BeginGrabObject")]
-        static IEnumerable<CodeInstruction> OnBeginGrabIL(IEnumerable<CodeInstruction> instructions, ILGenerator il) // return if grab invalidated.
+        static IEnumerable<CodeInstruction> OnBeginGrabIL(IEnumerable<CodeInstruction> instructions, ILGenerator il) // deny grab
         {
             var code = new List<CodeInstruction>(instructions);
 
             int index = -1;
             object returnOperand = null;
-            
 
             for (int i = 0; i < code.Count; i++)
             {
@@ -145,7 +216,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 Log.LogError("Failed to patch BeginGrabObject()");
             }
 
-            Log.LogInfo("Patched Section");
+            Log.LogInfo("Patched Section     PlayerControllerB.BeginGrabObject()");
             for(int i = 0; i < index + 4; i++)
             {
                 string labels = "", arrow = "";

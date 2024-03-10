@@ -58,14 +58,13 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public override void Start()
         {
             base.Start();
-            StartCoroutine(LateUpdateTransform());
+            StartCoroutine(UpdateTransform(12.0f, new Vector3(0, UnityEngine.Random.Range(0, 360), 0)));
         }
 
-
-        public IEnumerator LateUpdateTransform()
+        public IEnumerator UpdateTransform(float time, Vector3 rotation)
         {
-            yield return new WaitForSeconds(12.0f);
-            if (RoundManager.Instance.IsHost) syncRotationServerRpc(new Vector3(0, UnityEngine.Random.Range(0, 360), 0));
+            yield return new WaitForSeconds(time);
+            if (RoundManager.Instance.IsHost) syncRotationServerRpc(rotation);
         }
 
         [ServerRpc(RequireOwnership = false)]
