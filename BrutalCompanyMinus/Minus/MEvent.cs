@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus
 {
@@ -62,7 +63,7 @@ namespace BrutalCompanyMinus.Minus
 
                 float computedValue = scale.Base + (increment * Manager.daysPassed);
 
-                if (!Configuration.ignoreScaleCap.Value) computedValue = Functions.Range(computedValue, scale.MinCap, scale.MaxCap);
+                if (!Configuration.ignoreScaleCap.Value) computedValue = Mathf.Clamp(computedValue, scale.MinCap, scale.MaxCap);
                 return computedValue;
             }
         }

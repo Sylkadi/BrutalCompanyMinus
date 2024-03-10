@@ -219,7 +219,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 insideScrap = Manager.Spawn.DoSpawnScrapInside(scrapDiffernce);
             } else // Remove scrap if multiplier < x1.0
             {
-                amountRemoved = (int)Functions.Range(scrapDiffernce * -1, 0, scrapValues.Length - 1);
+                amountRemoved = (int)Mathf.Clamp(scrapDiffernce * -1, 0, scrapValues.Length - 1);
                 Log.LogInfo($"Removing {amountRemoved} scrap.");
                 for (int i = spawnedScrap.Length - 1; i >= spawnedScrap.Length - amountRemoved; i--)
                 {

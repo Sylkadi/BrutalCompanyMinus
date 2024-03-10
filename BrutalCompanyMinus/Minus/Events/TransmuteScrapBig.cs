@@ -53,7 +53,7 @@ namespace BrutalCompanyMinus.Minus.Events
             // Scale scrap amount abit more
             float scrapValue = (chosenScrap.spawnableItem.minValue + chosenScrap.spawnableItem.maxValue) * 0.25f; // Intentionally
             if (scrapValue <= 0) scrapValue = 40;
-            Manager.scrapAmountMultiplier *= Functions.Range(Mathf.Log(Assets.averageScrapValueList[Manager.GetLevelIndex()] / scrapValue, 5) + 1, 1.0f, 2.0f); // Range : [1.0f, 2.0f]
+            Manager.scrapAmountMultiplier *= Mathf.Clamp(Mathf.Log(Assets.averageScrapValueList[Manager.GetLevelIndex()] / scrapValue, 5) + 1, 1.0f, 2.0f); // Range : [1.0f, 2.0f]
         }
     }
 }

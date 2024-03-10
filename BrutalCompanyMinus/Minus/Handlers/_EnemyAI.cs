@@ -70,7 +70,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         private static IEnumerator UpdateHP(EnemyAI __instance)
         {
             yield return new WaitUntil(() => Net.Instance.receivedSyncedValues);
-            __instance.enemyHP = (int)Functions.Range(__instance.enemyHP + Manager.bonusEnemyHp, 1.1f, 99999999.0f);
+            __instance.enemyHP = (int)Mathf.Clamp(__instance.enemyHP + Manager.bonusEnemyHp, 1.1f, 99999999.0f);
         }
 
     }

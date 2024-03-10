@@ -62,7 +62,7 @@ namespace BrutalCompanyMinus.Minus
 
                 List<Vector3> spawnDenialPoints = Functions.GetSpawnDenialNodes();
 
-                int count = (int)Functions.Range(density * terrainArea, 0, objectCap); // Compute amount
+                int count = (int)Mathf.Clamp(density * terrainArea, 0, objectCap); // Compute amount
                 Log.LogInfo(string.Format("Spawning: {0}, Count:{1}", obj.name, count));
                 for (int i = 0; i < count; i++)
                 {
@@ -654,13 +654,6 @@ namespace BrutalCompanyMinus.Minus
             }
 
             return nodes;
-        }
-
-        public static float Range(float value, float min, float max)
-        {
-            if (value < min) value = min;
-            if (value > max) value = max;
-            return value;
         }
 
         public static int[] IntArray(this float[] Values)
