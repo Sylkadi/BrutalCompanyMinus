@@ -78,11 +78,10 @@ namespace BrutalCompanyMinus
         internal static List<AnimationCurve> insideSpawnChanceCurves = new List<AnimationCurve>(), outsideSpawnChanceCurves = new List<AnimationCurve>(), daytimeSpawnChanceCurves = new List<AnimationCurve>();
         internal static List<int> insideMaxPowerCounts = new List<int>(), outsideMaxPowerCounts = new List<int>(), daytimeMaxPowerCounts = new List<int>();
 
-
         // Custom Assets
         internal static EnemyType antiCoilHead, nutSlayer, kamikazieBug;
         internal static Item slayerShotgun, grabbableTurret, grabbableLandmine;
-        internal static GameObject stretchyWeb;
+        internal static GameObject artilleryShell;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
@@ -95,6 +94,8 @@ namespace BrutalCompanyMinus
             slayerShotgun = (Item)customAssetBundle.LoadAsset("SlayerShotgun");
             grabbableTurret = (Item)customAssetBundle.LoadAsset("GrabbableTurret");
             grabbableLandmine = (Item)customAssetBundle.LoadAsset("GrabbableLandmine");
+
+            artilleryShell = (GameObject)customAssetBundle.LoadAsset("ArtilleryShell");
 
             NetworkManager.Singleton.AddNetworkPrefab(antiCoilHead.enemyPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(nutSlayer.enemyPrefab);

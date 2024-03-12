@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 namespace BrutalCompanyMinus.Minus.Handlers
 {
@@ -20,9 +21,16 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch("Start")]
         private static void onTurretStart(ref Turret __instance)
         {
-            if (Events.GrabbableTurrets.Active && RoundManager.Instance.IsHost)
+            if (!RoundManager.Instance.IsHost) return;
+
+            if(Events.GrabbableTurrets.Active)
             {
                 __instance.StartCoroutine(destroySelfAndReplace(__instance));
+            } else
+            {
+                seed++;
+                System.Random rng = new System.Random(seed);
+                Net.Instance.GenerateAndSyncTerminalCodeServerRpc(__instance.NetworkObject, rng.Next(RoundManager.Instance.possibleCodesForBigDoors.Length));
             }
         }
 
@@ -41,6 +49,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 NetworkObject netObject = grabbableTurret.GetComponent<NetworkObject>();
                 netObject.Spawn();
 
+                Net.Instance.GenerateAndSyncTerminalCodeServerRpc(__instance.NetworkObject, rng.Next(RoundManager.Instance.possibleCodesForBigDoors.Length));
+
                 Net.Instance.SyncScrapValueServerRpc(netObject, (int)(UnityEngine.Random.Range(Assets.grabbableTurret.minValue, Assets.grabbableTurret.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier));
 
                 yield return new WaitForSeconds(5.0f);
@@ -58,6 +68,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public override void Start()
         {
             base.Start();
+
             StartCoroutine(UpdateTransform(12.0f, new Vector3(0, UnityEngine.Random.Range(0, 360), 0)));
         }
 

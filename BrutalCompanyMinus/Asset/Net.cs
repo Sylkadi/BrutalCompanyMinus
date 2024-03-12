@@ -7,6 +7,8 @@ using HarmonyLib;
 using BrutalCompanyMinus.Minus;
 using Unity.Collections;
 using GameNetcodeStuff;
+using BrutalCompanyMinus.Minus.Handlers;
+using static UnityEngine.GraphicsBuffer;
 
 namespace BrutalCompanyMinus
 {
@@ -24,7 +26,14 @@ namespace BrutalCompanyMinus
 
         public bool receivedSyncedValues = false;
 
-        void Awake()
+        public List<GameObject> objectsToSpawn = new List<GameObject>();
+        public List<int> objectsToSpawnAmount = new List<int>();
+        public List<float> objectsToSpawnRadius = new List<float>();
+        public List<Vector3> objectsToSpawnOffsets = new List<Vector3>();
+
+        private float currentIntervalTime = 0.0f;
+
+        private void Awake()
         {
             // Initalize or it will break
             currentWeatherMultipliers = new NetworkList<Weather>();
@@ -32,18 +41,32 @@ namespace BrutalCompanyMinus
             currentWeatherEffects = new NetworkList<CurrentWeatherEffect>();
         }
 
-        void FixedUpdate()
+        private void Update()
         {
-            if(currentWeatherEffects.Count > 0) // Set atmosphere
+            if(currentIntervalTime > 0.0f)
             {
-                foreach(CurrentWeatherEffect e in currentWeatherEffects)
+                currentIntervalTime -= Time.deltaTime;
+            } else
+            {
+                currentIntervalTime = 0.5f;
+                if (currentWeatherEffects.Count > 0) // Set atmosphere
                 {
-                    PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
-                    if(localPlayer != null)
+                    foreach (CurrentWeatherEffect e in currentWeatherEffects)
                     {
-                        if(!localPlayer.isInsideFactory) UpdateAtmosphere(e.name, e.state);
+                        PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
+                        if (localPlayer == null) continue;
+
+                        if (!localPlayer.isInsideFactory) UpdateAtmosphere(e.name, e.state);
                     }
                 }
+            }
+            if(objectsToSpawn.Count > 0)
+            {
+                Manager.Spawn.DoSpawnOutsideObjects(objectsToSpawnAmount[0], objectsToSpawnRadius[0], objectsToSpawnOffsets[0], objectsToSpawn[0]);
+                objectsToSpawn.RemoveAt(0);
+                objectsToSpawnAmount.RemoveAt(0);
+                objectsToSpawnRadius.RemoveAt(0);
+                objectsToSpawnOffsets.RemoveAt(0);
             }
         }
 
@@ -111,6 +134,30 @@ namespace BrutalCompanyMinus
         {
             obj.TryGet(out NetworkObject netObj);
             netObj.GetComponent<GrabbableObject>().SetScrapValue(value);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void GenerateAndSyncTerminalCodeServerRpc(NetworkObjectReference netObject, int code) => GenerateAndSyncTerminalCodeClientRpc(netObject, code);
+
+        [ClientRpc]
+        public void GenerateAndSyncTerminalCodeClientRpc(NetworkObjectReference netObject, int code)
+        {
+            NetworkObject netObj = null;
+            if (!netObject.TryGet(out netObj))
+            {
+                Log.LogError("Network Object is null in GenerateAndSyncTerminalCodeClientRpc()");
+                return;
+            }
+
+            TerminalAccessibleObject terminalAccessibleObject = netObj.GetComponentInChildren<TerminalAccessibleObject>();
+            if (terminalAccessibleObject == null)
+            {
+                Log.LogError("Terminal Accessible Object is null in GenerateAndSyncTerminalCodeClientRpc()");
+                return;
+            }
+
+            terminalAccessibleObject.InitializeValues();
+            terminalAccessibleObject.SetCodeTo(code);
         }
 
         private void UpdateAtmosphere(FixedString128Bytes name, bool state)
@@ -290,6 +337,19 @@ namespace BrutalCompanyMinus
                     Log.LogError("Scrap spawn has null NetworkObject");
                 }
             }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void FireAtServerRpc(Vector3 at, Vector3 from) => FireAtClientRpc(at, from);
+
+        [ClientRpc]
+        public void FireAtClientRpc(Vector3 at, Vector3 from)
+        {
+            GameObject artilleryShell = GameObject.Instantiate(Assets.artilleryShell, from, Quaternion.identity);
+            ArtilleryShell script = artilleryShell.GetComponent<ArtilleryShell>();
+            script.target = at;
+
+            Manager.objectsToClear.Add(artilleryShell);
         }
 
         [HarmonyPostfix]

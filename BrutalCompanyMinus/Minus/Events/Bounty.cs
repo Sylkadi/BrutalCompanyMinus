@@ -10,8 +10,6 @@ using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.Events
 {
-    [HarmonyPatch]
-    [HarmonyPatch(typeof(EnemyAI))]
     internal class Bounty : MEvent
     {
         public static bool Active = false;

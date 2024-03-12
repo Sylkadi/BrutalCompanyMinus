@@ -56,18 +56,40 @@ namespace BrutalCompanyMinus.Minus
         {
             internal static int randomSeedValue = 0;
 
+            private static List<Vector3> spawnDenialPoints = new List<Vector3>();
             internal static void OutsideObjects(GameObject obj, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000)
             {
                 if (obj == null) return;
 
-                List<Vector3> spawnDenialPoints = Functions.GetSpawnDenialNodes();
+                spawnDenialPoints = Functions.GetSpawnDenialNodes();
 
                 int count = (int)Mathf.Clamp(density * terrainArea, 0, objectCap); // Compute amount
                 Log.LogInfo(string.Format("Spawning: {0}, Count:{1}", obj.name, count));
+
+                int batchSize = 8;
+                int batches = count / batchSize;
+                int remainder = count % batchSize;
+
+                for(int i = 0; i < batches; i++)
+                {
+                    Net.Instance.objectsToSpawn.Add(obj);
+                    Net.Instance.objectsToSpawnRadius.Add(radius);
+                    Net.Instance.objectsToSpawnOffsets.Add(offset);
+                    Net.Instance.objectsToSpawnAmount.Add(batchSize);
+                }
+
+                Net.Instance.objectsToSpawn.Add(obj);
+                Net.Instance.objectsToSpawnRadius.Add(radius);
+                Net.Instance.objectsToSpawnOffsets.Add(offset);
+                Net.Instance.objectsToSpawnAmount.Add(remainder);
+            }
+
+            internal static void DoSpawnOutsideObjects(int count, float radius, Vector3 offset, GameObject obj) 
+            {
                 for (int i = 0; i < count; i++)
                 {
                     randomSeedValue++;
-                    
+
                     UnityEngine.Random.InitState(randomSeedValue); // Important or wont be same on all clients
                     Vector3 position = new Vector3(0.0f, 0.0f, 0.0f);
                     if (radius != -1.0f || outsideObjectSpawnNodes.Count == 0)

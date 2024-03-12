@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 namespace BrutalCompanyMinus.Minus.Handlers
 {
@@ -68,9 +69,16 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch("Start")]
         private static void onLandmineStart(ref Landmine __instance)
         {
-            if(Events.GrabbableLandmines.Active && RoundManager.Instance.IsHost)
+            if (!RoundManager.Instance.IsHost) return;
+
+            if(Events.GrabbableLandmines.Active)
             {
                 __instance.StartCoroutine(destroySelfAndReplace(__instance));
+            } else
+            {
+                seed++;
+                System.Random rng = new System.Random(seed);
+                Net.Instance.GenerateAndSyncTerminalCodeServerRpc(__instance.NetworkObject, rng.Next(RoundManager.Instance.possibleCodesForBigDoors.Length));
             }
         }
 
@@ -88,6 +96,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 GameObject grabbableLandmine = Instantiate(Assets.grabbableLandmine.spawnPrefab, __instance.transform.position, Quaternion.identity);
                 NetworkObject netObject = grabbableLandmine.GetComponent<NetworkObject>();
                 netObject.Spawn();
+
+                Net.Instance.GenerateAndSyncTerminalCodeServerRpc(__instance.NetworkObject, rng.Next(RoundManager.Instance.possibleCodesForBigDoors.Length));
 
                 Net.Instance.SyncScrapValueServerRpc(netObject, (int)(UnityEngine.Random.Range(Assets.grabbableLandmine.minValue, Assets.grabbableLandmine.maxValue + 1) * RoundManager.Instance.scrapValueMultiplier));
 

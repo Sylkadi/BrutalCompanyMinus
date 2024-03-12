@@ -76,6 +76,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.InsideBees(),
             new Events.NutSlayer(),
             new Events.Hell(),
+            new Events.DDay(),
             // NoEnemy
             new Events.NoBaboons(),
             new Events.NoBracken(),
