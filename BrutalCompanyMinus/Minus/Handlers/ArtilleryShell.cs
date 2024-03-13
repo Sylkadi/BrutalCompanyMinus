@@ -10,7 +10,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
     {
         public Transform transform;
 
-        private float speed = 100.0f;
+        public static float speed = 100.0f;
 
         private float timeTillExplode = 1.0f;
 
@@ -35,14 +35,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
         }
 
-        private static int seed = 42;
-        public static void FireAt(Vector3 target)
-        {
-            System.Random r = new System.Random(seed); seed++;
-
-            Vector3 from = target + new Vector3(r.Next(-100, 100), 600, r.Next(-100, 100));
-
-            Net.Instance.FireAtServerRpc(target, from);
-        }
+        public static void FireAt(Vector3 at, Vector3 from) => Net.Instance.FireAtServerRpc(at, from);
     }
 }

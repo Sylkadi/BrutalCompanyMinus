@@ -137,7 +137,7 @@ namespace BrutalCompanyMinus
 
             Configuration.GenerateLevelConfigurations(StartOfRound.Instance); // Bind 
             LevelModifications.ModifyEnemyScrapSpawns(StartOfRound.Instance); // Set
-
+            
             Assets.generateLevelScrapLists();
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
@@ -167,7 +167,7 @@ namespace BrutalCompanyMinus
             List<MEvent> currentEvents = EventManager.ChooseEvents(out additionalEvents);
             foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name()); // Log Chosen events
 
-            currentEvents.AddRange(new List<MEvent>() { Minus.Events.LeaflessBrownTrees.Instance, Minus.Events.OutsideTurrets.Instance, Minus.Events.OutsideLandmines.Instance });
+            currentEvents.AddRange(new List<MEvent>() { Minus.Events.DDay.Instance });
 
             EventManager.ApplyEvents(currentEvents);
             EventManager.ApplyEvents(additionalEvents);

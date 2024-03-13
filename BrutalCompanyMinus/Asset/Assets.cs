@@ -81,7 +81,7 @@ namespace BrutalCompanyMinus
         // Custom Assets
         internal static EnemyType antiCoilHead, nutSlayer, kamikazieBug;
         internal static Item slayerShotgun, grabbableTurret, grabbableLandmine;
-        internal static GameObject artilleryShell;
+        internal static GameObject artilleryShell, artillerySirens;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
@@ -96,6 +96,7 @@ namespace BrutalCompanyMinus
             grabbableLandmine = (Item)customAssetBundle.LoadAsset("GrabbableLandmine");
 
             artilleryShell = (GameObject)customAssetBundle.LoadAsset("ArtilleryShell");
+            artillerySirens = (GameObject)customAssetBundle.LoadAsset("ArtillerySirens");
 
             NetworkManager.Singleton.AddNetworkPrefab(antiCoilHead.enemyPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(nutSlayer.enemyPrefab);
@@ -104,6 +105,8 @@ namespace BrutalCompanyMinus
             NetworkManager.Singleton.AddNetworkPrefab(slayerShotgun.spawnPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(grabbableTurret.spawnPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(grabbableLandmine.spawnPrefab);
+
+            NetworkManager.Singleton.AddNetworkPrefab(artillerySirens);
         }
 
 

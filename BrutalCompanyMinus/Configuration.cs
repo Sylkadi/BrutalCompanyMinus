@@ -201,6 +201,14 @@ namespace BrutalCompanyMinus
             Minus.Handlers.RealityShift.normalScrapWeight = eventConfig.Bind(nameof(RealityShift), "Normal shift weight", 85, "Weight for transforming scrap into some other scrap?").Value;
             Minus.Handlers.RealityShift.grabbableLandmineWeight = eventConfig.Bind(nameof(RealityShift), "Grabbable landmine shift weight", 15, "Weight for transforming scrap into a grabbable landmine?").Value;
             Minus.Handlers.RealityShift.grabbableTurretWeight = eventConfig.Bind(nameof(RealityShift), "Grabbable turret shift weight", 0, "Weight for transforming scrap into a grabbable turret?").Value;
+
+            Minus.Handlers.DDay.bombardmentInterval = eventConfig.Bind(nameof(DDay), "Bombardment interval", 100, "The time it takes before each bombardment event.").Value;
+            Minus.Handlers.DDay.bombardmentTime = eventConfig.Bind(nameof(DDay), "Bombardment time", 15, "When a bombardment event occurs, how long will it last?").Value;
+            Minus.Handlers.DDay.fireInterval = eventConfig.Bind(nameof(DDay), "Fire interval", 1, "During a bombardment event how often will it fire?").Value;
+            Minus.Handlers.DDay.fireAmount = eventConfig.Bind(nameof(DDay), "Fire amount", 8, "For every fire interval, how many shot's will it take? This will get scaled higher on bigger maps.").Value;
+            Minus.Handlers.DDay.displayWarning = eventConfig.Bind(nameof(DDay), "Display warning?", true, "Display warning message before bombardment?").Value;
+            Minus.Handlers.ArtillerySirens.volume = eventConfig.Bind(nameof(DDay), "Siren Volume", 1.0f, "Volume of the siren? between 0.0 and 1.0").Value;
+            Minus.Handlers.ArtilleryShell.speed = eventConfig.Bind(nameof(DDay), "Artillery shell speed", 100.0f, "How fast does the artillery shell travel?").Value;
         }
 
         private static bool bindedLevelConfigurations = false;

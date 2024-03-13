@@ -9,6 +9,7 @@ using Unity.Collections;
 using GameNetcodeStuff;
 using BrutalCompanyMinus.Minus.Handlers;
 using static UnityEngine.GraphicsBuffer;
+using System.Net.Http.Headers;
 
 namespace BrutalCompanyMinus
 {
@@ -351,6 +352,12 @@ namespace BrutalCompanyMinus
 
             Manager.objectsToClear.Add(artilleryShell);
         }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void DisplayTipServerRpc(string headerText, string bodyText, bool isWarning = false) => DisplayTipClientRpc(headerText, bodyText, isWarning);
+
+        [ClientRpc]
+        public void DisplayTipClientRpc(string headerText, string bodyText, bool isWarning = false) => HUDManager.Instance.DisplayTip(headerText, bodyText, isWarning);
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]

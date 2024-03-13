@@ -23,13 +23,24 @@ namespace BrutalCompanyMinus.Minus.Events
 
             Weight = 1;
             Description = "You better start praying";
-            ColorHex = "#800000";
-            Type = EventType.VeryBad;
+            ColorHex = "#FF0000";
+            Type = EventType.Bad;
         }
 
-        public override void Execute() => Active = true;
+        public override void Execute()
+        {
+            Handlers.DDay.currentTime = Handlers.DDay.bombardmentInterval;
+            Active = true;
+        }
 
-        public override void OnShipLeave() => Active = false;
+        public override void OnShipLeave()
+        {
+            if(Handlers.ArtillerySirens.instance != null)
+            {
+                Handlers.ArtillerySirens.instance.StopServerRpc();
+            }
+            Active = false;
+        }
 
         public override void OnGameStart() => Active = false;
     }
