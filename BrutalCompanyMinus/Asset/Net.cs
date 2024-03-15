@@ -359,6 +359,19 @@ namespace BrutalCompanyMinus
         [ClientRpc]
         public void DisplayTipClientRpc(string headerText, string bodyText, bool isWarning = false) => HUDManager.Instance.DisplayTip(headerText, bodyText, isWarning);
 
+        [ServerRpc(RequireOwnership = false)]
+        public void BlackFridayServerRpc(int minPercentageCut, int maxPercentageCut) => BlackFridayClientRpc(minPercentageCut, maxPercentageCut);
+
+        public void BlackFridayClientRpc(int minPercentageCut, int maxPercentageCut)
+        {
+            System.Random rng = new System.Random(_seed++);
+            for (int i = 0; i < Manager.currentTerminal.buyableItemsList.Length; i++)
+            {
+                int percentage = 100 - (int)Mathf.Clamp(rng.Next(minPercentageCut, maxPercentageCut), 0.0f, 90.0f);
+                Manager.currentTerminal.itemSalesPercentages[i] = (int)Math.Round((double)percentage / 10) * 10;
+            }
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
         private static void InitalizeServerObject()

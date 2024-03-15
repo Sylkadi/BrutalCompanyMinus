@@ -27,17 +27,13 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.Bad;
         }
 
-        public override void Execute()
-        {
-            Handlers.DDay.currentTime = Handlers.DDay.bombardmentInterval;
-            Active = true;
-        }
+        public override void Execute() => Active = true;
 
         public override void OnShipLeave()
         {
-            if(Handlers.ArtillerySirens.instance != null)
+            if(Handlers.DDay.instance != null)
             {
-                Handlers.ArtillerySirens.instance.StopServerRpc();
+                Handlers.DDay.instance.StopServerRpc();
             }
             Active = false;
         }

@@ -89,12 +89,12 @@ namespace BrutalCompanyMinus
             // eventType weights
             eventTypeScales = new Scale[6]
             {
-                getScale(difficultyConfig.Bind("_EventType Weights", "VeryBad event weight scale", "8, 0, 8, 8", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "Bad event weight scale", "40, 0, 40, 40", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "VeryBad event weight scale", "10, 0.34, 10, 30", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Bad event weight scale", "40, -0.34, 20, 40", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
                 getScale(difficultyConfig.Bind("_EventType Weights", "Neutral event weight scale", "15, 0, 15, 15", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
                 getScale(difficultyConfig.Bind("_EventType Weights", "Good event weight scale", "18, 0, 18, 18", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event weight scale", "6, 0, 6, 6", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "Remove event weight scale", "13, 0, 13, 13", "These events remove something   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value)
+                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event weight scale", "5, 0, 5, 5", "Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Remove event weight scale", "12, 0, 12, 12", "These events remove something   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value)
             };
 
             // Difficulty scaling
@@ -207,7 +207,7 @@ namespace BrutalCompanyMinus
             Minus.Handlers.DDay.fireInterval = eventConfig.Bind(nameof(DDay), "Fire interval", 1, "During a bombardment event how often will it fire?").Value;
             Minus.Handlers.DDay.fireAmount = eventConfig.Bind(nameof(DDay), "Fire amount", 8, "For every fire interval, how many shot's will it take? This will get scaled higher on bigger maps.").Value;
             Minus.Handlers.DDay.displayWarning = eventConfig.Bind(nameof(DDay), "Display warning?", true, "Display warning message before bombardment?").Value;
-            Minus.Handlers.ArtillerySirens.volume = eventConfig.Bind(nameof(DDay), "Siren Volume", 1.0f, "Volume of the siren? between 0.0 and 1.0").Value;
+            Minus.Handlers.DDay.volume = eventConfig.Bind(nameof(DDay), "Siren Volume", 1.0f, "Volume of the siren? between 0.0 and 1.0").Value;
             Minus.Handlers.ArtilleryShell.speed = eventConfig.Bind(nameof(DDay), "Artillery shell speed", 100.0f, "How fast does the artillery shell travel?").Value;
         }
 

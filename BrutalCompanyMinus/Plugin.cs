@@ -23,7 +23,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.11.0";
+        private const string VERSION = "0.10.3";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -163,11 +163,12 @@ namespace BrutalCompanyMinus
             Manager.AddOutsidePower((int)MEvent.Scale.Compute(Configuration.outsideEnemyPowerCountScaling));
 
             // Choose any apply events
+            if (!Configuration.useCustomWeights.Value) EventManager.UpdateAllEventWeights();
+
             List<MEvent> additionalEvents = new List<MEvent>();
             List<MEvent> currentEvents = EventManager.ChooseEvents(out additionalEvents);
-            foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name()); // Log Chosen events
 
-            currentEvents.AddRange(new List<MEvent>() { Minus.Events.DDay.Instance });
+            foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name()); // Log Chosen events
 
             EventManager.ApplyEvents(currentEvents);
             EventManager.ApplyEvents(additionalEvents);

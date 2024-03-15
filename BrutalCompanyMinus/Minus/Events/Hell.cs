@@ -24,8 +24,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#280000";
             Type = EventType.VeryBad;
 
-            EventsToRemove = new List<string>() { nameof(Trees), nameof(LeaflessBrownTrees), nameof(Gloomy), nameof(Raining), nameof(HeavyRain) };
-            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees), nameof(AntiCoilhead), nameof(InsideBees), nameof(KamikazieBugs), nameof(SnareFleas), nameof(Thumpers) };
+            EventsToRemove = new List<string>() { nameof(Trees), nameof(LeaflessBrownTrees), nameof(Gloomy), nameof(Raining), nameof(HeavyRain), nameof(Warzone) };
+            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees), nameof(AntiCoilhead), nameof(InsideBees), nameof(KamikazieBugs), nameof(SnareFleas), nameof(Thumpers), nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(OutsideLandmines), nameof(DDay) };
 
             ScaleList.Add(ScaleType.ScrapValue, new Scale(1.75f, 0.0542f, 1.75f, 4.0f));
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.75f, 0.0542f, 1.75f, 4.0f));
@@ -50,9 +50,12 @@ namespace BrutalCompanyMinus.Minus.Events
             Manager.Spawn.OutsideEnemies(Assets.GetEnemy(Assets.EnemyName.BunkerSpider), 3);
             Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.BunkerSpider), 2);
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Assets.GetEnemy(Assets.EnemyName.ForestKeeper), 1);
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Assets.GetEnemy(Assets.EnemyName.ForestKeeper), 2);
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.Bracken), 15);
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.NutCracker), 5);
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.Masked), 5);
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.EarthLeviathan), 1);
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.Jester), 5);
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.nutSlayer, 1);
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.Bracken), 15);
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.EyelessDog), 3);

@@ -18,6 +18,8 @@ namespace BrutalCompanyMinus.Minus.Events
         {
             Instance = this;
 
+            EventsToRemove = new List<string>() { nameof(Hell) };
+
             Weight = 1;
             Description = "No worms";
             ColorHex = "#008000";

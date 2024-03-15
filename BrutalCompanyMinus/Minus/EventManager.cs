@@ -15,6 +15,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.GoldenBars(),
             new Events.BigDelivery(),
             new Events.PlentyOutsideScrap(),
+            new Events.BlackFriday(),
             // Good
             new Events.Bounty(),
             new Events.Bonus(),
@@ -215,12 +216,15 @@ namespace BrutalCompanyMinus.Minus
 
             int eventTypeAmount = Configuration.eventTypeScales.Length;
 
+            float[] computedScales = new float[eventTypeAmount];
+            for (int i = 0; i < eventTypeAmount; i++) computedScales[i] = MEvent.Scale.Compute(Configuration.eventTypeScales[i]);
+
             float eventTypeWeightSum = 0;
-            for (int i = 0; i < eventTypeAmount; i++) eventTypeWeightSum += MEvent.Scale.Compute(Configuration.eventTypeScales[i]);
+            for (int i = 0; i < eventTypeAmount; i++) eventTypeWeightSum += computedScales[i];
             eventTypeWeightSum = fix(eventTypeWeightSum);
 
             float[] eventTypeProbabilities = new float[eventTypeAmount];
-            for(int i = 0; i < eventTypeAmount; i++) eventTypeProbabilities[i] = MEvent.Scale.Compute(Configuration.eventTypeScales[i]) / eventTypeWeightSum;
+            for(int i = 0; i < eventTypeAmount; i++) eventTypeProbabilities[i] = computedScales[i] / eventTypeWeightSum;
 
             int[] newEventWeights = new int[eventTypeAmount];
             for (int i = 0; i < eventTypeAmount; i++)

@@ -96,7 +96,7 @@ namespace BrutalCompanyMinus
             grabbableLandmine = (Item)customAssetBundle.LoadAsset("GrabbableLandmine");
 
             artilleryShell = (GameObject)customAssetBundle.LoadAsset("ArtilleryShell");
-            artillerySirens = (GameObject)customAssetBundle.LoadAsset("ArtillerySirens");
+            artillerySirens = (GameObject)customAssetBundle.LoadAsset("DDay");
 
             NetworkManager.Singleton.AddNetworkPrefab(antiCoilHead.enemyPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(nutSlayer.enemyPrefab);

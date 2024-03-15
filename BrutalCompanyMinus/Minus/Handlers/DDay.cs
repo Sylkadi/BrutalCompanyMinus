@@ -3,12 +3,13 @@ using Discord;
 using HarmonyLib;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.Handlers
 {
     [HarmonyPatch]
-    internal class DDay
+    internal class DDay : NetworkBehaviour
     {
         public static float currentTime = 0;
         public static float bombardmentCurrentTime = 0;
@@ -27,9 +28,25 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private static int seed = 2352;
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(RoundManager), "Update")]
-        public static void OnUpdate(ref RoundManager __instance)
+        public static DDay instance;
+
+        public AudioSource sirensClose;
+
+        public AudioSource sirensFar;
+
+        public Transform transform;
+
+        public static float volume = 1.0f;
+
+        public void Start()
+        {
+            currentTime = 15.0f;
+
+            sirensClose.volume = volume;
+            sirensFar.volume = volume;
+        }
+
+        public void Update()
         {
             if (!Events.DDay.Active || !RoundManager.Instance.IsHost) return;
             if(currentTime > 0)
@@ -47,7 +64,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
             if(currentTime <= 15 && !displayedBombardmentWarning)
             {
-                ArtillerySirens.instance.PlayServerRpc();
+                DDay.instance.PlayServerRpc();
                 if(displayWarning) Net.Instance.DisplayTipServerRpc("BOMBARDMENT IN 15 SECONDS", "TAKE COVER!!!", true);
                 displayedBombardmentWarning = true;
             }
@@ -81,6 +98,50 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void PlayServerRpc() => PlayClientRpc();
+
+        [ClientRpc]
+        public void PlayClientRpc()
+        {
+            sirensClose.Play();
+            sirensFar.Play();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void StopServerRpc() => StopClientRpc();
+
+        [ClientRpc]
+        public void StopClientRpc()
+        {
+            sirensClose.Stop();
+            sirensFar.Stop();
+        }
+
+        public static void SpawnInstance()
+        {
+            Vector3 position = Vector3.zero;
+            GameObject ship = GameObject.Find("HangarShip");
+
+            if (ship != null) position = ship.transform.position; // This dosen't get corret position i want but im too lazy anyways...
+
+            GameObject sirens = GameObject.Instantiate(Assets.artillerySirens, position, Quaternion.identity);
+            sirens.GetComponent<NetworkObject>().Spawn(destroyWithScene: true);
+
+            instance = sirens.GetComponent<DDay>();
+        }
+
+        public static void DestroyInstance()
+        {
+            if (instance == null) return;
+
+            NetworkObject netObject = instance.transform.GetComponent<NetworkObject>();
+
+            if (netObject == null) return;
+
+            netObject.Despawn(true);
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StartOfRound), "OnShipLandedMiscEvents")]
         public static void OnShipLanded()
@@ -88,11 +149,11 @@ namespace BrutalCompanyMinus.Minus.Handlers
             if (!RoundManager.Instance.IsHost) return;
             if (Events.DDay.Active)
             {
-                ArtillerySirens.SpawnInstance();
+                SpawnInstance();
             }
             else
             {
-                ArtillerySirens.DestroyInstance();
+                DestroyInstance();
             }
         }
     }
