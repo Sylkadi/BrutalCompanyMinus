@@ -1,5 +1,11 @@
 # ChangeLog
 <details>
+  <summary>0.10.2</summary>
+
+  - Forgor to multiply transmuted scrap values.
+
+</details>
+<details>
   <summary>0.10.1</summary>
 
   - Changed how the mod handles scrapAmount and scrapValue multipliers for comptability reasons.
