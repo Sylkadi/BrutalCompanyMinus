@@ -70,7 +70,7 @@ namespace BrutalCompanyMinus
             Configuration.customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
 
             // Custom enemy events
-            int customEventCount = Configuration.eventConfig.Bind("_Temp Custom Monster Event Count", "How many events to generate in config?", 10, "This is temporary for the time being.").Value;
+            int customEventCount = Configuration.eventConfig.Bind("_Temp Custom Monster Event Count", "How many events to generate in config?", 1, "This is temporary for the time being.").Value;
             for (int i = 0; i < customEventCount; i++)
             {
                 MEvent e = new Minus.Events.CustomMonsterEvent();
