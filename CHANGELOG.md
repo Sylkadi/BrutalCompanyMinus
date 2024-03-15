@@ -1,5 +1,24 @@
 # ChangeLog
 <details>
+  <summary>0.10.3</summary>
+
+  - Added 2 new events
+  - (Bad) DDay: I like this one
+  - (VeryGood) BlackFriday: Every item in the shop will go on sale
+
+  - Reality shift will now grab the shifted object forcibly.
+  - WarZone will now come with DDay
+  - Hell will now come with WarZone
+  - Turned eventType Weights to scales
+  - Very bad will now scale (day:0 => 10 to day:60 => 30)
+  - Bad will now scale (day:0 => 40 to day:60 => 20)
+  - Other eventTypes wont scale by default
+
+  - Minus will now spawn outside Objects 8 per frame instead of being all in one frame.
+  - Fixed terminal codes for objects spawned by Minus.
+
+</details>
+<details>
   <summary>0.10.2</summary>
 
   - Forgor to multiply transmuted scrap values.
