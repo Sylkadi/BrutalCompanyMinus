@@ -2,7 +2,6 @@
 ![Screenshot](https://i.imgur.com/jS0vFm2.jpg)
 #### This mod is required on all clients
 #### Makes the game harder
-#### Current plan is to make more 'unique' events
 #### Config is fully generated when you load on a moon.
 #### Mod is highly configurable
 
@@ -56,6 +55,7 @@
 | Golden Bars | Only golden bars will spawn on the map |
 | Big Delivery | Spawns a shipment with a bunch of items |
 | Plenty Outside Scrap | Spawns scrap outside |
+| Black Friday | Everything will go on sale |
   </details>
 
   <details>
@@ -144,6 +144,7 @@
 | Strong Enemies | Increases enemy hp |
 | Reality Warp | Attempting to grab scrap will make it transform into something else, sometimes a landmine or turret |
 | Kamikazie Bugs | Hoarding bugs will now blow up when angered | 
+| DDay | Every so often the map will be bombarded will artillery fire |
   </details>
 
   <details>
