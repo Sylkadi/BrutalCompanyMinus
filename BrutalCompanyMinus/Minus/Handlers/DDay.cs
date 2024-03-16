@@ -146,7 +146,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch(typeof(StartOfRound), "OnShipLandedMiscEvents")]
         public static void OnShipLanded()
         {
-            if (!RoundManager.Instance.IsHost && !Events.DDay.Active) return;
+            if (!RoundManager.Instance.IsHost || !Events.DDay.Active) return;
 
             SpawnInstance();
         }
