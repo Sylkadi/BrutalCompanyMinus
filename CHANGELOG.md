@@ -1,5 +1,12 @@
 # ChangeLog
 <details>
+  <summary>0.10.4</summary>
+
+  - DDay persisting should be fixed
+  - Lowered default Siren volume
+
+</details>
+<details>
   <summary>0.10.3</summary>
 
   - Added 2 new events
