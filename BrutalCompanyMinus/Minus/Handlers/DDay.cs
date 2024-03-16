@@ -36,7 +36,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public Transform transform;
 
-        public static float volume = 1.0f;
+        public static float volume = 0.3f;
 
         public void Start()
         {
@@ -54,7 +54,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 currentTime -= Time.deltaTime;
             } else
             {
-                float fireAmountMultiplier = Mathf.Clamp(Manager.terrainArea / 9700.0f, 1.0f, 5.0f);
+                float fireAmountMultiplier = Mathf.Clamp(Manager.terrainArea / 9700.0f, 1.0f, 3.0f);
 
                 currentTime = bombardmentInterval;
                 bombardmentCurrentTime = bombardmentTime;
@@ -146,15 +146,9 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch(typeof(StartOfRound), "OnShipLandedMiscEvents")]
         public static void OnShipLanded()
         {
-            if (!RoundManager.Instance.IsHost) return;
-            if (Events.DDay.Active)
-            {
-                SpawnInstance();
-            }
-            else
-            {
-                DestroyInstance();
-            }
+            if (!RoundManager.Instance.IsHost && !Events.DDay.Active) return;
+
+            SpawnInstance();
         }
     }
 }

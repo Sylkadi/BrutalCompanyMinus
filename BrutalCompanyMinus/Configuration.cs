@@ -207,7 +207,7 @@ namespace BrutalCompanyMinus
             Minus.Handlers.DDay.fireInterval = eventConfig.Bind(nameof(DDay), "Fire interval", 1, "During a bombardment event how often will it fire?").Value;
             Minus.Handlers.DDay.fireAmount = eventConfig.Bind(nameof(DDay), "Fire amount", 8, "For every fire interval, how many shot's will it take? This will get scaled higher on bigger maps.").Value;
             Minus.Handlers.DDay.displayWarning = eventConfig.Bind(nameof(DDay), "Display warning?", true, "Display warning message before bombardment?").Value;
-            Minus.Handlers.DDay.volume = eventConfig.Bind(nameof(DDay), "Siren Volume", 1.0f, "Volume of the siren? between 0.0 and 1.0").Value;
+            Minus.Handlers.DDay.volume = eventConfig.Bind(nameof(DDay), "Siren Volume?", 0.3f, "Volume of the siren? between 0.0 and 1.0").Value;
             Minus.Handlers.ArtilleryShell.speed = eventConfig.Bind(nameof(DDay), "Artillery shell speed", 100.0f, "How fast does the artillery shell travel?").Value;
         }
 

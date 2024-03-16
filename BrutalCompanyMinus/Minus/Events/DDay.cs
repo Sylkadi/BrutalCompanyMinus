@@ -31,10 +31,7 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override void OnShipLeave()
         {
-            if(Handlers.DDay.instance != null)
-            {
-                Handlers.DDay.instance.StopServerRpc();
-            }
+            Handlers.DDay.DestroyInstance();
             Active = false;
         }
 
