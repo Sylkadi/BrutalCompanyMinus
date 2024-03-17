@@ -59,6 +59,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.StrongEnemies(),
             new Events.KamikazieBugs(),
             new Events.RealityShift(),
+            new Events.DDay(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),
@@ -77,7 +78,6 @@ namespace BrutalCompanyMinus.Minus
             new Events.InsideBees(),
             new Events.NutSlayer(),
             new Events.Hell(),
-            // new Events.DDay(),
             // NoEnemy
             new Events.NoBaboons(),
             new Events.NoBracken(),

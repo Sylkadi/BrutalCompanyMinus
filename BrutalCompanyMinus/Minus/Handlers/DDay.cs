@@ -40,6 +40,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public void Start()
         {
+            instance = this;
+
             currentTime = 15.0f;
 
             sirensClose.volume = volume;
