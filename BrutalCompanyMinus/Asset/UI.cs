@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 using HarmonyLib;
 using GameNetcodeStuff;
 using System.Globalization;
+using UnityEngine.InputSystem.Controls;
 
 namespace BrutalCompanyMinus
 {
@@ -22,6 +23,8 @@ namespace BrutalCompanyMinus
         public Scrollbar panelScrollBar;
 
         public string key = "K";
+
+        public KeyControl keyControl;
 
         public bool showCaseEvents = false;
 
@@ -74,7 +77,12 @@ namespace BrutalCompanyMinus
             }
 
             keyboard = Keyboard.current;
-            if (keyboard != null && Configuration.EnableUI.Value) keyboard.onTextInput += OnKeyboardInput;
+            if (keyboard != null && Configuration.EnableUI.Value)
+            {
+                keyControl = keyboard.FindKeyOnCurrentKeyboardLayout(key);
+
+                keyboard.onTextInput += OnKeyboardInput;
+            }
         }
 
         void Update()
@@ -140,7 +148,7 @@ namespace BrutalCompanyMinus
 
         public void OnKeyboardInput(char input)
         {
-            if (input.ToString().ToUpper() == UI.Instance.key && keyPressEnabledTyping && keyPressEnabledTerminal && keyPressEnabledSettings)
+            if (keyControl.isPressed && keyPressEnabledTyping && keyPressEnabledTerminal && keyPressEnabledSettings)
             {
                 bool newState = !UI.Instance.panelBackground.activeSelf;
 

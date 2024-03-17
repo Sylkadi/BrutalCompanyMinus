@@ -25,6 +25,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         private void Update()
         {
             transform.position += transform.forward * Time.deltaTime * speed;
+            if (timeTillExplode < -0.15f) Destroy(transform.gameObject);
             if(timeTillExplode > 0)
             {
                 timeTillExplode -= Time.deltaTime;
@@ -33,6 +34,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 Landmine.SpawnExplosion(transform.position, true, 5, 6);
                 Destroy(transform.gameObject);
             }
+            
         }
 
         public static void FireAt(Vector3 at, Vector3 from) => Net.Instance.FireAtServerRpc(at, from);

@@ -31,8 +31,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override void OnShipLeave()
         {
-            Handlers.DDay.DestroyInstance();
             Active = false;
+            Handlers.DDay.DestroyInstance();
         }
 
         public override void OnGameStart() => Active = false;

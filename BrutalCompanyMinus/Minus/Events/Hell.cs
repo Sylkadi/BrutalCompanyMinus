@@ -25,7 +25,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.VeryBad;
 
             EventsToRemove = new List<string>() { nameof(Trees), nameof(LeaflessBrownTrees), nameof(Gloomy), nameof(Raining), nameof(HeavyRain), nameof(Warzone) };
-            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees), nameof(AntiCoilhead), nameof(InsideBees), nameof(KamikazieBugs), nameof(SnareFleas), nameof(Thumpers), nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(OutsideLandmines), nameof(DDay) };
+            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees), nameof(AntiCoilhead), nameof(InsideBees), nameof(KamikazieBugs), nameof(SnareFleas), nameof(Thumpers), nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(OutsideLandmines) };
 
             ScaleList.Add(ScaleType.ScrapValue, new Scale(1.75f, 0.0542f, 1.75f, 4.0f));
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.75f, 0.0542f, 1.75f, 4.0f));

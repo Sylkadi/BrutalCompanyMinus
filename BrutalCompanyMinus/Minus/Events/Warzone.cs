@@ -25,7 +25,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.VeryBad;
 
             EventsToRemove = new List<string>() { nameof(LeaflessBrownTrees), nameof(LeaflessTrees) };
-            EventsToSpawnWith = new List<string>() { nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(OutsideLandmines), nameof(DDay), nameof(Trees) };
+            EventsToSpawnWith = new List<string>() { nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(OutsideLandmines), nameof(Trees) };
         }
     }
 }
