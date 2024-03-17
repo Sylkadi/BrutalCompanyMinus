@@ -25,13 +25,18 @@ namespace BrutalCompanyMinus.Minus.Handlers
         private void Update()
         {
             transform.position += transform.forward * Time.deltaTime * speed;
-            if (timeTillExplode < -0.15f) Destroy(transform.gameObject);
             if(timeTillExplode > 0)
             {
                 timeTillExplode -= Time.deltaTime;
             } else
             {
-                Landmine.SpawnExplosion(transform.position, true, 5, 6);
+                try
+                {
+                    Landmine.SpawnExplosion(transform.position, true, 5, 6);
+                } catch
+                {
+
+                }
                 Destroy(transform.gameObject);
             }
             

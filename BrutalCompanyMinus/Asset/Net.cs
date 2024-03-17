@@ -410,7 +410,6 @@ namespace BrutalCompanyMinus
                 {
                     Instance.currentWeatherEffects.Clear(); // Clear weather effects
                     Instance.outsideObjectsToSpawn.Clear();
-                    UI.ClearText();
                 }
             }
         }

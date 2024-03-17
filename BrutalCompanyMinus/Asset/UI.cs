@@ -144,7 +144,7 @@ namespace BrutalCompanyMinus
             return s;
         }
 
-        public static void ClearText() => Net.Instance.textUI.Value = new FixedString4096Bytes("<br>No Events...");
+        public static void ClearText() => Net.Instance.textUI.Value = new FixedString4096Bytes(" ");
 
         public void OnKeyboardInput(char input)
         {
@@ -165,6 +165,30 @@ namespace BrutalCompanyMinus
         public void UnsubscribeFromKeyboardEvent()
         {
             if (Configuration.EnableUI.Value) keyboard.onTextInput -= OnKeyboardInput;
+        }
+
+
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.First)]
+        [HarmonyPatch(typeof(StartOfRound), "ShipLeave")]
+        private static void OnShipLeave()
+        {
+            if (!Configuration.DisplayUIAfterShipLeaves.Value)
+            {
+                ClearText();
+                return;
+            }
+
+            if(Configuration.EnableUI.Value) GenerateText(EventManager.currentEvents);
+
+            if (Configuration.showEventsInChat.Value)
+            {
+                HUDManager.Instance.AddTextToChatOnServer("<color=#FFFFFF>Events:</color>");
+                foreach (MEvent e in EventManager.currentEvents)
+                {
+                    HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
+                }
+            }
         }
 
         // Disable inputs when in terminal, in settings or is typing.

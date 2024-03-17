@@ -173,7 +173,7 @@ namespace BrutalCompanyMinus
             EventManager.ApplyEvents(currentEvents);
             EventManager.ApplyEvents(additionalEvents);
 
-            if (Configuration.showEventsInChat.Value)
+            if (Configuration.showEventsInChat.Value && !Configuration.DisplayUIAfterShipLeaves.Value)
             {
                 HUDManager.Instance.AddTextToChatOnServer("<color=#FFFFFF>Events:</color>");
                 foreach(MEvent e in currentEvents)
@@ -190,7 +190,13 @@ namespace BrutalCompanyMinus
             Net.Instance.SyncValuesClientRpc(Manager.currentLevel.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier, Manager.bonusEnemyHp);
             
             // Apply UI
-            UI.GenerateText(currentEvents);
+            if(!Configuration.DisplayUIAfterShipLeaves.Value)
+            {
+                UI.GenerateText(currentEvents);
+            } else
+            {
+                UI.ClearText();
+            }
 
             // Logging
             Log.LogInfo("MapMultipliers = [scrapValueMultiplier: " + Manager.scrapValueMultiplier + ",     scrapAmountMultiplier: " + Manager.scrapAmountMultiplier + ",     currentLevel.factorySizeMultiplier:" + Manager.currentLevel.factorySizeMultiplier + "]");
