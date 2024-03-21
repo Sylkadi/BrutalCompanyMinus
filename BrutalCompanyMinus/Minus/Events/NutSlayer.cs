@@ -23,7 +23,7 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#280000";
             Type = EventType.VeryBad;
 
-            EventsToSpawnWith = new List<string>() { nameof(Gloomy), nameof(Thumpers), nameof(HoardingBugs), nameof(Spiders) };
+            EventsToSpawnWith = new List<string>() { nameof(Gloomy), nameof(Thumpers), nameof(Spiders), nameof(Masked) };
             EventsToRemove = new List<string>() { nameof(HeavyRain), nameof(Raining) };
 
             ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(1.0f, 0.034f, 1.0f, 3.0f));

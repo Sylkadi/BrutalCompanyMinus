@@ -22,7 +22,7 @@ namespace BrutalCompanyMinus.Minus.Events
         {
             Instance = this;
 
-            EventsToRemove = new List<string>() { nameof(Hell) };
+            EventsToRemove = new List<string>() { nameof(Hell), nameof(Masked), nameof(NutSlayer) };
 
             Weight = 1;
             Description = "No masks";

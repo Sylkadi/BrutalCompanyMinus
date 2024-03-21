@@ -59,6 +59,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.StrongEnemies(),
             new Events.KamikazieBugs(),
             new Events.RealityShift(),
+            new Events.Masked(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),

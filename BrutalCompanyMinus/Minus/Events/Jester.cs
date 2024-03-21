@@ -24,6 +24,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.VeryBad;
 
             ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(10.0f, 0.34f, 10.0f, 30.0f));
+            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(5.0f, 0.167f, 5.0f, 15.0f));
             ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
             ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
         }
@@ -33,6 +34,7 @@ namespace BrutalCompanyMinus.Minus.Events
             EnemyType Jester = Assets.GetEnemy(Assets.EnemyName.Jester);
 
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Jester, Get(ScaleType.InsideEnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Jester, Get(ScaleType.OutsideEnemyRarity));
             Manager.Spawn.InsideEnemies(Jester, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
         }
     }
