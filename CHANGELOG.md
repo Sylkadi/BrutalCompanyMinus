@@ -1,5 +1,13 @@
 # ChangeLog
 <details>
+  <summary>0.10.7</summary>
+  
+  - Added config option to show event's after ship leaves.
+  - Updated how UI key works
+  - Added back DDay, if it dosen't work i will cut my own dick off.
+  
+</details>
+<details>
   <summary>0.10.4</summary>
 
   - DDay persisting should be fixed

@@ -76,6 +76,7 @@
 | Small Delivery | Spawns a shipment with some items |
 | Scarce Outside Scrap | Spawns scrap outside |
 | Fragile Enemies | Decreases enemy hp |
+| Full Access | All Doors are unlocked and open and big doors are all unlocked, prevents facility ghost. |
   </details>
 
   <details>
@@ -92,7 +93,7 @@
 | No Giants | Removes Forest Keeper |
 | No Hoarding Bugs | Removes Hoarding Bug |
 | No Jester | Removes Jester |
-| No Little Girl | Removes Ghost Girl |
+| No Ghosts | Removes Ghost Girl and Facility Ghost |
 | No Lizards | Removes Spore Lizard |
 | No Nutcrackers | Removes Nutcracker |
 | No Spiders | Removes Bunker Spider |
@@ -144,7 +145,7 @@
 | Strong Enemies | Increases enemy hp |
 | Reality Warp | Attempting to grab scrap will make it transform into something else, sometimes a landmine or turret |
 | Kamikazie Bugs | Hoarding bugs will now blow up when angered | 
-| DDay | Every so often the map will be bombarded will artillery fire |
+| Masked | Spawned masked enemies |
   </details>
 
   <details>
@@ -167,7 +168,7 @@
 | Bug Horde | Spawns a load of Hoarding Bugs outside and inside, comes with Scarce Outside Scrap |
 | Forest Giant | Spawns a Forest Keeper inside |
 | Inside Bees | Spawns Bees outside and inside |
-| Nutslayer | Spawns the Nutslayer inside the facility, kills everything... comes with gloomy. |
+| Nutslayer | Spawns the Nutslayer inside the facility, kills everything... comes with gloomy, thumpers, spiders and masked. |
 | Hell | Great reward, but at what cost... |
     
   </details>
