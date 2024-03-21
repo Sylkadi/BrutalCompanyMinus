@@ -1,5 +1,12 @@
 # ChangeLog
 <details>
+  <summary>0.10.10</summary>
+  
+  - Spawn chance will no longer multiply negative values in key frames, Tldr; Higher spawn chance will now mean earlier spawns.
+  - Other stuff
+  
+</details>
+<details>
   <summary>0.10.9</summary>
   
   - Nut slayer is now immortal by default and slightly more dangerous.
