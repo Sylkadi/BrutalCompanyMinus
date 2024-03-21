@@ -521,7 +521,9 @@ namespace BrutalCompanyMinus.Minus
             Keyframe[] insideKeyFrames = new Keyframe[currentLevel.enemySpawnChanceThroughoutDay.keys.Length];
             for (int i = 0; i < currentLevel.enemySpawnChanceThroughoutDay.keys.Length; i++)
             {
-                insideKeyFrames[i] = new Keyframe(currentLevel.enemySpawnChanceThroughoutDay.keys[i].time, currentLevel.enemySpawnChanceThroughoutDay.keys[i].value * by);
+                float multiplier = by;
+                if (currentLevel.enemySpawnChanceThroughoutDay.keys[i].value <= 0) multiplier = 1.0f;
+                insideKeyFrames[i] = new Keyframe(currentLevel.enemySpawnChanceThroughoutDay.keys[i].time, currentLevel.enemySpawnChanceThroughoutDay.keys[i].value * multiplier);
             }
             currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(insideKeyFrames);
 
@@ -529,7 +531,9 @@ namespace BrutalCompanyMinus.Minus
             Keyframe[] outsideKeyFrames = new Keyframe[currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length];
             for (int i = 0; i < currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length; i++)
             {
-                outsideKeyFrames[i] = new Keyframe(currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].time, currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value * by);
+                float multiplier = by;
+                if (currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value <= 0) multiplier = 1.0f;
+                outsideKeyFrames[i] = new Keyframe(currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].time, currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value * multiplier);
             }
             currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve(outsideKeyFrames);
 
@@ -537,7 +541,9 @@ namespace BrutalCompanyMinus.Minus
             Keyframe[] daytimeKeyFrames = new Keyframe[currentLevel.daytimeEnemySpawnChanceThroughDay.keys.Length];
             for (int i = 0; i < currentLevel.daytimeEnemySpawnChanceThroughDay.keys.Length; i++)
             {
-                daytimeKeyFrames[i] = new Keyframe(currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].time, currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value * by);
+                float multiplier = by;
+                if (currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value <= 0) multiplier = 1.0f;
+                daytimeKeyFrames[i] = new Keyframe(currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].time, currentLevel.daytimeEnemySpawnChanceThroughDay.keys[i].value * multiplier);
             }
             currentLevel.daytimeEnemySpawnChanceThroughDay = new AnimationCurve(daytimeKeyFrames);
         }
