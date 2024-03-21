@@ -30,6 +30,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.SmallDeilvery(),
             new Events.ScarceOutsideScrap(),
             new Events.FragileEnemies(),
+            new Events.FullAccess(),
             // Neutral
             new Events.Nothing(),
             new Events.Locusts(),

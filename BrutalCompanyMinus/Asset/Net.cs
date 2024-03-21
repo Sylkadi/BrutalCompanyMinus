@@ -11,6 +11,8 @@ using BrutalCompanyMinus.Minus.Handlers;
 using static UnityEngine.GraphicsBuffer;
 using System.Net.Http.Headers;
 using JetBrains.Annotations;
+using System.Collections;
+using UnityEngine.Animations.Rigging;
 
 namespace BrutalCompanyMinus
 {
@@ -264,6 +266,32 @@ namespace BrutalCompanyMinus
                     door.gameObject.GetComponent<AnimatedObjectTrigger>().TriggerAnimationNonPlayer(false, true);
                     door.SetDoorAsOpen(Convert.ToBoolean(rng.Next(0, 2)));
                 }
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void UnlockAndOpenAllDoorsServerRpc()
+        {
+            TerminalAccessibleObject[] doors = GameObject.FindObjectsOfType<TerminalAccessibleObject>();
+
+            foreach(TerminalAccessibleObject door in doors) door.SetDoorOpenServerRpc(true);
+
+            UnlockAndOpenAllDoorsClientRpc();
+        }
+
+        [ClientRpc]
+        public void UnlockAndOpenAllDoorsClientRpc()
+        {
+            DoorLock[] doors = GameObject.FindObjectsOfType<DoorLock>();
+
+            foreach(DoorLock door in doors)
+            {
+                if (door == null) continue;
+
+                if (door.isLocked) door.UnlockDoor();
+
+                door.gameObject.GetComponent<AnimatedObjectTrigger>().TriggerAnimationNonPlayer(false, true);
+                door.SetDoorAsOpen(true);
             }
         }
 
