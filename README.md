@@ -164,7 +164,7 @@
 | Anti Coilhead | Changes Coilhead AI and spawns them inside, comes with Leafless Trees and Gloomy |
 | Chinese Produce | Decreased Scrap Value but Increased Scrap Amount |
 | Transmute Scrap Big | Takes any two-handed scrap in map scrap pool and only spawns that |
-| War Zone | Acts as Quad event including Turrets, Landmines, Outside Turrets and Outside Landmines |
+| War Zone | Acts as Quad event including Turrets, Landmines, Outside Turrets and Outside Landmines and will also come with artillery fire!! |
 | Bug Horde | Spawns a load of Hoarding Bugs outside and inside, comes with Scarce Outside Scrap |
 | Forest Giant | Spawns a Forest Keeper inside |
 | Inside Bees | Spawns Bees outside and inside |
