@@ -10,6 +10,7 @@ using GameNetcodeStuff;
 using BrutalCompanyMinus.Minus.Handlers;
 using static UnityEngine.GraphicsBuffer;
 using System.Net.Http.Headers;
+using JetBrains.Annotations;
 
 namespace BrutalCompanyMinus
 {
@@ -360,11 +361,14 @@ namespace BrutalCompanyMinus
         public void DisplayTipClientRpc(string headerText, string bodyText, bool isWarning = false) => HUDManager.Instance.DisplayTip(headerText, bodyText, isWarning);
 
         [ServerRpc(RequireOwnership = false)]
-        public void BlackFridayServerRpc(int minPercentageCut, int maxPercentageCut) => BlackFridayClientRpc(minPercentageCut, maxPercentageCut);
-
-        public void BlackFridayClientRpc(int minPercentageCut, int maxPercentageCut)
+        public void BlackFridayServerRpc(int minPercentageCut, int maxPercentageCut)
         {
-            System.Random rng = new System.Random(_seed++);
+            BlackFridayClientRpc(minPercentageCut, maxPercentageCut, _seed++);
+        }
+
+        public void BlackFridayClientRpc(int minPercentageCut, int maxPercentageCut, int seed)
+        {
+            System.Random rng = new System.Random(seed);
             for (int i = 0; i < Manager.currentTerminal.buyableItemsList.Length; i++)
             {
                 int percentage = 100 - (int)Mathf.Clamp(rng.Next(minPercentageCut, maxPercentageCut), 0.0f, 90.0f);
