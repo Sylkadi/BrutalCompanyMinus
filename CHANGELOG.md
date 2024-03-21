@@ -1,5 +1,24 @@
 # ChangeLog
 <details>
+  <summary>0.10.10</summary>
+  
+  - Spawn chance will no longer multiply negative values in key frames, Tldr; Higher spawn chance will now mean earlier spawns.
+  - Other stuff
+  
+</details>
+<details>
+  <summary>0.10.9</summary>
+  
+  - Nut slayer is now immortal by default and slightly more dangerous.
+  - Nut slayer event will now come with thumpers, spiders and masked events. And will also increase spawn rates and spawn cap.
+  - Black friday values should now be synced to all clients(Small oversight)
+  - Moved DDay event to warzone(Removed DDay event but now it will only appear in warzone and hell).
+  - Added 2 new events(Nothing interesting):
+  - (Bad) Masked: Spawns Masked enemies
+  - (Good) FullAccess: Every door will be unlocked and opened, prevents facility ghost.
+  
+</details>
+<details>
   <summary>0.10.7</summary>
   
   - Added config option to show event's after ship leaves.
