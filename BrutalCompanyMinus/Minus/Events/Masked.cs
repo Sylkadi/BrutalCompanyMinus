@@ -24,8 +24,8 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.Bad;
 
             ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(20.0f, 0.34f, 25.0f, 40.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 2.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.05f, 3.0f, 5.0f));
+            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
+            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.05f, 2.0f, 5.0f));
         }
 
         public override void Execute()

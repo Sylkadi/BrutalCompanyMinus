@@ -775,10 +775,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             isFiring = true;
             fire(gunPosition, gunForward);
-            StartCoroutine(fireAfterDelay(0.3f, gunPosition, gunForward));
-            StartCoroutine(fireAfterDelay(0.6f, gunPosition, gunForward));
-            StartCoroutine(fireAfterDelay(0.9f, gunPosition, gunForward));
-            StartCoroutine(fireAfterDelay(1.2f, gunPosition, gunForward));
+            StartCoroutine(fireAfterDelay(0.35f, gunPosition, gunForward));
+            StartCoroutine(fireAfterDelay(0.7f, gunPosition, gunForward));
             isFiring = false;
         }
 
