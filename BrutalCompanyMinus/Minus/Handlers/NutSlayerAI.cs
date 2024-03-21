@@ -711,7 +711,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             serverPosition = enemyPos;
             if (enemyHP <= 1)
             {
-                yield return new WaitForSeconds(1.5f);
+                yield return new WaitForSeconds(0.75f);
             }
             else if (gun.shellsLoaded == 1)
             {
@@ -719,7 +719,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
             else
             {
-                yield return new WaitForSeconds(1.5f);
+                yield return new WaitForSeconds(0.75f);
             }
             yield return new WaitForEndOfFrame();
             if (base.IsOwner && !isFiring)

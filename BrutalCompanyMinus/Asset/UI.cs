@@ -148,7 +148,15 @@ namespace BrutalCompanyMinus
 
         public void OnKeyboardInput(char input)
         {
-            if (keyControl.isPressed && keyPressEnabledTyping && keyPressEnabledTerminal && keyPressEnabledSettings)
+            bool pressed = false;
+            if(keyControl != null)
+            {
+                pressed = keyControl.isPressed;
+            } else
+            {
+                pressed = (input.ToString().ToUpper() == key.ToUpper());
+            }
+            if (pressed && keyPressEnabledTyping && keyPressEnabledTerminal && keyPressEnabledSettings)
             {
                 bool newState = !UI.Instance.panelBackground.activeSelf;
 
@@ -173,6 +181,8 @@ namespace BrutalCompanyMinus
         [HarmonyPatch(typeof(StartOfRound), "ShipLeave")]
         private static void OnShipLeave()
         {
+            if (!RoundManager.Instance.IsHost) return;
+
             if (!Configuration.DisplayUIAfterShipLeaves.Value)
             {
                 ClearText();

@@ -40,6 +40,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public void Start()
         {
+            if(instance != null) DestroyInstance();
             instance = this;
 
             currentTime = 15.0f;
@@ -129,8 +130,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
             GameObject sirens = GameObject.Instantiate(Assets.artillerySirens, position, Quaternion.identity);
             sirens.GetComponent<NetworkObject>().Spawn(destroyWithScene: true);
-
-            instance = sirens.GetComponent<DDay>();
         }
 
         public static void DestroyInstance()
