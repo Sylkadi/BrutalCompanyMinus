@@ -23,7 +23,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.10.9";
+        private const string VERSION = "0.10.10";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -171,7 +171,7 @@ namespace BrutalCompanyMinus
             
             EventManager.ApplyEvents(currentEvents);
             EventManager.ApplyEvents(additionalEvents);
-            
+
             if (Configuration.showEventsInChat.Value && !Configuration.DisplayUIAfterShipLeaves.Value)
             {
                 HUDManager.Instance.AddTextToChatOnServer("<color=#FFFFFF>Events:</color>");

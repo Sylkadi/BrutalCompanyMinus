@@ -1,5 +1,4 @@
-﻿using BrutalCompanyMinus.Minus.Events;
-using Discord;
+﻿using Discord;
 using HarmonyLib;
 using System.Collections;
 using System.Collections.Generic;
@@ -139,8 +138,27 @@ namespace BrutalCompanyMinus.Minus.Handlers
             NetworkObject netObject = instance.transform.GetComponent<NetworkObject>();
 
             if (netObject == null) return;
+            try
+            {
+                netObject.Despawn(true);
+            } catch
+            {
 
-            netObject.Despawn(true);
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.EndGameServerRpc))]
+        public static void DestroyForGodsSake()
+        {
+            if (!RoundManager.Instance.IsHost) return;
+            try
+            {
+                NetworkObject netObject = instance.transform.GetComponent<NetworkObject>();
+                netObject.Despawn(true);
+            } catch
+            {
+            }
         }
 
         [HarmonyPostfix]
