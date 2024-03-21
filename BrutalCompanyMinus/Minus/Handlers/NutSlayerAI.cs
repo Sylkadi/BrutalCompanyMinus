@@ -111,7 +111,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         // Custom variables
 
-        private float speedWhileMoving = 8.0f;
+        private float speedWhileMoving = 9.5f;
         private float widthSearch = 45f;
         private int rangeSearch = 30;
         private Transform target;
@@ -711,7 +711,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             serverPosition = enemyPos;
             if (enemyHP <= 1)
             {
-                yield return new WaitForSeconds(0.75f);
+                yield return new WaitForSeconds(0.9f);
             }
             else if (gun.shellsLoaded == 1)
             {
@@ -719,7 +719,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
             else
             {
-                yield return new WaitForSeconds(0.75f);
+                yield return new WaitForSeconds(0.9f);
             }
             yield return new WaitForEndOfFrame();
             if (base.IsOwner && !isFiring)
@@ -775,8 +775,10 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             isFiring = true;
             fire(gunPosition, gunForward);
-            StartCoroutine(fireAfterDelay(0.35f, gunPosition, gunForward));
-            StartCoroutine(fireAfterDelay(0.7f, gunPosition, gunForward));
+            StartCoroutine(fireAfterDelay(0.3f, gunPosition, gunForward));
+            StartCoroutine(fireAfterDelay(0.6f, gunPosition, gunForward));
+            StartCoroutine(fireAfterDelay(0.9f, gunPosition, gunForward));
+            StartCoroutine(fireAfterDelay(1.2f, gunPosition, gunForward));
             isFiring = false;
         }
 

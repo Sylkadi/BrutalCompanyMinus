@@ -119,7 +119,7 @@ namespace BrutalCompanyMinus
             // Custom scrap settings
             nutSlayerLives = customAssetsConfig.Bind("NutSlayer", "Lives", 5, "If hp reaches zero or below, decrement lives and reset hp until 0 lives.");
             nutSlayerHp = customAssetsConfig.Bind("NutSlayer", "Hp", 6);
-            nutSlayerMovementSpeed = customAssetsConfig.Bind("NutSlayer", "Speed", 8.0f);
+            nutSlayerMovementSpeed = customAssetsConfig.Bind("NutSlayer", "Speed?", 9.5f);
             nutSlayerImmortal = customAssetsConfig.Bind("NutSlayer", "Immortal?", true);
             Assets.grabbableTurret.minValue = customAssetsConfig.Bind("Grabbable Landmine", "Min value", 50).Value;
             Assets.grabbableTurret.maxValue = customAssetsConfig.Bind("Grabbable Landmine", "Max value", 75).Value;

@@ -51,6 +51,8 @@ namespace BrutalCompanyMinus.Minus.Events
             Manager.Spawn.OutsideEnemies(Assets.GetEnemy(Assets.EnemyName.BunkerSpider), 3);
             Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.BunkerSpider), 2);
 
+            Manager.Spawn.InsideEnemies(Assets.GetEnemy(Assets.EnemyName.ForestKeeper), 1);
+
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Assets.GetEnemy(Assets.EnemyName.ForestKeeper), 2);
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.Bracken), 15);
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Assets.GetEnemy(Assets.EnemyName.NutCracker), 5);
