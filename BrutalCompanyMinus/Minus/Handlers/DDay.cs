@@ -51,7 +51,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public void Update()
         {
-            if (!Events.DDay.Active || !RoundManager.Instance.IsHost) return;
+            if (!Events.Warzone.Active || !RoundManager.Instance.IsHost) return;
             if(currentTime > 0)
             {
                 currentTime -= Time.deltaTime;
@@ -147,7 +147,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch(typeof(StartOfRound), "OnShipLandedMiscEvents")]
         public static void OnShipLanded()
         {
-            if (!RoundManager.Instance.IsHost || !Events.DDay.Active) return;
+            if (!RoundManager.Instance.IsHost || !Events.Warzone.Active) return;
 
             SpawnInstance();
         }

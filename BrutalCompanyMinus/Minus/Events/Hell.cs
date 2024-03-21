@@ -25,7 +25,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.VeryBad;
 
             EventsToRemove = new List<string>() { nameof(Trees), nameof(LeaflessBrownTrees), nameof(Gloomy), nameof(Raining), nameof(HeavyRain), nameof(Warzone) };
-            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees), nameof(AntiCoilhead), nameof(InsideBees), nameof(KamikazieBugs), nameof(SnareFleas), nameof(Thumpers), nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(DDay), nameof(OutsideLandmines) };
+            EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees), nameof(AntiCoilhead), nameof(InsideBees), nameof(KamikazieBugs), nameof(SnareFleas), nameof(Thumpers), nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(OutsideLandmines) };
 
             ScaleList.Add(ScaleType.ScrapValue, new Scale(1.75f, 0.0542f, 1.75f, 4.0f));
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.75f, 0.0542f, 1.75f, 4.0f));
@@ -37,6 +37,7 @@ namespace BrutalCompanyMinus.Minus.Events
         public override void Execute()
         {
             Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Exclipsed], true);
+            Warzone.Instance.Enabled = true;
 
             RoundManager.Instance.currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(new Keyframe(0f, 1.0f), new Keyframe(1.0f, 8.0f));
             RoundManager.Instance.currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve(new Keyframe(0f, -10f), new Keyframe(0.15f, -10.0f), new Keyframe(0.16f, 1.0f), new Keyframe(1.0f, 8.0f));

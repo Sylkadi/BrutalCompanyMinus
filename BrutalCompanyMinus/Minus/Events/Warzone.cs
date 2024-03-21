@@ -6,11 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 
 namespace BrutalCompanyMinus.Minus.Events
 {
     internal class Warzone : MEvent
     {
+
+        public static bool Active = false;
+
         public override string Name() => nameof(Warzone);
 
         public static Warzone Instance;
@@ -25,7 +29,17 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.VeryBad;
 
             EventsToRemove = new List<string>() { nameof(LeaflessBrownTrees), nameof(LeaflessTrees) };
-            EventsToSpawnWith = new List<string>() { nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(OutsideLandmines), nameof(DDay), nameof(Trees) };
+            EventsToSpawnWith = new List<string>() { nameof(Turrets), nameof(Landmines), nameof(OutsideTurrets), nameof(OutsideLandmines), nameof(Trees) };
         }
+
+        public override void Execute() => Active = true;
+
+        public override void OnShipLeave()
+        {
+            Active = false;
+            Handlers.DDay.DestroyInstance();
+        }
+
+        public override void OnGameStart() => Active = false;
     }
 }
