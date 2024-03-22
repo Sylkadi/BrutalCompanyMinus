@@ -24,6 +24,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.VeryBad;
 
             ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(30.0f, 1.0f, 30.0f, 90.0f));
+            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(4.0f, 0.134f, 4.0f, 12.0f));
             ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
             ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.05f, 1.0f, 5.0f));
         }
@@ -33,6 +34,7 @@ namespace BrutalCompanyMinus.Minus.Events
             EnemyType Coilhead = Assets.GetEnemy(Assets.EnemyName.CoilHead);
 
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Coilhead, Get(ScaleType.InsideEnemyRarity));
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Coilhead, Get(ScaleType.OutsideEnemyRarity));
             Manager.Spawn.InsideEnemies(Coilhead, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
         }
     }
