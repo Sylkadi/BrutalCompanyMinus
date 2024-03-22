@@ -550,6 +550,26 @@ namespace BrutalCompanyMinus.Minus
             currentLevel.daytimeEnemySpawnChanceThroughDay = new AnimationCurve(daytimeKeyFrames);
         }
 
+        public static void AddInsideSpawnChance(float value)
+        {
+            Keyframe[] insideKeyFrames = new Keyframe[currentLevel.enemySpawnChanceThroughoutDay.keys.Length];
+            for (int i = 0; i < currentLevel.enemySpawnChanceThroughoutDay.keys.Length; i++)
+            {
+                insideKeyFrames[i] = new Keyframe(currentLevel.enemySpawnChanceThroughoutDay.keys[i].time, currentLevel.enemySpawnChanceThroughoutDay.keys[i].value + value);
+            }
+            currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(insideKeyFrames);
+        }
+
+        public static void AddOutsideSpawnChance(float value)
+        {
+            Keyframe[] outsideKeyFrames = new Keyframe[currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length];
+            for (int i = 0; i < currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length; i++)
+            {
+                outsideKeyFrames[i] = new Keyframe(currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].time, currentLevel.outsideEnemySpawnChanceThroughDay.keys[i].value + value);
+            }
+            currentLevel.outsideEnemySpawnChanceThroughDay = new AnimationCurve(outsideKeyFrames);
+        }
+
         public static void PayCredits(int amount)
         {
             if (amount == 0) return;

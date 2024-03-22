@@ -158,6 +158,8 @@ namespace BrutalCompanyMinus
 
             // Difficulty modifications
             Manager.AddEnemyHp((int)MEvent.Scale.Compute(Configuration.enemyBonusHpScaling));
+            Manager.AddInsideSpawnChance(MEvent.Scale.Compute(Configuration.insideSpawnChanceAdditive));
+            Manager.AddOutsideSpawnChance(MEvent.Scale.Compute(Configuration.outsideSpawnChanceAdditive));
             Manager.MultiplySpawnChance(newLevel, MEvent.Scale.Compute(Configuration.spawnChanceMultiplierScaling));
             Manager.MultiplySpawnCap(MEvent.Scale.Compute(Configuration.spawnCapMultiplier));
             Manager.AddInsidePower((int)MEvent.Scale.Compute(Configuration.insideEnemyMaxPowerCountScaling));

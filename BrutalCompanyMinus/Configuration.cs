@@ -64,7 +64,7 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<int> deadLineDaysAmount, startingCredits, startingQuota, baseIncrease, increaseSteepness;
         public static Scale
             spawnChanceMultiplierScaling = new Scale(), insideEnemyMaxPowerCountScaling = new Scale(), outsideEnemyPowerCountScaling = new Scale(), enemyBonusHpScaling = new Scale(), spawnCapMultiplier = new Scale(),
-            scrapAmountMultiplier = new Scale(), scrapValueMultiplier = new Scale();
+            scrapAmountMultiplier = new Scale(), scrapValueMultiplier = new Scale(), insideSpawnChanceAdditive = new Scale(), outsideSpawnChanceAdditive = new Scale();
         public static ConfigEntry<bool> ignoreScaleCap;
 
         public static Dictionary<string, Dictionary<string, int>>  // Level name => Enemy/Scrap name => Rarity
@@ -105,6 +105,8 @@ namespace BrutalCompanyMinus
             // Difficulty scaling
             ignoreScaleCap = difficultyConfig.Bind("Difficulty Scaling", "Ignore minCap, maxCap", false, "Ignore caps that limit scaling.");
             spawnChanceMultiplierScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn chance multiplier scale", "1.0, 0.017, 1.0, 2.0", "This will multiply the spawn chance by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            insideSpawnChanceAdditive = getScale(difficultyConfig.Bind("Difficulty Scaling", "Inside spawn chance additive", "0.0, 0.0, 0.0, 0.0", "This will add to all keyframes for insideSpawns on the animationCurve,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            insideSpawnChanceAdditive = getScale(difficultyConfig.Bind("Difficulty Scaling", "Outside spawn chance additive", "0.0, 0.0, 0.0, 0.0", "This will add to all keyframes for outsideSpawns on the animationCurve,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             spawnCapMultiplier = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn cap multipler scale", "1.0, 0.017, 1.0, 2.0", "This will multiply outside and inside power counts by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Additional Inside Max Enemy Power Count", "0, 0, 0, 0", "Added max enemy power count for inside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Additional Outside Max Enemy Power Count", "0, 0, 0, 0", "Added max enemy power count for outside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
@@ -192,8 +194,8 @@ namespace BrutalCompanyMinus
                 eventScales.Add(scales);
 
                 // EventsToRemove and EventsToSpawnWith
-                eventsToRemove.Add(ListToStrings(eventConfig.Bind(e.Name(), "Events To Remove", StringsToList(e.EventsToRemove), "Will prevent said event from occuring.").Value));
-                eventsToSpawnWith.Add(ListToStrings(eventConfig.Bind(e.Name(), "Events To Spawn With", StringsToList(e.EventsToSpawnWith), "Will spawn said events").Value));
+                eventsToRemove.Add(ListToStrings(eventConfig.Bind(e.Name(), "Events To Remove", StringsToList(e.EventsToRemove), "Will prevent said event(s) from occuring.").Value));
+                eventsToSpawnWith.Add(ListToStrings(eventConfig.Bind(e.Name(), "Events To Spawn With", StringsToList(e.EventsToSpawnWith), "Will spawn said events(s).").Value));
             }
 
             // Specific event settings
