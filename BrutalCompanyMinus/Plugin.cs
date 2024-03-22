@@ -158,8 +158,8 @@ namespace BrutalCompanyMinus
 
             // Difficulty modifications
             Manager.AddEnemyHp((int)MEvent.Scale.Compute(Configuration.enemyBonusHpScaling));
-            Manager.AddInsideSpawnChance(MEvent.Scale.Compute(Configuration.insideSpawnChanceAdditive));
-            Manager.AddOutsideSpawnChance(MEvent.Scale.Compute(Configuration.outsideSpawnChanceAdditive));
+            Manager.AddInsideSpawnChance(newLevel, MEvent.Scale.Compute(Configuration.insideSpawnChanceAdditive));
+            Manager.AddOutsideSpawnChance(newLevel, MEvent.Scale.Compute(Configuration.outsideSpawnChanceAdditive));
             Manager.MultiplySpawnChance(newLevel, MEvent.Scale.Compute(Configuration.spawnChanceMultiplierScaling));
             Manager.MultiplySpawnCap(MEvent.Scale.Compute(Configuration.spawnCapMultiplier));
             Manager.AddInsidePower((int)MEvent.Scale.Compute(Configuration.insideEnemyMaxPowerCountScaling));
@@ -207,6 +207,12 @@ namespace BrutalCompanyMinus
 
             // Logging
             Log.LogInfo("MapMultipliers = [scrapValueMultiplier: " + Manager.scrapValueMultiplier + ",     scrapAmountMultiplier: " + Manager.scrapAmountMultiplier + ",     currentLevel.factorySizeMultiplier:" + Manager.currentLevel.factorySizeMultiplier + "]");
+            Log.LogInfo("Inside Spawn Curve");
+            foreach(Keyframe key in newLevel.enemySpawnChanceThroughoutDay.keys) Log.LogInfo($"Time:{key.time} + $Value:{key.value}");
+            Log.LogInfo("Outside Spawn Curve");
+            foreach (Keyframe key in newLevel.outsideEnemySpawnChanceThroughDay.keys) Log.LogInfo($"Time:{key.time} + $Value:{key.value}");
+            Log.LogInfo("Daytime Spawn Curve");
+            foreach (Keyframe key in newLevel.daytimeEnemySpawnChanceThroughDay.keys) Log.LogInfo($"Time:{key.time} + $Value:{key.value}");
         }
     }
 }
