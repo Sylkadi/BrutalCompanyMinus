@@ -13,6 +13,9 @@ using System.Net.Http.Headers;
 using JetBrains.Annotations;
 using System.Collections;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.InputSystem.HID;
+using UnityEngine.AI;
+using System.Runtime.InteropServices;
 
 namespace BrutalCompanyMinus
 {
@@ -211,6 +214,12 @@ namespace BrutalCompanyMinus
         public void SetRealityShiftActiveClientRpc(bool state) => Minus.Events.RealityShift.Active = state;
 
         [ServerRpc(RequireOwnership = false)]
+        public void SetAllWeatherActiveServerRpc(bool state) => SetAllWeatherActiveClientRpc(state);
+
+        [ClientRpc]
+        public void SetAllWeatherActiveClientRpc(bool state) => Minus.Events.AllWeather.Active = state;
+
+        [ServerRpc(RequireOwnership = false)]
         public void MessWithLightsServerRpc() => MessWithLightsClientRpc();
 
         [ClientRpc]
@@ -230,7 +239,7 @@ namespace BrutalCompanyMinus
             }
         }
 
-        private int _seed = 0;
+        public int _seed = 49;
         [ServerRpc(RequireOwnership = false)]
         public void MessWithDoorsServerRpc(float openCloseChance, bool messWithLock = false, float messWithLockChance = 0.0f)
         {
@@ -292,6 +301,55 @@ namespace BrutalCompanyMinus
 
                 door.gameObject.GetComponent<AnimatedObjectTrigger>().TriggerAnimationNonPlayer(false, true);
                 door.SetDoorAsOpen(true);
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SpawnMudPilesOutsideServerRpc(int amount)
+        {
+            NavMeshHit hit = default(NavMeshHit);
+            System.Random rng = new System.Random(_seed++);
+            for (int i = 0; i < amount; i++)
+            {
+                Vector3 node = RoundManager.Instance.outsideAINodes[rng.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
+                Vector3 nodeMoved = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(node, 30f, hit, rng) + Vector3.up;
+
+                SpawnMudPilesOutsideClientRpc(nodeMoved, _seed++);
+            }
+        }
+
+        [ClientRpc]
+        public void SpawnMudPilesOutsideClientRpc(Vector3 position, int seed) => GameObject.Instantiate(RoundManager.Instance.quicksandPrefab, position, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SpawnAllWeatherServerRpc() => SpawnAllWeatherClientRpc();
+
+        [ClientRpc]
+        public void SpawnAllWeatherClientRpc()
+        {
+            for(int i = 0; i < 20; i++)
+            {
+                if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Stormy && Assets.stormy != null)
+                {
+                    StormyWeather stormy = GameObject.Instantiate(Assets.stormy);
+                    stormy.gameObject.SetActive(true);
+                    Manager.objectsToClear.Add(stormy.gameObject);
+                }
+            }
+
+            if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Eclipsed && Assets.eclipsed != null)
+            {
+                EclipseWeather eclipsed = GameObject.Instantiate(Assets.eclipsed);
+                eclipsed.gameObject.SetActive(true);
+                Manager.objectsToClear.Add(eclipsed.gameObject);
+            }
+
+            if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Flooded && Assets.flooded != null)
+            {
+                FloodWeather flooded = GameObject.Instantiate(Assets.flooded);
+                AllWeather.spawnedFloodedWeather = flooded;
+                flooded.gameObject.SetActive(true);
+                Manager.objectsToClear.Add(flooded.gameObject);
             }
         }
 

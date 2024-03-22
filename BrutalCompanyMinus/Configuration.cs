@@ -210,6 +210,8 @@ namespace BrutalCompanyMinus
             Minus.Handlers.DDay.displayWarning = eventConfig.Bind(nameof(Warzone), "Display warning?", true, "Display warning message before bombardment?").Value;
             Minus.Handlers.DDay.volume = eventConfig.Bind(nameof(Warzone), "Siren Volume?", 0.3f, "Volume of the siren? between 0.0 and 1.0").Value;
             Minus.Handlers.ArtilleryShell.speed = eventConfig.Bind(nameof(Warzone), "Artillery shell speed", 100.0f, "How fast does the artillery shell travel?").Value;
+
+            // Specific
         }
 
         private static bool bindedLevelConfigurations = false;

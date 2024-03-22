@@ -71,12 +71,15 @@ namespace BrutalCompanyMinus
         internal static Dictionary<string, EnemyType> EnemyList = new Dictionary<string, EnemyType>();
         internal static Dictionary<string, Item> ItemList = new Dictionary<string, Item>();
         internal static Dictionary<string, GameObject> ObjectList = new Dictionary<string, GameObject>();
-        internal static Dictionary<string, WeatherEffect> AtmosphereList = new Dictionary<string, WeatherEffect>();
 
         internal static List<float> factorySizeMultiplierList = new List<float>();
         internal static List<float> averageScrapValueList = new List<float>();
         internal static List<AnimationCurve> insideSpawnChanceCurves = new List<AnimationCurve>(), outsideSpawnChanceCurves = new List<AnimationCurve>(), daytimeSpawnChanceCurves = new List<AnimationCurve>();
         internal static List<int> insideMaxPowerCounts = new List<int>(), outsideMaxPowerCounts = new List<int>(), daytimeMaxPowerCounts = new List<int>();
+
+        internal static EclipseWeather eclipsed;
+        internal static StormyWeather stormy;
+        internal static FloodWeather flooded;
 
         // Custom Assets
         internal static EnemyType antiCoilHead, nutSlayer, kamikazieBug;
@@ -133,7 +136,19 @@ namespace BrutalCompanyMinus
         private static bool generatedList = false;
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (generatedList || StartOfRound.Instance == null) return;
+            if(StartOfRound.Instance == null) return;
+
+            // This is placed here intentionally, if placed after generatedList it wont work after loading Scene again.
+            // Get weather scripts
+            StormyWeather[] stormyWeather = Resources.FindObjectsOfTypeAll<StormyWeather>().Concat(GameObject.FindObjectsByType<StormyWeather>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray();
+            EclipseWeather[] eclipsedWeather = Resources.FindObjectsOfTypeAll<EclipseWeather>().Concat(GameObject.FindObjectsByType<EclipseWeather>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray();
+            FloodWeather[] floodWeather = Resources.FindObjectsOfTypeAll<FloodWeather>().Concat(GameObject.FindObjectsByType<FloodWeather>(FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)).ToArray();
+
+            if (stormyWeather.Length != 0) stormy = stormyWeather[0];
+            if (eclipsedWeather.Length != 0) eclipsed = eclipsedWeather[0];
+            if (floodWeather.Length != 0) flooded = floodWeather[0];
+
+            if (generatedList) return;
 
             // Generate Enemy List
             Log.LogInfo("Generating 'EnemyList'");

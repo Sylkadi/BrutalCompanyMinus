@@ -16,6 +16,8 @@ using System.IO;
 using UnityEngine.Events;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using UnityEngine.AI;
 
 namespace BrutalCompanyMinus.Minus
 {
@@ -555,7 +557,7 @@ namespace BrutalCompanyMinus.Minus
             currentTerminal.SyncGroupCreditsServerRpc(currentTerminal.groupCredits, currentTerminal.numberOfItemsInDropship);
 
             bool isPositive = (amount >= 0);
-            HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}{2} credits</color>", isPositive ? "#008000" : "#FF0000", isPositive ? "+" : "", amount));
+            HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}{2} ■</color>", isPositive ? "#008000" : "#FF0000", isPositive ? "+" : "", amount));
         }
 
         [HarmonyPostfix]
@@ -585,11 +587,10 @@ namespace BrutalCompanyMinus.Minus
         [HarmonyPatch(typeof(RoundManager), "RefreshEnemyVents")]
         private static void OnRefreshEnemyVents()
         {
-            if (RoundManager.Instance.allEnemyVents.Length != 0)
-            {
-                Spawn.DoSpawnInsideEnemies();
-                Spawn.DoSpawnOutsideEnemies();
-            }
+            if (RoundManager.Instance.allEnemyVents.Length == 0) return;
+
+            Spawn.DoSpawnInsideEnemies();
+            Spawn.DoSpawnOutsideEnemies();
         }
 
         internal struct ObjectInfo
