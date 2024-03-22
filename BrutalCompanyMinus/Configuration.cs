@@ -62,7 +62,9 @@ namespace BrutalCompanyMinus
 
         public static ConfigEntry<bool> enableQuotaChanges;
         public static ConfigEntry<int> deadLineDaysAmount, startingCredits, startingQuota, baseIncrease, increaseSteepness;
-        public static Scale spawnChanceMultiplierScaling = new Scale(), insideEnemyMaxPowerCountScaling = new Scale(), outsideEnemyPowerCountScaling = new Scale(), enemyBonusHpScaling = new Scale(), spawnCapMultiplier = new Scale();
+        public static Scale
+            spawnChanceMultiplierScaling = new Scale(), insideEnemyMaxPowerCountScaling = new Scale(), outsideEnemyPowerCountScaling = new Scale(), enemyBonusHpScaling = new Scale(), spawnCapMultiplier = new Scale(),
+            scrapAmountMultiplier = new Scale(), scrapValueMultiplier = new Scale();
         public static ConfigEntry<bool> ignoreScaleCap;
 
         public static Dictionary<string, Dictionary<string, int>>  // Level name => Enemy/Scrap name => Rarity
@@ -107,6 +109,8 @@ namespace BrutalCompanyMinus
             insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Additional Inside Max Enemy Power Count", "0, 0, 0, 0", "Added max enemy power count for inside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Additional Outside Max Enemy Power Count", "0, 0, 0, 0", "Added max enemy power count for outside enemies.,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Additional hp", "0, 0.084, 0, 5", "Added hp to all enemies,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            scrapValueMultiplier = getScale(difficultyConfig.Bind("Difficulty Scaling", "Global scrap value multiplier scale", "1.0f, 0.0, 1.0, 1.0", "Mutliplies scrap value,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            scrapAmountMultiplier = getScale(difficultyConfig.Bind("Difficulty Scaling", "Global scrap amount multiplier scale", "1.0f, 0.0, 1.0, 1.0", "Mutliplies scrap value,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             goodEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
             badEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
 
