@@ -94,6 +94,8 @@ namespace BrutalCompanyMinus
                 EventManager.events[i].Type = Configuration.eventTypes[i].Value;
                 EventManager.events[i].ScaleList = Configuration.eventScales[i];
                 EventManager.events[i].Enabled = Configuration.eventEnables[i].Value;
+                EventManager.events[i].EventsToRemove = Configuration.eventsToRemove[i];
+                EventManager.events[i].EventsToSpawnWith = Configuration.eventsToSpawnWith[i];
             }
 
             // Create disabled events list and update
@@ -172,6 +174,7 @@ namespace BrutalCompanyMinus
 
             EventManager.ApplyEvents(currentEvents);
             EventManager.ApplyEvents(additionalEvents);
+            
 
             if (Configuration.showEventsInChat.Value && !Configuration.DisplayUIAfterShipLeaves.Value)
             {

@@ -37,6 +37,9 @@ namespace BrutalCompanyMinus
         public static List<ConfigEntry<MEvent.EventType>> eventTypes = new List<ConfigEntry<MEvent.EventType>>();
         public static List<Dictionary<ScaleType, Scale>> eventScales = new List<Dictionary<ScaleType, Scale>>();
         public static List<ConfigEntry<bool>> eventEnables = new List<ConfigEntry<bool>>();
+        public static List<List<string>>
+            eventsToRemove = new List<List<string>>(),
+            eventsToSpawnWith = new List<List<string>>();
 
         public static ConfigEntry<bool> useCustomWeights, showEventsInChat;
         public static ConfigEntry<int> eventsToSpawn, maxEventsToSpawn;
@@ -183,6 +186,10 @@ namespace BrutalCompanyMinus
                     scales.Add(obj.Key, getScale(eventConfig.Bind(e.Name(), obj.Key.ToString(), $"{obj.Value.Base.ToString(en)}, {obj.Value.Increment.ToString(en)}, {obj.Value.MinCap.ToString(en)}, {obj.Value.MaxCap.ToString(en)}", ScaleInfoList[obj.Key] + "   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value));
                 }
                 eventScales.Add(scales);
+
+                // EventsToRemove and EventsToSpawnWith
+                eventsToRemove.Add(ListToStrings(eventConfig.Bind(e.Name(), "Events To Remove", StringsToList(e.EventsToRemove), "Will prevent said event from occuring.").Value));
+                eventsToSpawnWith.Add(ListToStrings(eventConfig.Bind(e.Name(), "Events To Spawn With", StringsToList(e.EventsToSpawnWith), "Will spawn said events").Value));
             }
 
             // Specific event settings
@@ -382,6 +389,25 @@ namespace BrutalCompanyMinus
         private static float[] ParseValuesFromString(string from)
         {
             return from.Split(',').Select(x => float.Parse(x, en)).ToArray();
+        }
+
+        private static string StringsToList(List<string> strings)
+        {
+            string text = "";
+            foreach (string s in strings)
+            {
+                text += s;
+                text += ", ";
+            }
+            if (strings.Count > 0) text = text.Substring(0, text.Length - 2);
+            return text;
+        }
+
+        private static List<string> ListToStrings(string text)
+        {
+            if (text.IsNullOrWhiteSpace()) return new List<string>();
+            text = text.Replace(" ", "");
+            return text.Split(',').ToList();
         }
     }
 }
