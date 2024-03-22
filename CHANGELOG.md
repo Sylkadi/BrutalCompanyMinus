@@ -1,5 +1,16 @@
 # ChangeLog
 <details>
+  <summary>0.10.11</summary>
+  
+  - Added 1 new event:
+  - (VeryBad) AllWeather: Will spawn Eclipsed, Stormy, Flooded and Raining weather.
+  - Added config options for 'eventsToSpawnWith' and 'eventsToRemove' for every event.
+  - Added globalScrapValueMultiplier and globalScrapAmountMultipliers scales, both set to (1, 0, 1, 1) by default
+  - Added additiveInsideSpawnChance and additiveOutsidespawnChance scales, both set to (0, 0, 0, 0) by default
+  - Added some outsideSpawnChance to certain events.
+  
+</details>
+<details>
   <summary>0.10.10</summary>
   
   - Spawn chance will no longer multiply negative values in key frames, Tldr; Higher spawn chance will now mean earlier spawns.
