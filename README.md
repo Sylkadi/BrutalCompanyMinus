@@ -170,6 +170,7 @@
 | Inside Bees | Spawns Bees outside and inside |
 | Nutslayer | Spawns the Nutslayer inside the facility, kills everything... comes with gloomy, thumpers, spiders and masked. |
 | Hell | Great reward, but at what cost... |
+| AllWeather | Acts as Eclipsed, Stormy, Flooded and Raining all in one day |
     
   </details>
   
@@ -194,6 +195,10 @@ Location: `BrutalCompanyMinus\Difficulty_Settings.cfg`
 
 `Spawn Chance Multiplier`: A **scale** that multiplys the spawn rate.
 
+`Inside Spawn Chance Additive`: This will add to all keyframes for the insideSpawn animation curve.
+
+`Outside Spawn Chance Additive`: This will add to all keyframes for the outsideSpawn animation curve.
+
 `Spawn Cap Multiplier`: A **scale** that multiplys the spawn caps, this allows for a higher maximum amount of enemies to spawn outside and inside.
 
 `Additional Inside Max Enemy Power`: A **scale** that adds to the inside max enemy power count.
@@ -201,6 +206,10 @@ Location: `BrutalCompanyMinus\Difficulty_Settings.cfg`
 `Additional Outside Max Enemy Power`: A **scale** that adds to the outside max enemy power count.
 
 `Addional hp`: A **scale** that adds bonus hp to enemies.
+
+`Global scrap value multiplier scale`: A **scale** that multiplies all scrap value.
+
+`Global scrap amount multiplier scale`: A **scale** that multiplies all scrap amount.
 
 `Good event increment multiplier`: A global multiplier that will multiply all **Good** and **Very Good** increments.
 
@@ -216,13 +225,15 @@ Location: `BrutalCompanyMinus\Difficulty_Settings.cfg`
 
 #### Event Type Weights
 
-`Very Good Weight`: The weight for **VeryGood** event to be chosen
+`Very Good Weight scale`: The weight **scale** for **VeryGood** event to be chosen
 
 **...**
 
-`Very Bad Weight`: The weight for **VeryBad** event to be chosen
+`Very Bad Weight scale`: The weight **scale** for **VeryBad** event to be chosen
 
 #### Quota Settings
+
+`Enable Quota Changes`: Enable quota changes?
 
 `Deadline Days Amount`: Deadline
 
@@ -330,6 +341,10 @@ This will contain conifgurable options for every single event.
 
 `Max Outside Enemy`: A **scale** that describes the maximum amount of enemies garunteed to spawn outside.
 
+`Events To Remove`: Will prevent said event(s) from occuring.
+
+`Events To Spawn With`: Will spawn with said event(s).
+
 **...**
 
 #### Higher Scrap Value
@@ -346,6 +361,10 @@ This will contain conifgurable options for every single event.
 
 `Scrap Value`: A **scale** that multiplies the scrap value.
 
+`Events To Remove`: Will prevent said event(s) from occuring.
+
+`Events To Spawn With`: Will spawn with said event(s).
+
 **...**
 
 #### WarZone
@@ -359,3 +378,7 @@ This will contain conifgurable options for every single event.
 `Event Type`: This can be eiter **VeryBad**, **Bad**, **Neutral**, **Good**, **Very Good**, **Remove**
 
 `Event Enabled`: Will the event be enabled?
+
+`Events To Remove`: Will prevent said event(s) from occuring.
+
+`Events To Spawn With`: Will spawn with said event(s).
