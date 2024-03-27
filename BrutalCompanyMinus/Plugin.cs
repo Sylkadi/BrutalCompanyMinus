@@ -173,8 +173,6 @@ namespace BrutalCompanyMinus
             List<MEvent> additionalEvents = new List<MEvent>();
             List<MEvent> currentEvents = EventManager.ChooseEvents(out additionalEvents);
 
-            currentEvents.Add(Minus.Events.Trees.Instance);
-
             foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name()); // Log Chosen events
             foreach (MEvent e in additionalEvents) Log.LogInfo("Additional events: " + e.Name());
 
