@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
 using HarmonyLib;
-using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 
 namespace BrutalCompanyMinus.Minus.Events
 {
@@ -29,6 +28,9 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.VeryBad;
 
             EventsToRemove = new List<string>() { nameof(Gloomy), nameof(Raining), nameof(HeavyRain) };
+
+            ScaleList.Add(ScaleType.ScrapValue, new Scale(1.60f, 0.0f, 1.65f, 1.60f));
+            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.30f, 0.0f, 1.30f, 1.30f));
         }
 
         public override void Execute()
@@ -36,6 +38,9 @@ namespace BrutalCompanyMinus.Minus.Events
             Net.Instance.SetAllWeatherActiveServerRpc(true);
 
             Net.Instance.SpawnAllWeatherServerRpc();
+
+            Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
+            Manager.scrapValueMultiplier *= Getf(ScaleType.ScrapValue);
 
             Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Exclipsed], true);
             Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Flooded], true);

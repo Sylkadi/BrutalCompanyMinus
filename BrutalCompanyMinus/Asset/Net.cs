@@ -327,14 +327,11 @@ namespace BrutalCompanyMinus
         [ClientRpc]
         public void SpawnAllWeatherClientRpc()
         {
-            for(int i = 0; i < 20; i++)
+            if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Stormy && Assets.stormy != null)
             {
-                if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Stormy && Assets.stormy != null)
-                {
-                    StormyWeather stormy = GameObject.Instantiate(Assets.stormy);
-                    stormy.gameObject.SetActive(true);
-                    Manager.objectsToClear.Add(stormy.gameObject);
-                }
+                StormyWeather stormy = GameObject.Instantiate(Assets.stormy);
+                stormy.gameObject.SetActive(true);
+                Manager.objectsToClear.Add(stormy.gameObject);
             }
 
             if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Eclipsed && Assets.eclipsed != null)
