@@ -37,10 +37,13 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public static float volume = 0.3f;
 
+        private List<Vector3> spawnDenialNodes = new List<Vector3>();
+
         public void Start()
         {
             if(instance != null) DestroyInstance();
             instance = this;
+            spawnDenialNodes = Functions.GetSpawnDenialNodes();
 
             currentTime = 15.0f;
 
@@ -87,15 +90,31 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 // Fire
                 for (int i = 0; i < fireAmount * fireAmountMultiplier; i++)
                 {
-                    Vector3 at = Manager.outsideObjectSpawnNodes[rng.Next(Manager.outsideObjectSpawnNodes.Count)];
-                    at += new Vector3(rng.Next(-75, 75), 0, rng.Next(-75, 75));
+                    for (int j = 0; j < 3; j++) // 3 Attempts at safe position
+                    {
+                        rng = new System.Random(seed++);
 
-                    Vector3 from = at + new Vector3(rng.Next(-100, 100), rng.Next(500, 800), rng.Next(-100, 100));
+                        Vector3 at = Manager.outsideObjectSpawnNodes[rng.Next(Manager.outsideObjectSpawnNodes.Count)];
+                        at += new Vector3(rng.Next(-75, 75), 0, rng.Next(-75, 75));
 
-                    RaycastHit hit = new RaycastHit();
-                    if (Physics.Raycast(new Ray(from, (at - from).normalized), out hit)) at = hit.point;
+                        Vector3 from = at + new Vector3(rng.Next(-100, 100), rng.Next(500, 800), rng.Next(-100, 100));
 
-                    ArtilleryShell.FireAt(at, from);
+                        RaycastHit hit = new RaycastHit();
+                        if (Physics.Raycast(new Ray(from, (at - from).normalized), out hit)) at = hit.point;
+
+                        bool isSafe = true;
+                        foreach (Vector3 denialNode in spawnDenialNodes)
+                        {
+                            if (Vector3.Distance(denialNode, at) < 15.0f)
+                            {
+                                isSafe = false;
+                                break;
+                            }
+                        }
+
+                        if(isSafe) ArtilleryShell.FireAt(at, from);
+                        break;
+                    }
                 }
             }
         }

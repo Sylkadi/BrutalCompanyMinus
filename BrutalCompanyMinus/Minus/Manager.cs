@@ -163,7 +163,7 @@ namespace BrutalCompanyMinus.Minus
                         }
                         GameObject obj = UnityEngine.Object.Instantiate(
                             enemiesToSpawnOutside[i].obj,
-                            Functions.GetSafePosition(OutsideAiNodes, SpawnDenialNodes, 20.0f),
+                            Functions.GetSafePosition(OutsideAiNodes, SpawnDenialNodes, 20.0f, seed++),
                             Quaternion.Euler(Vector3.zero));
 
                         RoundManager.Instance.SpawnedEnemies.Add(obj.GetComponent<EnemyAI>());
@@ -715,15 +715,17 @@ namespace BrutalCompanyMinus.Minus
             return newValues;
         }
 
-        public static Vector3 GetSafePosition(List<Vector3> nodes, List<Vector3> denialNodes, float radius)
+        public static Vector3 GetSafePosition(List<Vector3> nodes, List<Vector3> denialNodes, float radius, int seed)
         {
-            Vector3 position = nodes[UnityEngine.Random.Range(0, nodes.Count)];
+            System.Random rng = new System.Random(seed);
+            UnityEngine.Random.InitState(seed);
+            Vector3 position = nodes[rng.Next(nodes.Count)];
             int Iteration = 0;
 
             while (true)
             {
                 Iteration++;
-                Vector3 newPosition = RoundManager.Instance.GetRandomNavMeshPositionInRadius(position, radius);
+                Vector3 newPosition = RoundManager.Instance.GetRandomPositionInRadius(position, 0, radius, rng);
                 bool foundSafe = true;
                 foreach (Vector3 node in denialNodes)
                 {
