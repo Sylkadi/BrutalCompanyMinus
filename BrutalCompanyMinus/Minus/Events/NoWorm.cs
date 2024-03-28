@@ -26,8 +26,8 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.Remove;
         }
 
-        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.EarthLeviathan]);
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.EarthLeviathan);
 
-        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.EarthLeviathan]);
+        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyName.EarthLeviathan);
     }
 }

@@ -32,7 +32,7 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override bool AddEventIfOnly()
         {
-            if (Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.Masked])) return true;
+            if (Manager.SpawnExists(Assets.EnemyName.Masked)) return true;
             if (RoundManager.Instance.currentLevel.spawnableScrap.Exists(x => x.spawnableItem.name == Assets.ItemNameList[Assets.ItemName.Comedy])) return true;
             if (RoundManager.Instance.currentLevel.spawnableScrap.Exists(x => x.spawnableItem.name == Assets.ItemNameList[Assets.ItemName.Tragedy])) return true;
             return false;
@@ -56,7 +56,7 @@ namespace BrutalCompanyMinus.Minus.Events
             }
 
             // Remove masked enemy
-            Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.Masked]);
+            Manager.RemoveSpawn(Assets.EnemyName.Masked);
         }
 
         public override void OnShipLeave()

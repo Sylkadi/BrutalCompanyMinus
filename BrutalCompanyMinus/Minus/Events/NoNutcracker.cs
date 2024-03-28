@@ -26,8 +26,8 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(Nutcracker), nameof(NutSlayer), nameof(Hell) };
         }
 
-        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.NutCracker]);
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.NutCracker);
 
-        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.NutCracker]);
+        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyName.NutCracker);
     }
 }

@@ -26,8 +26,8 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(BaboonHorde), nameof(Hell) };
         }
 
-        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyNameList[Assets.EnemyName.BaboonHawk]);
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.BaboonHawk);
 
-        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.BaboonHawk]);
+        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyName.BaboonHawk);
     }
 }

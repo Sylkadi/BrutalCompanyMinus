@@ -386,6 +386,78 @@ namespace BrutalCompanyMinus
             }
         }
 
+        private static bool Initalized = false;
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Terminal), "Awake")]
+        private static void OnTerminalAwake()
+        {
+            if (Initalized) return;
+
+            uiConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\UI_Settings.cfg", true);
+            difficultyConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Difficulty_Settings.cfg", true);
+            eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
+            weatherConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Settings.cfg", true);
+            customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
+
+            // Custom enemy events
+            int customEventCount = eventConfig.Bind("_Temp Custom Monster Event Count", "How many events to generate in config?", 1, "This is temporary for the time being.").Value;
+            for (int i = 0; i < customEventCount; i++)
+            {
+                MEvent e = new CustomMonsterEvent();
+                e.Enabled = false;
+                EventManager.AddEvents(e);
+            }
+
+            // Initalize Events
+            foreach (MEvent e in EventManager.events) e.Initalize();
+
+            Manager.currentTerminal = GameObject.FindObjectOfType<Terminal>();
+            // Config
+            Initalize();
+
+            // Use config settings
+            for (int i = 0; i != EventManager.events.Count; i++)
+            {
+                EventManager.events[i].Weight = eventWeights[i].Value;
+                EventManager.events[i].Description = eventDescriptions[i].Value;
+                EventManager.events[i].ColorHex = eventColorHexes[i].Value;
+                EventManager.events[i].Type = eventTypes[i].Value;
+                EventManager.events[i].ScaleList = eventScales[i];
+                EventManager.events[i].Enabled = eventEnables[i].Value;
+                EventManager.events[i].EventsToRemove = eventsToRemove[i];
+                EventManager.events[i].EventsToSpawnWith = eventsToSpawnWith[i];
+            }
+
+            // Create disabled events list and update
+            List<MEvent> newEvents = new List<MEvent>();
+            foreach (MEvent e in EventManager.events)
+            {
+                if (!e.Enabled)
+                {
+                    EventManager.disabledEvents.Add(e);
+                }
+                else
+                {
+                    newEvents.Add(e);
+                }
+            }
+            EventManager.events = newEvents;
+
+            EventManager.UpdateEventTypeCounts();
+            if (!useCustomWeights.Value) EventManager.UpdateAllEventWeights();
+
+            Log.LogInfo(
+                $"\n\nTotal Events:{EventManager.events.Count},   Disabled Events:{EventManager.disabledEvents.Count},   Total Events - Remove Count:{EventManager.events.Count - EventManager.eventTypeCount[5]}\n" +
+                $"Very Bad:{EventManager.eventTypeCount[0]}\n" +
+                $"Bad:{EventManager.eventTypeCount[1]}\n" +
+                $"Neutral:{EventManager.eventTypeCount[2]}\n" +
+                $"Good:{EventManager.eventTypeCount[3]}\n" +
+                $"Very Good:{EventManager.eventTypeCount[4]}\n" +
+                $"Remove:{EventManager.eventTypeCount[5]}\n");
+
+            Initalized = true;
+        }
+
         private static Scale getScale(string from)
         {
             float[] values = ParseValuesFromString(from);

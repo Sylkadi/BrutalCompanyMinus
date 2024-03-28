@@ -1,10 +1,14 @@
-﻿using System;
+﻿using BrutalCompanyMinus.Minus.Handlers;
+using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus
 {
+    [HarmonyPatch]
     public class EventManager
     {
 
@@ -135,7 +139,7 @@ namespace BrutalCompanyMinus.Minus
             foreach (MEvent e in events) eventsToChooseForm.Add(e);
 
             // Decide how many events to spawn
-            Random rng = new Random(StartOfRound.Instance.randomMapSeed + 32345);
+            System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + 32345);
             int eventsToSpawn = Configuration.eventsToSpawn.Value + RoundManager.Instance.GetRandomWeightedIndex(Configuration.weightsForExtraEvents.IntArray(), rng);
                 
             // Spawn events
@@ -248,6 +252,93 @@ namespace BrutalCompanyMinus.Minus
 
             eventTypeSum = 0.0f;
             for (int i = 0; i < eventTypeAmount; i++) eventTypeSum += eventTypeCount[i];
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
+        private static void ModifyLevel(ref SelectableLevel newLevel)
+        {
+            Manager.currentLevel = newLevel;
+            Manager.currentTerminal = GameObject.FindObjectOfType<Terminal>();
+            Manager.daysPassed = StartOfRound.Instance.gameStats.daysSpent;
+
+            Configuration.GenerateLevelConfigurations(StartOfRound.Instance); // Bind 
+            LevelModifications.ModifyEnemyScrapSpawns(StartOfRound.Instance); // Set
+
+            Assets.generateLevelScrapLists();
+            Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
+            if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
+
+            LevelModifications.ResetValues(StartOfRound.Instance);
+
+            // Apply weather multipliers
+            foreach (Weather e in Net.Instance.currentWeatherMultipliers)
+            {
+                if (newLevel.currentWeather == e.weatherType)
+                {
+                    Manager.scrapValueMultiplier *= e.scrapValueMultiplier;
+                    Manager.scrapAmountMultiplier *= e.scrapAmountMultiplier;
+                    Manager.currentLevel.factorySizeMultiplier *= e.factorySizeMultiplier;
+                }
+            }
+
+            // Difficulty modifications
+            Manager.AddEnemyHp((int)MEvent.Scale.Compute(Configuration.enemyBonusHpScaling));
+            Manager.AddInsideSpawnChance(newLevel, MEvent.Scale.Compute(Configuration.insideSpawnChanceAdditive));
+            Manager.AddOutsideSpawnChance(newLevel, MEvent.Scale.Compute(Configuration.outsideSpawnChanceAdditive));
+            Manager.MultiplySpawnChance(newLevel, MEvent.Scale.Compute(Configuration.spawnChanceMultiplierScaling));
+            Manager.MultiplySpawnCap(MEvent.Scale.Compute(Configuration.spawnCapMultiplier));
+            Manager.AddInsidePower((int)MEvent.Scale.Compute(Configuration.insideEnemyMaxPowerCountScaling));
+            Manager.AddOutsidePower((int)MEvent.Scale.Compute(Configuration.outsideEnemyPowerCountScaling));
+            Manager.scrapValueMultiplier *= MEvent.Scale.Compute(Configuration.scrapValueMultiplier);
+            Manager.scrapAmountMultiplier *= MEvent.Scale.Compute(Configuration.scrapAmountMultiplier);
+
+            // Choose any apply events
+            if (!Configuration.useCustomWeights.Value) UpdateAllEventWeights();
+
+            List<MEvent> additionalEvents = new List<MEvent>();
+            List<MEvent> currentEvents = ChooseEvents(out additionalEvents);
+
+            foreach (MEvent e in currentEvents) Log.LogInfo("Event chosen: " + e.Name()); // Log Chosen events
+            foreach (MEvent e in additionalEvents) Log.LogInfo("Additional events: " + e.Name());
+
+            ApplyEvents(currentEvents);
+            ApplyEvents(additionalEvents);
+
+            if (Configuration.showEventsInChat.Value && !Configuration.DisplayUIAfterShipLeaves.Value)
+            {
+                HUDManager.Instance.AddTextToChatOnServer("<color=#FFFFFF>Events:</color>");
+                foreach (MEvent e in currentEvents)
+                {
+                    HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
+                }
+            }
+
+            // Apply maxPower counts
+            RoundManager.Instance.currentLevel.maxEnemyPowerCount = (int)((RoundManager.Instance.currentLevel.maxEnemyPowerCount + Manager.bonusMaxInsidePowerCount) * Manager.spawncapMultipler);
+            RoundManager.Instance.currentLevel.maxOutsideEnemyPowerCount = (int)((RoundManager.Instance.currentLevel.maxOutsideEnemyPowerCount + Manager.bonusMaxOutsidePowerCount) * Manager.spawncapMultipler);
+
+            // Sync values to all clients
+            Net.Instance.SyncValuesClientRpc(Manager.currentLevel.factorySizeMultiplier, Manager.scrapValueMultiplier, Manager.scrapAmountMultiplier, Manager.bonusEnemyHp);
+
+            // Apply UI
+            if (!Configuration.DisplayUIAfterShipLeaves.Value)
+            {
+                UI.GenerateText(currentEvents);
+            }
+            else
+            {
+                UI.ClearText();
+            }
+
+            // Logging
+            Log.LogInfo("MapMultipliers = [scrapValueMultiplier: " + Manager.scrapValueMultiplier + ",     scrapAmountMultiplier: " + Manager.scrapAmountMultiplier + ",     currentLevel.factorySizeMultiplier:" + Manager.currentLevel.factorySizeMultiplier + "]");
+            Log.LogInfo("Inside Spawn Curve");
+            foreach (Keyframe key in newLevel.enemySpawnChanceThroughoutDay.keys) Log.LogInfo($"Time:{key.time} + $Value:{key.value}");
+            Log.LogInfo("Outside Spawn Curve");
+            foreach (Keyframe key in newLevel.outsideEnemySpawnChanceThroughDay.keys) Log.LogInfo($"Time:{key.time} + $Value:{key.value}");
+            Log.LogInfo("Daytime Spawn Curve");
+            foreach (Keyframe key in newLevel.daytimeEnemySpawnChanceThroughDay.keys) Log.LogInfo($"Time:{key.time} + $Value:{key.value}");
         }
     }
 }

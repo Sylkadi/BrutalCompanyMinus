@@ -40,7 +40,7 @@ namespace BrutalCompanyMinus.Minus.Events
 
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, AntiCoilHead, Get(ScaleType.InsideEnemyRarity));
             Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, AntiCoilHead, Get(ScaleType.OutsideEnemyRarity));
-            Manager.RemoveSpawn(Assets.EnemyNameList[Assets.EnemyName.CoilHead]);
+            Manager.RemoveSpawn(Assets.EnemyName.CoilHead);
             Manager.Spawn.InsideEnemies(AntiCoilHead, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
             Manager.Spawn.OutsideEnemies(AntiCoilHead, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
         }

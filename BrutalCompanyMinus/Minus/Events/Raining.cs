@@ -36,6 +36,6 @@ namespace BrutalCompanyMinus.Minus.Events
             return true;
         }
 
-        public override void Execute() => Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Rainy], true);
+        public override void Execute() => Manager.SetAtmosphere(Assets.AtmosphereName.Rainy, true);
     }
 }

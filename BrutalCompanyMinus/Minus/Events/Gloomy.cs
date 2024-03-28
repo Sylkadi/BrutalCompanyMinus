@@ -37,6 +37,6 @@ namespace BrutalCompanyMinus.Minus.Events
             return true;
         }
 
-        public override void Execute() => Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Foggy], true);
+        public override void Execute() => Manager.SetAtmosphere(Assets.AtmosphereName.Foggy, true);
     }
 }

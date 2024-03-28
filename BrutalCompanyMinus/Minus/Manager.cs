@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using UnityEngine.AI;
+using System.Xml.Linq;
 
 namespace BrutalCompanyMinus.Minus
 {
@@ -59,7 +60,11 @@ namespace BrutalCompanyMinus.Minus
             internal static int randomSeedValue = 0;
 
             private static List<Vector3> spawnDenialPoints = new List<Vector3>();
-            internal static void OutsideObjects(GameObject obj, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000)
+            internal static void OutsideObjects(GameObject obj, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000) => BatchOutsideObjects(obj, offset, density, radius, objectCap);
+
+            internal static void OutsideObjects(Assets.ObjectName objName, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000) => BatchOutsideObjects(Assets.GetObject(objName), offset, density, radius, objectCap);
+
+            private static void BatchOutsideObjects(GameObject obj, Vector3 offset, float density, float radius, int objectCap)
             {
                 if (obj == null) return;
 
@@ -72,7 +77,7 @@ namespace BrutalCompanyMinus.Minus
                 int batches = count / batchSize;
                 int remainder = count % batchSize;
 
-                for(int i = 0; i < batches; i++)
+                for (int i = 0; i < batches; i++)
                 {
                     Net.Instance.objectsToSpawn.Add(obj);
                     Net.Instance.objectsToSpawnRadius.Add(radius);
@@ -143,8 +148,13 @@ namespace BrutalCompanyMinus.Minus
             }
 
             public static void OutsideEnemies(EnemyType enemy, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(enemy.enemyPrefab, count));
+            public static void OutsideEnemies(Assets.EnemyName enemyName, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(Assets.GetEnemy(enemyName).enemyPrefab, count));
+
             public static void InsideEnemies(EnemyType enemy, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(enemy.enemyPrefab, count, 0.0f, radius));
-            public static void ScrapOutside(int Amount) => randomItemsToSpawnOutsideCount += Amount;
+
+            public static void InsideEnemies(Assets.EnemyName enemyName, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(Assets.GetEnemy(enemyName).enemyPrefab, count, 0.0f, radius));
+
+            public static void OutsideScrap(int Amount) => randomItemsToSpawnOutsideCount += Amount;
 
             internal static void DoSpawnOutsideEnemies()
             {
@@ -447,7 +457,11 @@ namespace BrutalCompanyMinus.Minus
             terrainName = Functions.MostCommon(hits.Select(x => x.collider.gameObject.name).ToList());
         }
 
-        public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, EnemyType enemy, int rarity)
+        public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, EnemyType enemy, int rarity) => DoAddEnemyToPoolWithRarity(ref list, enemy, rarity);
+
+        public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, Assets.EnemyName enemy, int rarity) => DoAddEnemyToPoolWithRarity(ref list, Assets.GetEnemy(enemy), rarity);
+
+        private static void DoAddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, EnemyType enemy, int rarity)
         {
             if (enemy.enemyPrefab == null)
             {
@@ -462,7 +476,13 @@ namespace BrutalCompanyMinus.Minus
 
         public static void SetAtmosphere(string name, bool state) => Net.Instance.currentWeatherEffects.Add(new CurrentWeatherEffect(name, state));
 
-        public static void RemoveSpawn(string Name)
+        public static void SetAtmosphere(Assets.AtmosphereName name, bool state) => Net.Instance.currentWeatherEffects.Add(new CurrentWeatherEffect(Assets.AtmosphereNameList[name], state));
+
+        public static void RemoveSpawn(string name) => DoRemoveSpawn(name);
+
+        public static void RemoveSpawn(Assets.EnemyName name) => DoRemoveSpawn(Assets.EnemyNameList[name]);
+
+        private static void DoRemoveSpawn(string Name)
         {
             int amountRemoved = 0;
             try
@@ -489,7 +509,11 @@ namespace BrutalCompanyMinus.Minus
             if (amountRemoved == 0) Log.LogInfo(string.Format("Failed to remove '{0}' from enemy pool, either it dosen't exist on the map or wrong string used.", Name));
         }
 
-        public static bool SpawnExists(string name)
+        public static bool SpawnExists(string name) => DoSpawnExists(name);
+
+        public static bool SpawnExists(Assets.EnemyName name) => DoSpawnExists(Assets.EnemyNameList[name]);
+
+        private static bool DoSpawnExists(string name)
         {
             try
             {

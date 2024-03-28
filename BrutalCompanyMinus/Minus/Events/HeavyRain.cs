@@ -28,9 +28,9 @@ namespace BrutalCompanyMinus.Minus.Events
         }
 
         public override void Execute() {
-            Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Rainy], true);
-            Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Flooded], true);
-            Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Stormy], true);
+            Manager.SetAtmosphere(Assets.AtmosphereName.Rainy, true);
+            Manager.SetAtmosphere(Assets.AtmosphereName.Flooded, true);
+            Manager.SetAtmosphere(Assets.AtmosphereName.Stormy, true);
         }
     }
 }

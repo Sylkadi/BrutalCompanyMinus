@@ -42,10 +42,10 @@ namespace BrutalCompanyMinus.Minus.Events
             Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
             Manager.scrapValueMultiplier *= Getf(ScaleType.ScrapValue);
 
-            Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Exclipsed], true);
-            Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Flooded], true);
-            Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Rainy], true);
-            Manager.SetAtmosphere(Assets.AtmosphereNameList[Assets.AtmosphereName.Stormy], true);
+            Manager.SetAtmosphere(Assets.AtmosphereName.Exclipsed, true);
+            Manager.SetAtmosphere(Assets.AtmosphereName.Flooded, true);
+            Manager.SetAtmosphere(Assets.AtmosphereName.Rainy, true);
+            Manager.SetAtmosphere(Assets.AtmosphereName.Stormy, true);
         }
 
         public override void OnShipLeave() => Net.Instance.SetAllWeatherActiveServerRpc(false);
