@@ -6,7 +6,7 @@ namespace BrutalCompanyMinus.Minus
 {
     public class MEvent
     {
-        public string Description = "";
+        public List<string> Descriptions = new List<string>() { "" };
         public string ColorHex = "#FFFFFF";
         public int Weight = 1;
         public EventType Type = EventType.Neutral;
@@ -58,13 +58,12 @@ namespace BrutalCompanyMinus.Minus
             {
                 float increment = scale.Increment;
 
-                if (Type == MEvent.EventType.VeryBad || Type == MEvent.EventType.Bad) increment = scale.Increment * Configuration.badEventIncrementMultiplier.Value;
-                if (Type == MEvent.EventType.VeryGood || Type == MEvent.EventType.Good) increment = scale.Increment * Configuration.goodEventIncrementMultiplier.Value;
+                if (Type == EventType.VeryBad || Type == EventType.Bad) increment = scale.Increment * Configuration.badEventIncrementMultiplier.Value;
+                if (Type == EventType.VeryGood || Type == EventType.Good) increment = scale.Increment * Configuration.goodEventIncrementMultiplier.Value;
 
-                float computedValue = scale.Base + (increment * Manager.daysPassed);
+                if (Configuration.ignoreScaling.Value) increment = 0.0f;
 
-                if (!Configuration.ignoreScaleCap.Value) computedValue = Mathf.Clamp(computedValue, scale.MinCap, scale.MaxCap);
-                return computedValue;
+                return Mathf.Clamp(scale.Base + (increment * Manager.daysPassed), scale.MinCap, scale.MaxCap);
             }
         }
 

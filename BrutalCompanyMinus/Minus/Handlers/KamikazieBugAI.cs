@@ -128,6 +128,10 @@ namespace BrutalCompanyMinus.Minus.Handlers
             base.Start();
             heldItem = null;
             RefreshGrabbableObjectsInMapList();
+
+            if (!Compatibility.yippeeModCompatibilityMode || Compatibility.yippeeNewSFX == null) return;
+
+            chitterSFX = Compatibility.yippeeNewSFX;
         }
 
         public static void RefreshGrabbableObjectsInMapList()
@@ -205,7 +209,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 ChooseNestPosition();
                 return;
             }
-            if (HasLineOfSightToPosition(nestPosition, 60f, 40, 0.5f))
+            if (HasLineOfSightToPositionCopy(nestPosition, 60f, 40, 0.5f))
             {
                 for (int i = 0; i < HoarderBugItems.Count; i++)
                 {
@@ -981,6 +985,28 @@ namespace BrutalCompanyMinus.Minus.Handlers
             bugLight.gameObject.SetActive(false);
             tickingAudio.Stop();
             StopAllCoroutines();
+        }
+        
+        // Copy from zeeker's for both v49 and v50 compat
+        public bool HasLineOfSightToPositionCopy(Vector3 pos, float width = 45f, int range = 60, float proximityAwareness = -1f)
+        {
+            if (eye == null)
+            {
+                _ = base.transform;
+            }
+            else
+            {
+                _ = eye;
+            }
+            if (Vector3.Distance(eye.position, pos) < (float)range && !Physics.Linecast(eye.position, pos, StartOfRound.Instance.collidersAndRoomMaskAndDefault))
+            {
+                Vector3 to = pos - eye.position;
+                if (Vector3.Angle(eye.forward, to) < width || Vector3.Distance(base.transform.position, pos) < proximityAwareness)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

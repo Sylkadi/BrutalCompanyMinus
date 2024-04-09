@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace BrutalCompanyMinus.Minus.Events
+namespace BrutalCompanyMinus.Minus.CustomEvents
 {
     internal class CustomMonsterEvent : MEvent
     {
@@ -26,7 +26,7 @@ namespace BrutalCompanyMinus.Minus.Events
             enemyName = Configuration.eventConfig.Bind(Name(), "Enemy Name", "", "To find out what string to use, open save in game, and then in the console it will generate warnings from this mod with enemy names, to get vanilla strings go to line 24 on https://github.com/Sylkadi/BrutalCompanyMinus/blob/master/BrutalCompanyMinus/Asset/Assets.cs ");
 
             Weight = 0;
-            Description = "Description...";
+            Descriptions = new List<string>() { "Descriptions..." };
             ColorHex = "#FF0000";
             Type = EventType.Neutral;
 

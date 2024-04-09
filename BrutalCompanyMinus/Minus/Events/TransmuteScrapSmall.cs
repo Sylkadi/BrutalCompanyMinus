@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "All the scrap has transmuted into something small...";
+            Descriptions = new List<string>() { "All the scrap has transmuted into something small...", "This is going to be a one-handed job", "It's all the light stuff" };
             ColorHex = "#008000";
             Type = EventType.Good;
 

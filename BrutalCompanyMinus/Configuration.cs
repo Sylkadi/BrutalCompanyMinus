@@ -19,6 +19,7 @@ using UnityEngine;
 using System.Collections.Concurrent;
 using System.Globalization;
 using BrutalCompanyMinus.Minus.Events;
+using System.Reflection;
 
 namespace BrutalCompanyMinus
 {
@@ -26,14 +27,13 @@ namespace BrutalCompanyMinus
     internal class Configuration
     {
 
-        public static ConfigFile uiConfig, eventConfig, weatherConfig, customAssetsConfig, difficultyConfig;
+        public static ConfigFile uiConfig, eventConfig, weatherConfig, customAssetsConfig, difficultyConfig, moddedEventConfig, customEventConfig;
 
         public static List<ConfigFile> levelConfigs = new List<ConfigFile>();
 
         public static List<ConfigEntry<int>> eventWeights = new List<ConfigEntry<int>>();
-        public static List<ConfigEntry<string>>
-            eventDescriptions = new List<ConfigEntry<string>>(),
-            eventColorHexes = new List<ConfigEntry<string>>();
+        public static List<List<string>> eventDescriptions = new List<List<string>>();
+        public static List<ConfigEntry<string>> eventColorHexes = new List<ConfigEntry<string>>();
         public static List<ConfigEntry<MEvent.EventType>> eventTypes = new List<ConfigEntry<MEvent.EventType>>();
         public static List<Dictionary<ScaleType, Scale>> eventScales = new List<Dictionary<ScaleType, Scale>>();
         public static List<ConfigEntry<bool>> eventEnables = new List<ConfigEntry<bool>>();
@@ -42,7 +42,7 @@ namespace BrutalCompanyMinus
             eventsToSpawnWith = new List<List<string>>();
 
         public static ConfigEntry<bool> useCustomWeights, showEventsInChat;
-        public static ConfigEntry<int> eventsToSpawn, maxEventsToSpawn;
+        public static Scale eventsToSpawn;
         public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier;
         public static float[] weightsForExtraEvents;
 
@@ -57,15 +57,12 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<bool> NormaliseScrapValueDisplay, EnableUI, ShowUILetterBox, ShowExtraProperties, PopUpUI, DisplayUIAfterShipLeaves;
         public static ConfigEntry<float> UITime;
 
-        public static ConfigEntry<bool> customScrapWeights, customEnemyWeights, enableAllEnemies, enableAllScrap, enableCustomWeights;
-        public static ConfigEntry<int> allEnemiesDefaultWeight, allScrapDefaultWeight;
-
         public static ConfigEntry<bool> enableQuotaChanges;
         public static ConfigEntry<int> deadLineDaysAmount, startingCredits, startingQuota, baseIncrease, increaseSteepness;
         public static Scale
             spawnChanceMultiplierScaling = new Scale(), insideEnemyMaxPowerCountScaling = new Scale(), outsideEnemyPowerCountScaling = new Scale(), enemyBonusHpScaling = new Scale(), spawnCapMultiplier = new Scale(),
             scrapAmountMultiplier = new Scale(), scrapValueMultiplier = new Scale(), insideSpawnChanceAdditive = new Scale(), outsideSpawnChanceAdditive = new Scale();
-        public static ConfigEntry<bool> ignoreScaleCap;
+        public static ConfigEntry<bool> ignoreScaling;
 
         public static Dictionary<string, Dictionary<string, int>>  // Level name => Enemy/Scrap name => Rarity
             insideEnemyRarityList = new Dictionary<string, Dictionary<string, int>>(), 
@@ -85,9 +82,17 @@ namespace BrutalCompanyMinus
 
         public static void Initalize()
         {
+            uiConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\UI_Settings.cfg", true);
+            difficultyConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Difficulty_Settings.cfg", true);
+            eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
+            weatherConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Settings.cfg", true);
+            customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
+            moddedEventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\ModdedEvents.cfg", true);
+            customEventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\CustomEvents.cfg", true);
+
             // Event settings
             useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
-            eventsToSpawn = difficultyConfig.Bind("_Event Settings", "Event count", 2);
+            eventsToSpawn = getScale(difficultyConfig.Bind("_Event Settings", "Event amount scale", "2, 0.034, 2.0, 4.0", "The base amount of events   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events.", "40, 40, 15, 5", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
             showEventsInChat = difficultyConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
 
@@ -103,7 +108,7 @@ namespace BrutalCompanyMinus
             };
 
             // Difficulty scaling
-            ignoreScaleCap = difficultyConfig.Bind("Difficulty Scaling", "Ignore minCap, maxCap", false, "Ignore caps that limit scaling.");
+            ignoreScaling = difficultyConfig.Bind("Difficulty Scaling", "Ignore scaling?", false, "Mod wont scale anymore if true.");
             spawnChanceMultiplierScaling = getScale(difficultyConfig.Bind("Difficulty Scaling", "Spawn chance multiplier scale", "1.0, 0.017, 1.0, 2.0", "This will multiply the spawn chance by this,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             insideSpawnChanceAdditive = getScale(difficultyConfig.Bind("Difficulty Scaling", "Inside spawn chance additive", "0.0, 0.0, 0.0, 0.0", "This will add to all keyframes for insideSpawns on the animationCurve,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             outsideSpawnChanceAdditive = getScale(difficultyConfig.Bind("Difficulty Scaling", "Outside spawn chance additive", "0.0, 0.0, 0.0, 0.0", "This will add to all keyframes for outsideSpawns on the animationCurve,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
@@ -115,15 +120,7 @@ namespace BrutalCompanyMinus
             scrapAmountMultiplier = getScale(difficultyConfig.Bind("Difficulty Scaling", "Global scrap amount multiplier scale", "1.0, 0.0, 1.0, 1.0", "Mutliplies scrap value,   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             goodEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
             badEventIncrementMultiplier = difficultyConfig.Bind("Difficulty Scaling", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
-            
-            // Level Enemy/Scrap settings
-            customScrapWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Generate and use scrap weights?", false, "This will generate customizable scrap weights for each level (This can become slow if you have alot of modded scraps)");
-            customEnemyWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Generate and use enemy weights?", false, "This will generate customizable enemy weights for each level");
-            enableAllEnemies = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Enable all enemies on all moons", false, "This will enable all insideEnemies to spawn inside.., you need to have generate and use enemy weights enabled.");
-            enableAllScrap = customAssetsConfig.Bind("_Custom enemy and scrap weights", "Enable all scrap on all moons", false, "This will enable for all scraps to spawn on all moons, you need to have generate and use scrap weights enabled.");
-            enableCustomWeights = customAssetsConfig.Bind("_Custom enemy and scrap weights", "_Enable?", false);
-            allEnemiesDefaultWeight = customAssetsConfig.Bind("_Custom enemy and scrap weights", "All enemies on all moons weight", 2, "If there is any enemy with weight 0, it will be set to this weight enabling them to spawn.");
-            allEnemiesDefaultWeight = customAssetsConfig.Bind("_Custom enemy and scrap weights", "All scrap on all moons weight", 2, "If there is any scrap with weight 0, it will be set to this weight enabling them to spawn.");
+
 
             // Custom scrap settings
             nutSlayerLives = customAssetsConfig.Bind("NutSlayer", "Lives", 5, "If hp reaches zero or below, decrement lives and reset hp until 0 lives.");
@@ -176,32 +173,53 @@ namespace BrutalCompanyMinus
             UITime = uiConfig.Bind("UI Options", "PopUp UI time.", 45.0f, "UI popup time");
             DisplayUIAfterShipLeaves = uiConfig.Bind("UI Options", "Display UI after ship leaves?", false, "Will only display event's after ship has left.");
 
-            // Event settings
-            foreach (MEvent e in EventManager.events)
+            // Events
+            void RegisterEvents(ConfigFile toConfig, List<MEvent> events)
             {
-                eventWeights.Add(eventConfig.Bind(e.Name(), "Custom Weight", e.Weight, "If you want to use custom weights change 'Use custom weights'? setting in '__Event Settings' to true."));
-                eventDescriptions.Add(eventConfig.Bind(e.Name(), "Description", e.Description));
-                eventColorHexes.Add(eventConfig.Bind(e.Name(), "Color Hex", e.ColorHex));
-                eventTypes.Add(eventConfig.Bind(e.Name(), "Event Type", e.Type));
-                eventEnables.Add(eventConfig.Bind(e.Name(), "Event Enabled?", e.Enabled, "Setting this to false will stop the event from occuring.")); // Normal event
-
-                // Make scale list
-                Dictionary<ScaleType, Scale> scales = new Dictionary<ScaleType, Scale>();
-                foreach (KeyValuePair<ScaleType, Scale> obj in e.ScaleList)
+                // Event settings
+                foreach (MEvent e in events)
                 {
-                    scales.Add(obj.Key, getScale(eventConfig.Bind(e.Name(), obj.Key.ToString(), $"{obj.Value.Base.ToString(en)}, {obj.Value.Increment.ToString(en)}, {obj.Value.MinCap.ToString(en)}, {obj.Value.MaxCap.ToString(en)}", ScaleInfoList[obj.Key] + "   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value));
-                }
-                eventScales.Add(scales);
+                    eventWeights.Add(toConfig.Bind(e.Name(), "Custom Weight", e.Weight, "If you want to use custom weights change 'Use custom weights'? setting in '__Event Settings' to true."));
+                    eventDescriptions.Add(ListToDescriptions(toConfig.Bind(e.Name(), "Descriptions", StringsToList(e.Descriptions, "|"), "Seperated by |").Value));
+                    eventColorHexes.Add(toConfig.Bind(e.Name(), "Color Hex", e.ColorHex));
+                    eventTypes.Add(toConfig.Bind(e.Name(), "Event Type", e.Type));
+                    eventEnables.Add(toConfig.Bind(e.Name(), "Event Enabled?", e.Enabled, "Setting this to false will stop the event from occuring.")); // Normal event
 
-                // EventsToRemove and EventsToSpawnWith
-                eventsToRemove.Add(ListToStrings(eventConfig.Bind(e.Name(), "Events To Remove", StringsToList(e.EventsToRemove), "Will prevent said event(s) from occuring.").Value));
-                eventsToSpawnWith.Add(ListToStrings(eventConfig.Bind(e.Name(), "Events To Spawn With", StringsToList(e.EventsToSpawnWith), "Will spawn said events(s).").Value));
+                    // Make scale list
+                    Dictionary<ScaleType, Scale> scales = new Dictionary<ScaleType, Scale>();
+                    foreach (KeyValuePair<ScaleType, Scale> obj in e.ScaleList)
+                    {
+                        scales.Add(obj.Key, getScale(toConfig.Bind(e.Name(), obj.Key.ToString(), $"{obj.Value.Base.ToString(en)}, {obj.Value.Increment.ToString(en)}, {obj.Value.MinCap.ToString(en)}, {obj.Value.MaxCap.ToString(en)}", ScaleInfoList[obj.Key] + "   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value));
+                    }
+                    eventScales.Add(scales);
+
+                    // EventsToRemove and EventsToSpawnWith
+                    eventsToRemove.Add(ListToStrings(toConfig.Bind(e.Name(), "Events To Remove", StringsToList(e.EventsToRemove, ", "), "Will prevent said event(s) from occuring.").Value));
+                    eventsToSpawnWith.Add(ListToStrings(toConfig.Bind(e.Name(), "Events To Spawn With", StringsToList(e.EventsToSpawnWith, ", "), "Will spawn said events(s).").Value));
+                }
             }
+
+            // Custom enemy events
+            int customEventCount = customEventConfig.Bind("Temp Custom Monster Event Count", "How many events to generate in config?", 3, "This is temporary for the time being.").Value;
+            for (int i = 0; i < customEventCount; i++)
+            {
+                MEvent e = new Minus.CustomEvents.CustomMonsterEvent();
+                e.Enabled = false;
+                EventManager.customEvents.Add(e);
+            }
+
+            RegisterEvents(eventConfig, EventManager.vanillaEvents);
+            RegisterEvents(moddedEventConfig, EventManager.moddedEvents);
+            RegisterEvents(customEventConfig, EventManager.customEvents);
+
+            EventManager.events.AddRange(EventManager.vanillaEvents);
+            EventManager.events.AddRange(EventManager.moddedEvents);
+            EventManager.events.AddRange(EventManager.customEvents);
 
             // Specific event settings
             Minus.Handlers.FacilityGhost.actionTimeCooldown = eventConfig.Bind(nameof(FacilityGhost), "Normal Action Time Interval", 15.0f, "How often does it take for the ghost to make a decision?").Value;
             Minus.Handlers.FacilityGhost.ghostCrazyActionInterval = eventConfig.Bind(nameof(FacilityGhost), "Crazy Action Time Interval", 0.1f, "How often does it take for the ghost to make a decision while going crazy?").Value;
-            Minus.Handlers.FacilityGhost.ghostCrazyPeriod = eventConfig.Bind(nameof(FacilityGhost), "Crazy Period", 3.0f, "How long will the ghost go crazy for?").Value;
+            Minus.Handlers.FacilityGhost.ghostCrazyPeriod = eventConfig.Bind(nameof(FacilityGhost), "Crazy Period", 5.0f, "How long will the ghost go crazy for?").Value;
             Minus.Handlers.FacilityGhost.crazyGhostChance = eventConfig.Bind(nameof(FacilityGhost), "Crazy Chance", 0.1f, "Whenever the ghost makes a decision, what is the chance that it will go crazy?").Value;
             Minus.Handlers.FacilityGhost.DoNothingWeight = eventConfig.Bind(nameof(FacilityGhost), "Do Nothing Weight", 50, "Whenever the ghost makes a decision, what is the weight to do nothing?").Value;
             Minus.Handlers.FacilityGhost.OpenCloseBigDoorsWeight = eventConfig.Bind(nameof(FacilityGhost), "Open and close big doors weight", 20, "Whenever the ghost makes a decision, what is the weight for ghost to open and close big doors?").Value;
@@ -223,159 +241,13 @@ namespace BrutalCompanyMinus
             Minus.Handlers.DDay.displayWarning = eventConfig.Bind(nameof(Warzone), "Display warning?", true, "Display warning message before bombardment?").Value;
             Minus.Handlers.DDay.volume = eventConfig.Bind(nameof(Warzone), "Siren Volume?", 0.3f, "Volume of the siren? between 0.0 and 1.0").Value;
             Minus.Handlers.ArtilleryShell.speed = eventConfig.Bind(nameof(Warzone), "Artillery shell speed", 100.0f, "How fast does the artillery shell travel?").Value;
-
-            // Specific
-        }
-
-        private static bool bindedLevelConfigurations = false;
-        internal static void GenerateLevelConfigurations(StartOfRound instance)
-        {
-            if (bindedLevelConfigurations || !enableCustomWeights.Value) return;
-            if (!customEnemyWeights.Value && !customScrapWeights.Value) return;
-
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            // Create scrap list
-            Log.LogInfo("Generating Enemy + Scrap rarity config");
-            List<string> scrapNameList = new List<string>();
-            foreach (KeyValuePair<string, Item> item in Assets.ItemList)
-            {
-                if (item.Value.isScrap) scrapNameList.Add(item.Key);
-            }
-
-            int levelCount = instance.levels.Length;
-
-            Dictionary<string, int>[]
-                insideEnemyList = new Dictionary<string, int>[levelCount],
-                outsideEnemyList = new Dictionary<string, int>[levelCount],
-                daytimeEnemyList = new Dictionary<string, int>[levelCount],
-                scrapList = new Dictionary<string, int>[levelCount];
-
-            // Multi thread cause this is fucking slow otherwise
-            Parallel.For(0, levelCount, i =>
-            {
-                if (instance.levels[i] == null)
-                {
-                    Log.LogError("Null entry in levels list");
-                    return;
-                }
-                Log.LogInfo(string.Format("Generating and binding Enemy + Scrap rarity config for {0}", instance.levels[i].name));
-
-                // Create configFile for particular moon
-                ConfigFile levelConfig = new ConfigFile(string.Format("{0}\\BrutalCompanyMinus\\Levels\\{1}_Weights.cfg", Paths.ConfigPath, instance.levels[i].name), true);
-                
-                // Initalize Lists
-                insideEnemyList[i] = new Dictionary<string, int>();
-                outsideEnemyList[i] = new Dictionary<string, int>();
-                daytimeEnemyList[i] = new Dictionary<string, int>();
-                scrapList[i] = new Dictionary<string, int>();
-
-                // Assign rarities to lists
-                // Enemies
-                if (customEnemyWeights.Value)
-                {
-                    // Add all enemies with rarity 0
-                    foreach (KeyValuePair<string, EnemyType> enemy in Assets.EnemyList)
-                    {
-                        insideEnemyList[i].Add(enemy.Key, 0);
-                        outsideEnemyList[i].Add(enemy.Key, 0);
-                        daytimeEnemyList[i].Add(enemy.Key, 0);
-                    }
-
-                    // Inside enemies
-                    foreach (SpawnableEnemyWithRarity enemy in instance.levels[i].Enemies)
-                    {
-                        if (enemy == null || enemy.enemyType == null)
-                        {
-                            Log.LogError(string.Format("Null entry on {0} in level.Enemies", instance.levels[i].name));
-                            continue; // Skip entry
-                        }
-                        insideEnemyList[i][enemy.enemyType.name] = enemy.rarity;
-                    }
-                    foreach (KeyValuePair<string, int> enemy in insideEnemyList[i].ToList())
-                    {
-                        insideEnemyList[i][enemy.Key] = levelConfig.Bind("_Inside Enemies", enemy.Key, enemy.Value).Value;
-                    }
-
-                    // Outside enemies
-                    foreach (SpawnableEnemyWithRarity enemy in instance.levels[i].OutsideEnemies)
-                    {
-                        if (enemy == null || enemy.enemyType == null)
-                        {
-                            Log.LogError(string.Format("Null entry on {0} in level.OutsideEnemies", instance.levels[i].name));
-                            continue; // Skip entry
-                        }
-                        outsideEnemyList[i][enemy.enemyType.name] = enemy.rarity;
-                    }
-                    foreach (KeyValuePair<string, int> enemy in outsideEnemyList[i].ToList())
-                    {
-                        outsideEnemyList[i][enemy.Key] = levelConfig.Bind("_Outside Enemies", enemy.Key, enemy.Value).Value;
-                    }
-
-                    // Daytime enemies
-                    foreach (SpawnableEnemyWithRarity enemy in instance.levels[i].DaytimeEnemies)
-                    {
-                        if (enemy == null || enemy.enemyType == null)
-                        {
-                            Log.LogError(string.Format("Null entry on {0} in level.DaytimeEnemies", instance.levels[i].name));
-                            continue; // Skip entry
-                        }
-                        daytimeEnemyList[i][enemy.enemyType.name] = enemy.rarity;
-                    }
-                    foreach (KeyValuePair<string, int> enemy in daytimeEnemyList[i].ToList())
-                    {
-                        daytimeEnemyList[i][enemy.Key] = levelConfig.Bind("Daytime Enemies", enemy.Key, enemy.Value).Value;
-                    }
-                }
-
-                // Scrap
-                if(customScrapWeights.Value)
-                {
-                    // Add all scrap with rarity 0
-                    foreach (string scrapName in scrapNameList)
-                    {
-                        scrapList[i].Add(scrapName, 0);
-                    }
-
-                    foreach (SpawnableItemWithRarity scrap in instance.levels[i].spawnableScrap)
-                    {
-                        if (scrap == null || scrap.spawnableItem == null)
-                        {
-                            Log.LogError(string.Format("Null entry on {0} in level.spawnableScrap", instance.levels[i].name));
-                            continue; // Skip Entry
-                        }
-                        scrapList[i][scrap.spawnableItem.name] = scrap.rarity;
-                    }
-                    foreach (KeyValuePair<string, int> scrap in scrapList[i].ToList())
-                    {
-                        scrapList[i][scrap.Key] = levelConfig.Bind("Scrap", scrap.Key, scrap.Value).Value;
-                    }
-                }
-            });
-
-            for(int i = 0; i < levelCount; i++) // This is done for thread safety
-            {
-                string levelName = instance.levels[i].name;
-                insideEnemyRarityList.Add(levelName, insideEnemyList[i]);
-                outsideEnemyRarityList.Add(levelName, outsideEnemyList[i]);
-                daytimeEnemyRarityList.Add(levelName, daytimeEnemyList[i]);
-                scrapRarityList.Add(levelName, scrapList[i]);
-            }
-
-            stopWatch.Stop();
-            Log.LogInfo(string.Format("Took {0}ms", stopWatch.ElapsedMilliseconds));
-
-
-            
-            bindedLevelConfigurations = true;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(TimeOfDay), "Awake")]
         private static void OnTimeDayStart(ref TimeOfDay __instance)
         {
-            enableQuotaChanges = difficultyConfig.Bind("Quota Settings", "_Enable Quota Changes", true);
+            enableQuotaChanges = difficultyConfig.Bind("Quota Settings", "_Enable Quota Changes", false);
             if(enableQuotaChanges.Value)
             {
                 __instance.quotaVariables.deadlineDaysAmount = difficultyConfig.Bind("Quota Settings", "Deadline Days Amount", __instance.quotaVariables.deadlineDaysAmount).Value;
@@ -393,25 +265,12 @@ namespace BrutalCompanyMinus
         {
             if (Initalized) return;
 
-            uiConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\UI_Settings.cfg", true);
-            difficultyConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Difficulty_Settings.cfg", true);
-            eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
-            weatherConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Settings.cfg", true);
-            customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
-
-            // Custom enemy events
-            int customEventCount = eventConfig.Bind("_Temp Custom Monster Event Count", "How many events to generate in config?", 1, "This is temporary for the time being.").Value;
-            for (int i = 0; i < customEventCount; i++)
-            {
-                MEvent e = new CustomMonsterEvent();
-                e.Enabled = false;
-                EventManager.AddEvents(e);
-            }
-
             // Initalize Events
-            foreach (MEvent e in EventManager.events) e.Initalize();
+            foreach (MEvent e in EventManager.vanillaEvents) e.Initalize();
+            foreach (MEvent e in EventManager.moddedEvents) e.Initalize();
 
             Manager.currentTerminal = GameObject.FindObjectOfType<Terminal>();
+
             // Config
             Initalize();
 
@@ -419,7 +278,7 @@ namespace BrutalCompanyMinus
             for (int i = 0; i != EventManager.events.Count; i++)
             {
                 EventManager.events[i].Weight = eventWeights[i].Value;
-                EventManager.events[i].Description = eventDescriptions[i].Value;
+                EventManager.events[i].Descriptions = eventDescriptions[i];
                 EventManager.events[i].ColorHex = eventColorHexes[i].Value;
                 EventManager.events[i].Type = eventTypes[i].Value;
                 EventManager.events[i].ScaleList = eventScales[i];
@@ -469,15 +328,15 @@ namespace BrutalCompanyMinus
             return from.Split(',').Select(x => float.Parse(x, en)).ToArray();
         }
 
-        private static string StringsToList(List<string> strings)
+        private static string StringsToList(List<string> strings, string seperator)
         {
             string text = "";
             foreach (string s in strings)
             {
                 text += s;
-                text += ", ";
+                text += seperator;
             }
-            if (strings.Count > 0) text = text.Substring(0, text.Length - 2);
+            if (strings.Count > 0) text = text.Substring(0, text.Length - seperator.Length);
             return text;
         }
 
@@ -486,6 +345,12 @@ namespace BrutalCompanyMinus
             if (text.IsNullOrWhiteSpace()) return new List<string>();
             text = text.Replace(" ", "");
             return text.Split(',').ToList();
+        }
+
+        private static List<string> ListToDescriptions(string text)
+        {
+            if (text.IsNullOrWhiteSpace()) return new List<string>() { "" };
+            return text.Split("|").ToList();
         }
     }
 }

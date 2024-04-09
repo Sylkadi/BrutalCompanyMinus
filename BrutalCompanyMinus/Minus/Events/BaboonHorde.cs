@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "You feel outnumbered";
+            Descriptions = new List<string>() { "You feel outnumbered", "Keep the door's closed.", "Hear their calls, see their shadows cover the land.", "Why are they also inside??" };
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 

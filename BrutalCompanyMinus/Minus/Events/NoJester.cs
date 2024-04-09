@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "It wont be there to fuck you up";
+            Descriptions = new List<string>() { "No more jackbox's", "No cranking", "You dont need to go home today" };
             ColorHex = "#008000";
             Type = EventType.Remove;
 

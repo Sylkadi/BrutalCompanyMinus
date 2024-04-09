@@ -20,7 +20,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "The scrap looks shiny";
+            Descriptions = new List<string>() { "The scrap looks shiny", "Valuable scrap ahead", "This facility is rich" };
             ColorHex = "#008000";
             Type = EventType.Good;
 

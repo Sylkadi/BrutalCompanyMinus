@@ -21,7 +21,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Description = "There is a ghost in the facility";
+            Descriptions = new List<string>() { "There is a ghost in the facility", "Who keeps turning the lights off...", "Paranormal signature detected", "Bring your ouija board" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
         }

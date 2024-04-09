@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "There is slighly more scrap in the facility!";
+            Descriptions = new List<string>() { "There is slighly more scrap in the facility!", "This facility was slighly more productive than others.", "Scrap but more." };
             ColorHex = "#008000";
             Type = EventType.Good;
 

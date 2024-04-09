@@ -581,7 +581,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     {
                         SetTargetDegreesToPosition(lastSeenPlayerPos);
                     }
-                    if (HasLineOfSightToPosition(target.position, widthSearch, rangeSearch, 1f))
+                    if (HasLineOfSightToPositionCopy(target.position, widthSearch, rangeSearch, 1f))
                     {
                         timeSinceSeeingTarget = 0f;
                         lastSeenPlayerPos = target.position;
@@ -976,6 +976,28 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             yield return new WaitForSeconds(1.2f);
             SpawnShotgunShells();
+        }
+
+        // Copy from zeeker's for both v49 and v50 compat
+        public bool HasLineOfSightToPositionCopy(Vector3 pos, float width = 45f, int range = 60, float proximityAwareness = -1f)
+        {
+            if (eye == null)
+            {
+                _ = base.transform;
+            }
+            else
+            {
+                _ = eye;
+            }
+            if (Vector3.Distance(eye.position, pos) < (float)range && !Physics.Linecast(eye.position, pos, StartOfRound.Instance.collidersAndRoomMaskAndDefault))
+            {
+                Vector3 to = pos - eye.position;
+                if (Vector3.Angle(eye.forward, to) < width || Vector3.Distance(base.transform.position, pos) < proximityAwareness)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

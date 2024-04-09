@@ -21,94 +21,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
         internal static List<SpawnableEnemyWithRarity> outsideEnemies = new List<SpawnableEnemyWithRarity>();
         internal static List<SpawnableEnemyWithRarity> daytimeEnemies = new List<SpawnableEnemyWithRarity>();
 
-        private static bool modifiedEnemySpawns = false;
-        public static void ModifyEnemyScrapSpawns(StartOfRound instance)
-        {
-            if (modifiedEnemySpawns || !Configuration.enableCustomWeights.Value) return;
-            if (!Configuration.customEnemyWeights.Value && !Configuration.customScrapWeights.Value) return;
-
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            Log.LogInfo("Modifying enemy map pool and scrap pool from config.");
-
-            // Multi-thread this shit
-            Parallel.For(0, instance.levels.Length, i =>
-            {
-                Log.LogInfo(string.Format("Modifying enemy map pool and scrap pool for {0} using config settings.", instance.levels[i].name));
-
-                if(Configuration.insideEnemyRarityList.TryGetValue(instance.levels[i].name, out _))
-                {
-                    if(Configuration.customEnemyWeights.Value) instance.levels[i].Enemies.Clear();
-                    foreach (KeyValuePair<string, int> insideEnemy in Configuration.insideEnemyRarityList[instance.levels[i].name])
-                    {
-                        EnemyType enemy = Assets.GetEnemy(insideEnemy.Key);
-                        int rarity = insideEnemy.Value;
-                        if (Configuration.enableAllEnemies.Value && rarity == 0 && !enemy.isOutsideEnemy) rarity = Configuration.allEnemiesDefaultWeight.Value;
-                        if (rarity == 0) continue; // Skip Entry
-                        instance.levels[i].Enemies.Add(new SpawnableEnemyWithRarity() { enemyType = enemy, rarity = rarity });
-                    }
-                } else
-                {
-                    Log.LogError(string.Format("Level {0} dosen't exist in dictionaries for insideEnemyRarirtyList, skipping.", instance.levels[i].name));
-                }
-
-                if (Configuration.outsideEnemyRarityList.TryGetValue(instance.levels[i].name, out _))
-                {
-                    if (Configuration.customEnemyWeights.Value) instance.levels[i].OutsideEnemies.Clear();
-                    foreach (KeyValuePair<string, int> outsideEnemy in Configuration.outsideEnemyRarityList[instance.levels[i].name])
-                    {
-                        EnemyType enemy = Assets.GetEnemy(outsideEnemy.Key);
-                        int rarity = outsideEnemy.Value;
-                        if (Configuration.enableAllEnemies.Value && rarity == 0 && enemy.isOutsideEnemy) rarity = Configuration.allEnemiesDefaultWeight.Value;
-                        if (outsideEnemy.Value == 0) continue; // Skip Entry
-                        instance.levels[i].OutsideEnemies.Add(new SpawnableEnemyWithRarity() { enemyType = enemy, rarity = rarity });
-                    }
-                } else
-                {
-                    Log.LogError(string.Format("Level {0} dosen't exist in dictionaries for outsideEnemyRarirtyList, skipping.", instance.levels[i].name));
-                }
-
-                if (Configuration.daytimeEnemyRarityList.TryGetValue(instance.levels[i].name, out _))
-                {
-                    if (Configuration.customEnemyWeights.Value) instance.levels[i].DaytimeEnemies.Clear();
-                    foreach (KeyValuePair<string, int> daytimeEnemy in Configuration.daytimeEnemyRarityList[instance.levels[i].name])
-                    {
-                        EnemyType enemy = Assets.GetEnemy(daytimeEnemy.Key);
-                        int rarity = daytimeEnemy.Value;
-                        if (Configuration.enableAllEnemies.Value && rarity == 0 && enemy.isDaytimeEnemy) rarity = Configuration.allEnemiesDefaultWeight.Value;
-                        if (daytimeEnemy.Value == 0) continue; // Skip Entry
-                        instance.levels[i].DaytimeEnemies.Add(new SpawnableEnemyWithRarity() { enemyType = enemy, rarity = rarity });
-                    }
-                } else
-                {
-                    Log.LogError(string.Format("Level {0} dosen't exist in dictionaries for daytimeEnemyRarirtyList, skipping.", instance.levels[i].name));
-                }
-
-                if (Configuration.scrapRarityList.TryGetValue(instance.levels[i].name, out _))
-                {
-                    if (Configuration.customScrapWeights.Value) instance.levels[i].spawnableScrap.Clear();
-                    foreach (KeyValuePair<string, int> scrap in Configuration.scrapRarityList[instance.levels[i].name])
-                    {
-                        Item item = Assets.GetItem(scrap.Key);
-                        int rarity = scrap.Value;
-                        if (Configuration.enableAllScrap.Value && rarity == 0) rarity = Configuration.allScrapDefaultWeight.Value;
-                        if (scrap.Value == 0) continue; // Skip Entry
-                        instance.levels[i].spawnableScrap.Add(new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(scrap.Key), rarity = scrap.Value });
-
-                    }
-                } else
-                {
-                    Log.LogError(string.Format("Level {0} dosen't exist in dictionaries for scrapRarityList, skipping.", instance.levels[i].name));
-                }
-            });
-
-            stopWatch.Stop();
-            Log.LogInfo(string.Format("Took {0}ms", stopWatch.ElapsedMilliseconds));
-
-            modifiedEnemySpawns = true;
-        }
-
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StartOfRound), "Start")]
         private static void onStartOfRoundStart()
@@ -118,8 +30,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 e.OnGameStart();
             }
-
-            modifiedEnemySpawns = false;
         }
 
         [HarmonyPrefix]

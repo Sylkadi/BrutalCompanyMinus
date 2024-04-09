@@ -21,18 +21,19 @@ namespace BrutalCompanyMinus
 
         public enum EnemyName
         {
-            Bracken, HoardingBug, CoilHead, Thumper, BunkerSpider, Jester, SnareFlea, Hygrodere, GhostGirl, SporeLizard, NutCracker, Masked, EyelessDog, ForestKeeper, EarthLeviathan, BaboonHawk, RoamingLocust, Manticoil, CircuitBee, Lasso
+            Bracken, HoardingBug, CoilHead, Thumper, BunkerSpider, Jester, SnareFlea, Hygrodere, GhostGirl, SporeLizard, NutCracker, Masked, EyelessDog, ForestKeeper, EarthLeviathan, BaboonHawk, RoamingLocust, Manticoil, CircuitBee, Lasso, Butler, OldBird
         }
         internal static Dictionary<EnemyName, string> EnemyNameList = new Dictionary<EnemyName, string>() { 
             { EnemyName.SnareFlea, "Centipede" }, { EnemyName.BunkerSpider, "SandSpider" }, { EnemyName.HoardingBug, "HoarderBug" }, { EnemyName.Bracken, "Flowerman" }, { EnemyName.Thumper, "Crawler" },
             { EnemyName.Hygrodere, "Blob" }, { EnemyName.GhostGirl, "DressGirl" }, { EnemyName.SporeLizard, "Puffer" }, { EnemyName.NutCracker, "Nutcracker" }, { EnemyName.EyelessDog, "MouthDog" },
             { EnemyName.ForestKeeper, "ForestGiant" }, { EnemyName.EarthLeviathan, "SandWorm" }, { EnemyName.CircuitBee, "RedLocustBees" }, { EnemyName.BaboonHawk, "BaboonHawk" }, { EnemyName.CoilHead, "SpringMan" },
-            { EnemyName.Jester, "Jester" }, { EnemyName.Lasso, "LassoMan" }, { EnemyName.Masked, "MaskedPlayerEnemy" }, { EnemyName.Manticoil, "Doublewing" }, { EnemyName.RoamingLocust, "DocileLocustBees" }
+            { EnemyName.Jester, "Jester" }, { EnemyName.Lasso, "LassoMan" }, { EnemyName.Masked, "MaskedPlayerEnemy" }, { EnemyName.Manticoil, "Doublewing" }, { EnemyName.RoamingLocust, "DocileLocustBees" },
+            { EnemyName.Butler, "Butler" }, { EnemyName.OldBird, "RadMech" }
         };
 
         public enum ItemName
         {
-            LargeAxle, V_TypeEngine, PlasticFish, MetalSheet, LaserPointer, BigBolt, Bottles, Ring, SteeringWheel, CookieMoldPan, EggBeater, JarOfPickles, DustPan, AirHorn, ClownHorn, CashRegister, Candy, GoldBar, YieldSign, HomemadeFlashbang, Gift, Flask, ToyCube, Remote, ToyRobot, MagnifyingGlass, StopSign, TeaKettle, Mug, RedSoda, OldPhone, HairDryer, Brush, Bell, WhoopieCushion, Comedy, Tragedy, RubberDucky, ChemicalJug, FancyLamp, GoldenCup, Painting, Toothpaste, PillBottle, PerfumeBottle, Teeth, Magic7Ball
+            LargeAxle, V_TypeEngine, PlasticFish, MetalSheet, LaserPointer, BigBolt, Bottles, Ring, SteeringWheel, CookieMoldPan, EggBeater, JarOfPickles, DustPan, AirHorn, ClownHorn, CashRegister, Candy, GoldBar, YieldSign, HomemadeFlashbang, Gift, Flask, ToyCube, Remote, ToyRobot, MagnifyingGlass, StopSign, TeaKettle, Mug, RedSoda, OldPhone, HairDryer, Brush, Bell, WhoopieCushion, Comedy, Tragedy, RubberDucky, ChemicalJug, FancyLamp, GoldenCup, Painting, Toothpaste, PillBottle, PerfumeBottle, Teeth, Magic7Ball, EasterEgg
         }
         internal static Dictionary<ItemName, string> ItemNameList = new Dictionary<ItemName, string>() {
             { ItemName.LargeAxle, "Cog1" }, { ItemName.V_TypeEngine, "EnginePart1"}, { ItemName.PlasticFish, "FishTestProp" }, { ItemName.MetalSheet, "MetalSheet" }, { ItemName.LaserPointer, "FlashLaserPointer" },
@@ -44,17 +45,17 @@ namespace BrutalCompanyMinus
             { ItemName.OldPhone, "Phone" }, { ItemName.HairDryer, "Hairdryer" }, { ItemName.Brush, "Brush" }, { ItemName.Bell, "Bell" }, { ItemName.WhoopieCushion, "WhoopieCushion" },
             { ItemName.Comedy, "ComedyMask" }, { ItemName.Tragedy, "TragedyMask" }, { ItemName.RubberDucky, "RubberDuck" }, { ItemName.ChemicalJug, "ChemicalJug" }, { ItemName.FancyLamp, "FancyLamp" },
             { ItemName.Painting, "FancyPainting" }, { ItemName.GoldenCup, "FancyCup" }, { ItemName.Toothpaste, "Toothpaste" }, { ItemName.PillBottle, "PillBottle" }, { ItemName.PerfumeBottle, "PerfumeBottle" },
-            { ItemName.Teeth, "Dentures" }, { ItemName.Magic7Ball, "7Ball" }
+            { ItemName.Teeth, "Dentures" }, { ItemName.Magic7Ball, "7Ball" }, { ItemName.EasterEgg, "EasterEgg" }
         };
-
+        
         public enum ObjectName
         {
-            LargeRock1, LargeRock2, LargeRock3, LargeRock4, TreeLeaflessBrown1, GiantPumkin, GreyRockGrouping2, GreyRockGrouping4, Tree, TreeLeafless2, TreeLeafless3, Landmine, Turret
+            LargeRock1, LargeRock2, LargeRock3, LargeRock4, TreeLeaflessBrown1, GiantPumkin, GreyRockGrouping2, GreyRockGrouping4, Tree, TreeLeafless2, TreeLeafless3, Landmine, Turret, SpikeRoofTrap
         }
         internal static Dictionary<ObjectName, string> ObjectNameList = new Dictionary<ObjectName, string>() {
             { ObjectName.LargeRock1, "LargeRock1" }, { ObjectName.LargeRock2, "LargeRock2" }, { ObjectName.LargeRock3, "LargeRock3" }, { ObjectName.LargeRock4, "LargeRock4" }, { ObjectName.GreyRockGrouping2, "GreyRockGrouping2" },
             { ObjectName.GreyRockGrouping4, "GreyRockGrouping4" }, { ObjectName.GiantPumkin, "GiantPumpkin" }, { ObjectName.Tree, "tree" }, { ObjectName.TreeLeaflessBrown1, "treeLeaflessBrown.001 Variant" }, { ObjectName.TreeLeafless2, "treeLeafless.002_LOD0" },
-            { ObjectName.TreeLeafless3, "treeLeafless.003_LOD0" }, { ObjectName.Landmine, "Landmine" }, { ObjectName.Turret, "TurretContainer" }
+            { ObjectName.TreeLeafless3, "treeLeafless.003_LOD0" }, { ObjectName.Landmine, "Landmine" }, { ObjectName.Turret, "TurretContainer" }, { ObjectName.SpikeRoofTrap, "SpikeRoofTrapHazard" }
         };
 
         public enum AtmosphereName
@@ -101,15 +102,15 @@ namespace BrutalCompanyMinus
             artilleryShell = (GameObject)customAssetBundle.LoadAsset("ArtilleryShell");
             artillerySirens = (GameObject)customAssetBundle.LoadAsset("DDay");
 
-            NetworkManager.Singleton.AddNetworkPrefab(antiCoilHead.enemyPrefab);
-            NetworkManager.Singleton.AddNetworkPrefab(nutSlayer.enemyPrefab);
-            NetworkManager.Singleton.AddNetworkPrefab(kamikazieBug.enemyPrefab);
+            RegisterNetworkPrefabs(antiCoilHead.enemyPrefab, nutSlayer.enemyPrefab, kamikazieBug.enemyPrefab, slayerShotgun.spawnPrefab, grabbableTurret.spawnPrefab, grabbableLandmine.spawnPrefab, artillerySirens);
+        }
 
-            NetworkManager.Singleton.AddNetworkPrefab(slayerShotgun.spawnPrefab);
-            NetworkManager.Singleton.AddNetworkPrefab(grabbableTurret.spawnPrefab);
-            NetworkManager.Singleton.AddNetworkPrefab(grabbableLandmine.spawnPrefab);
-
-            NetworkManager.Singleton.AddNetworkPrefab(artillerySirens);
+        private static void RegisterNetworkPrefabs(params GameObject[] objects)
+        {
+            foreach(GameObject obj in objects)
+            {
+                NetworkManager.Singleton.AddNetworkPrefab(obj);
+            }
         }
 
 
@@ -170,14 +171,22 @@ namespace BrutalCompanyMinus
                 bool existsInList = false;
                 foreach (KeyValuePair<EnemyName, string> n in EnemyNameList)
                 {
-                    if (e.Key == n.Value) existsInList = true;
+                    if (e.Key == n.Value)
+                    {
+                        existsInList = true;
+                        break;
+                    }
                 }
                 if (!existsInList) Log.LogWarning(string.Format("Enemy:'{0}', isn't matched with enum, this may cause issues...", e.Key));
             }
 
             Log.LogInfo(string.Format("Finished generating 'EnemyList', Count:{0}", EnemyList.Count));
 
-
+            if(EnemyList.ContainsKey("Butler"))
+            {
+                Log.LogInfo("Game is v50, v50 event's will appear");
+                Compatibility.IsVersion50 = true;
+            }
 
             // Generate Item List
             Log.LogInfo("Generating 'ItemList'");
@@ -198,7 +207,11 @@ namespace BrutalCompanyMinus
                 bool existsInList = false;
                 foreach (KeyValuePair<ItemName, string> n in ItemNameList)
                 {
-                    if (i.Key == n.Value) existsInList = true;
+                    if (i.Key == n.Value)
+                    {
+                        existsInList = true;
+                        break;
+                    }
                 }
                 if (!existsInList) Log.LogWarning(string.Format("Item:'{0}', isn't matched with enum, this may cause issues...", i.Key));
             }
@@ -241,7 +254,11 @@ namespace BrutalCompanyMinus
                 bool existsInList = false;
                 foreach (KeyValuePair<ObjectName, string> n in ObjectNameList)
                 {
-                    if (o.Key == n.Value) existsInList = true;
+                    if (o.Key == n.Value)
+                    {
+                        existsInList = true;
+                        break;
+                    }
                 }
                 if (!existsInList) Log.LogWarning(string.Format("Object:'{0}', isn't matched with enum, this may cause issues...", o.Key));
             }

@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "Tastes salty...";
+            Descriptions = new List<string>() { "Tastes satly...", "Reminds me of grandma", "This cellar is massive" };
             ColorHex = "#008000";
             Type = EventType.Good;
 

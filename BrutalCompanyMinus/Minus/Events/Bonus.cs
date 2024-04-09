@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrutalCompanyMinus.Minus.Handlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "Corporate is feeling good today.";
+            Descriptions = new List<string>() { "Corporate is feeling good today.", "The company is giving you credits for exisiting", "■ ■ ■", "It's never enough." };
             ColorHex = "#008000";
             Type = EventType.Good;
 

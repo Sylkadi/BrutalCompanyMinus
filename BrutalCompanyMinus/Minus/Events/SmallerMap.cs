@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "This facility is smaller.";
+            Descriptions = new List<string>() { "This facility is smaller.", "Less time running around", "This facility is more compact" };
             ColorHex = "#008000";
             Type = EventType.Good;
 

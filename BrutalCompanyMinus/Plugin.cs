@@ -45,7 +45,7 @@ namespace BrutalCompanyMinus
                     }
                 }
             }
-
+            
             // Load assets
             Assets.Load();
 

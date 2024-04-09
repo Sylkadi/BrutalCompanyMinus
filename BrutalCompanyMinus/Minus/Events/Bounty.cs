@@ -22,7 +22,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "The company is now paying for kills";
+            Descriptions = new List<string>() { "The company is now paying for kills", "RIP AND TEAR", "Extermination time", "Monsters roam free, and the price on their heads is mediocre", "The hunt is on!" };
             ColorHex = "#008000";
             Type = EventType.Good;
 

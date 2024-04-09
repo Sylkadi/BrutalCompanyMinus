@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "This facility is armed.";
+            Descriptions = new List<string>() { "This facility is armed.", "You better bring your codpiece", "Try moving, i dare you..." };
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 

@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "No lizards";
+            Descriptions = new List<string>() { "No lizards", "No immortal things for whatever reason", "No gas gas gas" };
             ColorHex = "#008000";
             Type = EventType.Remove;
             EventsToRemove = new List<string>() { nameof(Lizard) };

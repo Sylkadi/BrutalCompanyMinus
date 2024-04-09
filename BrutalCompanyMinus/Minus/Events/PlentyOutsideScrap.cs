@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "There is some scrap to be found outside.";
+            Descriptions = new List<string>() { "There is some scrap to be found outside.", "This facility lacks proper waste disposal", "Yay, scrap outside" };
             ColorHex = "#00FF00";
             Type = EventType.VeryGood;
 

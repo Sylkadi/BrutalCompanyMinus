@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "They can hear you";
+            Descriptions = new List<string>() { "They can hear you", "Who's a good boy?", "They aren't good boys ;(", "The ground trembles under their paws", "Bring out your whoopie cushions!", "Make sure to close the door behind you" };
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 

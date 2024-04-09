@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "The company has ordered a big delivery on this planet.";
+            Descriptions = new List<string>() { "The company has ordered a big delivery on this planet.", "A Luxurious cargo descends.", "Corporate has sent you a massive package." };
             ColorHex = "#00FF00";
             Type = EventType.VeryGood;
 
@@ -27,9 +27,10 @@ namespace BrutalCompanyMinus.Minus.Events
 
             ScaleList.Add(ScaleType.MinItemAmount, new Scale(4.0f, 0.134f, 4.0f, 12.0f));
             ScaleList.Add(ScaleType.MaxItemAmount, new Scale(6.0f, 0.2f, 6.0f, 18.0f));
+            ScaleList.Add(ScaleType.MinValue, new Scale(60.0f, 0.0f, 60.0f, 60.0f));
             ScaleList.Add(ScaleType.MaxValue, new Scale(99999.0f, 0.0f, 99999.0f, 99999.0f));
         }
 
-        public override void Execute() => Manager.DeliverRandomItems(UnityEngine.Random.Range(Get(ScaleType.MinItemAmount), Get(ScaleType.MaxItemAmount) + 1), Get(ScaleType.MaxValue));
+        public override void Execute() => Manager.DeliverRandomItems(UnityEngine.Random.Range(Get(ScaleType.MinItemAmount), Get(ScaleType.MaxItemAmount) + 1), Get(ScaleType.MinValue), Get(ScaleType.MaxValue));
     }
 }

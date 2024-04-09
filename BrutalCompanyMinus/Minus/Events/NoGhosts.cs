@@ -19,15 +19,20 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "No ghosts";
+            Descriptions = new List<string>() { "No ghosts", "No more paranormal activity", "The ghost busters have cleared this facility of ghosts." };
             ColorHex = "#008000";
             Type = EventType.Remove;
 
-            EventsToRemove = new List<string>() { nameof(LittleGirl), nameof(FacilityGhost) };
+            EventsToRemove = new List<string>() { nameof(LittleGirl), nameof(FacilityGhost), nameof(Hell), nameof(Walkers), nameof(Herobrine) };
         }
 
-        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.GhostGirl);
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.GhostGirl) || Manager.SpawnExists("WalkerType") || Manager.SpawnExists("Herobrine");
 
-        public override void Execute() => Manager.RemoveSpawn(Assets.EnemyName.GhostGirl);
+        public override void Execute()
+        {
+            Manager.RemoveSpawn(Assets.EnemyName.GhostGirl);
+            Manager.RemoveSpawn("WalkerType");
+            Manager.RemoveSpawn("Herobrine");
+        }
     }
 }

@@ -20,14 +20,14 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 8;
-            Description = "These trees look dead";
+            Descriptions = new List<string>() { "These trees look dead", "These trees have lost their touch", "It's winter" };
             ColorHex = "#FFFFFF";
             Type = EventType.Neutral;
 
             EventsToRemove = new List<string>() { nameof(Trees), nameof(LeaflessBrownTrees) };
 
-            ScaleList.Add(ScaleType.MinDensity, new Scale(0.03f, 0.0f, 0.03f, 0.03f));
-            ScaleList.Add(ScaleType.MaxDensity, new Scale(0.05f, 0.0f, 0.05f, 0.05f));
+            ScaleList.Add(ScaleType.MinDensity, new Scale(0.018f, 0.0f, 0.018f, 0.018f));
+            ScaleList.Add(ScaleType.MaxDensity, new Scale(0.03f, 0.0f, 0.03f, 0.03f));
         }
 
         public override void Execute()

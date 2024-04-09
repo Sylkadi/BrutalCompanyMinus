@@ -147,9 +147,11 @@ namespace BrutalCompanyMinus.Minus
                 }
             }
 
+            public static void OutsideEnemies(GameObject enemy, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(enemy, count));
             public static void OutsideEnemies(EnemyType enemy, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(enemy.enemyPrefab, count));
             public static void OutsideEnemies(Assets.EnemyName enemyName, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(Assets.GetEnemy(enemyName).enemyPrefab, count));
 
+            public static void InsideEnemies(GameObject enemy, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(enemy, count, 0.0f, radius));
             public static void InsideEnemies(EnemyType enemy, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(enemy.enemyPrefab, count, 0.0f, radius));
 
             public static void InsideEnemies(Assets.EnemyName enemyName, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(Assets.GetEnemy(enemyName).enemyPrefab, count, 0.0f, radius));
@@ -158,6 +160,12 @@ namespace BrutalCompanyMinus.Minus
 
             internal static void DoSpawnOutsideEnemies()
             {
+                if(Events.SafeOutside.Active)
+                {
+                    Log.LogInfo("Outside spawning prevented by OutsideSafe");
+                    return;
+                }
+
                 List<Vector3> OutsideAiNodes = Functions.GetOutsideNodes();
                 List<Vector3> SpawnDenialNodes = Functions.GetSpawnDenialNodes();
 
@@ -360,7 +368,7 @@ namespace BrutalCompanyMinus.Minus
             ScrapToTransmuteTo.AddRange(Items);
         }
 
-        public static void DeliverRandomItems(int Amount, int MaxPrice)
+        public static void DeliverRandomItems(int Amount, int MinPrice, int MaxPrice)
         {
             if (RoundManager.Instance.IsServer)
             {
@@ -369,7 +377,7 @@ namespace BrutalCompanyMinus.Minus
                 List<int> validItems = new List<int>();
                 for (int i = 0; i < terminal.buyableItemsList.Length; i++)
                 {
-                    if (terminal.buyableItemsList[i].creditsWorth <= MaxPrice) validItems.Add(i);
+                    if (terminal.buyableItemsList[i].creditsWorth >= MinPrice && terminal.buyableItemsList[i].creditsWorth <= MaxPrice) validItems.Add(i);
                 }
 
                 for (int i = 0; i < Amount; i++)
@@ -601,7 +609,7 @@ namespace BrutalCompanyMinus.Minus
             currentTerminal.SyncGroupCreditsServerRpc(currentTerminal.groupCredits, currentTerminal.numberOfItemsInDropship);
 
             bool isPositive = (amount >= 0);
-            HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}{2} ■</color>", isPositive ? "#008000" : "#FF0000", isPositive ? "+" : "", amount));
+            HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}{2}■</color>", isPositive ? "#008000" : "#FF0000", isPositive ? "+" : "", amount));
         }
 
         [HarmonyPostfix]
@@ -617,7 +625,7 @@ namespace BrutalCompanyMinus.Minus
             // Net objects
             foreach (ObjectInfo obj in insideObjectsToSpawnOutside) Spawn.OutsideObjects(obj.obj, new Vector3(0.0f, -0.05f, 0.0f), obj.density, -1, 250); // 250 Cap for outside landmines and turrets as such
         }
-
+        
         private static IEnumerator DelayedExecution() // Delay this to fix trees not spawning in correctly on clients
         {
             yield return new WaitForSeconds(5.0f);
@@ -749,7 +757,7 @@ namespace BrutalCompanyMinus.Minus
             while (true)
             {
                 Iteration++;
-                Vector3 newPosition = RoundManager.Instance.GetRandomPositionInRadius(position, 0, radius, rng);
+                Vector3 newPosition = RoundManager.Instance.GetRandomNavMeshPositionInRadius(position, radius);
                 bool foundSafe = true;
                 foreach (Vector3 node in denialNodes)
                 {

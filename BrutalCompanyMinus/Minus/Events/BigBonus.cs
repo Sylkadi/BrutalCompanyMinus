@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "Corporate is very pleased";
+            Descriptions = new List<string>() { "Corporate is very pleased", "The company has sent you a stimulus check", "Yippeeee" };
             ColorHex = "#00FF00";
             Type = EventType.VeryGood;
 

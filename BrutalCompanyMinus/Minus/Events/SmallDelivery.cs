@@ -19,15 +19,16 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "The company has decided to give you a present.";
+            Descriptions = new List<string>() { "The company has decided to give you a present.", "Small shipment for small jobs", "Congratz, you have been awarded." };
             ColorHex = "#008000";
             Type = EventType.Good;
 
             ScaleList.Add(ScaleType.MinItemAmount, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
             ScaleList.Add(ScaleType.MaxItemAmount, new Scale(3.0f, 0.1f, 3.0f, 9.0f));
+            ScaleList.Add(ScaleType.MinValue, new Scale(0.0f, 0.0f, 0.0f, 0.0f));
             ScaleList.Add(ScaleType.MaxValue, new Scale(25.0f, 5.0f, 25.0f, 325.0f));
         }
 
-        public override void Execute() => Manager.DeliverRandomItems(UnityEngine.Random.Range(Get(ScaleType.MinItemAmount), Get(ScaleType.MaxItemAmount) + 1), Get(ScaleType.MaxValue));
+        public override void Execute() => Manager.DeliverRandomItems(UnityEngine.Random.Range(Get(ScaleType.MinItemAmount), Get(ScaleType.MaxItemAmount) + 1), Get(ScaleType.MinValue), Get(ScaleType.MaxValue));
     }
 }

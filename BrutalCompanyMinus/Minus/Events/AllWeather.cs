@@ -13,7 +13,6 @@ namespace BrutalCompanyMinus.Minus.Events
     internal class AllWeather : MEvent
     {
         public static bool Active = false;
-
         public override string Name() => nameof(AllWeather);
 
         public static AllWeather Instance;
@@ -23,13 +22,13 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "God hates you";
+            Descriptions = new List<string>() { "God hates you", "Chaos reigns as the skies unleash every weather pattern known to man.", "An umbrella might help here", "I hope you suffer here" };
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
             EventsToRemove = new List<string>() { nameof(Gloomy), nameof(Raining), nameof(HeavyRain) };
 
-            ScaleList.Add(ScaleType.ScrapValue, new Scale(1.60f, 0.0f, 1.65f, 1.60f));
+            ScaleList.Add(ScaleType.ScrapValue, new Scale(1.60f, 0.0f, 1.60f, 1.60f));
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.30f, 0.0f, 1.30f, 1.30f));
         }
 

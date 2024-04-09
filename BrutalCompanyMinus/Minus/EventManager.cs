@@ -11,8 +11,7 @@ namespace BrutalCompanyMinus.Minus
     [HarmonyPatch]
     public class EventManager
     {
-
-        internal static List<MEvent> events = new List<MEvent>() {
+        internal static List<MEvent> vanillaEvents = new List<MEvent>() {
             // Very Good
             new Events.BigBonus(),
             new Events.ScrapGalore(),
@@ -20,6 +19,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.BigDelivery(),
             new Events.PlentyOutsideScrap(),
             new Events.BlackFriday(),
+            new Events.SafeOutside(),
             // Good
             new Events.Bounty(),
             new Events.Bonus(),
@@ -47,7 +47,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.HeavyRain(),
             // Bad
             new Events.HoardingBugs(),
-            new Events.Bees(),
+            new Events.Roomba(),
             new Events.Landmines(),
             new Events.Lizard(),
             new Events.Slimes(),
@@ -65,6 +65,8 @@ namespace BrutalCompanyMinus.Minus
             new Events.KamikazieBugs(),
             new Events.RealityShift(),
             new Events.Masked(),
+            new Events.Butlers(),
+            new Events.SpikeTraps(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),
@@ -84,7 +86,9 @@ namespace BrutalCompanyMinus.Minus
             new Events.NutSlayer(),
             new Events.Hell(),
             new Events.AllWeather(),
-            // NoEnemy
+            new Events.Worms(),
+            new Events.OldBirds(),
+            // No Enemy
             new Events.NoBaboons(),
             new Events.NoBracken(),
             new Events.NoCoilhead(),
@@ -102,8 +106,43 @@ namespace BrutalCompanyMinus.Minus
             new Events.NoSlimes(),
             new Events.NoMasks(),
             new Events.NoTurrets(),
-            new Events.NoLandmines()
+            new Events.NoLandmines(),
+            new Events.NoOldBird(),
+            new Events.NoButlers(),
+            new Events.NoSpikeTraps()
         };
+
+        internal static List<MEvent> moddedEvents = new List<MEvent>() {
+            // Very Good
+            // Good
+            // Neutral
+            // Bad
+            new Events.RollingGiants(),
+            new Events.Lockers(),
+            new Events.Peepers(),
+            new Events.Roomba(),
+            new Events.Shrimp(),
+            new Events.ImmortalSnail(),
+            // Very Bad
+            new Events.Herobrine(),
+            new Events.TheFiend(),
+            new Events.SirenHead(),
+            new Events.Walkers(),
+            new Events.GiantShowdown(),
+            new Events.ShyGuy(),
+            new Events.Walkers(),
+            // No Enemy
+            new Events.NoLockers(),
+            new Events.NoPeepers(),
+            new Events.NoShyGuy(),
+            new Events.NoSirenHead(),
+            new Events.NoRollingGiants()
+        };
+
+        internal static List<MEvent> customEvents = new List<MEvent>();
+
+        internal static List<MEvent> events = new List<MEvent>();
+
         internal static List<MEvent> disabledEvents = new List<MEvent>();
 
         internal static List<MEvent> currentEvents = new List<MEvent>();
@@ -140,7 +179,7 @@ namespace BrutalCompanyMinus.Minus
 
             // Decide how many events to spawn
             System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + 32345);
-            int eventsToSpawn = Configuration.eventsToSpawn.Value + RoundManager.Instance.GetRandomWeightedIndex(Configuration.weightsForExtraEvents.IntArray(), rng);
+            int eventsToSpawn = (int)MEvent.Scale.Compute(Configuration.eventsToSpawn, MEvent.EventType.Neutral) + RoundManager.Instance.GetRandomWeightedIndex(Configuration.weightsForExtraEvents.IntArray(), rng);
                 
             // Spawn events
             for (int i = 0; i < eventsToSpawn; i++)
@@ -262,9 +301,6 @@ namespace BrutalCompanyMinus.Minus
             Manager.currentTerminal = GameObject.FindObjectOfType<Terminal>();
             Manager.daysPassed = StartOfRound.Instance.gameStats.daysSpent;
 
-            Configuration.GenerateLevelConfigurations(StartOfRound.Instance); // Bind 
-            LevelModifications.ModifyEnemyScrapSpawns(StartOfRound.Instance); // Set
-
             Assets.generateLevelScrapLists();
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
@@ -310,7 +346,7 @@ namespace BrutalCompanyMinus.Minus
                 HUDManager.Instance.AddTextToChatOnServer("<color=#FFFFFF>Events:</color>");
                 foreach (MEvent e in currentEvents)
                 {
-                    HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Description));
+                    HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Descriptions[UnityEngine.Random.Range(0, e.Descriptions.Count)]));
                 }
             }
 

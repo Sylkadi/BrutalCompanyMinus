@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Description = "Your skin crawls...";
+            Descriptions = new List<string>() { "Your skin crawls...", "Not for those with arachnophobia", "Bring your hoover" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 

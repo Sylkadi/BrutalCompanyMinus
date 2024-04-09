@@ -63,7 +63,13 @@ namespace BrutalCompanyMinus
                         PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
                         if (localPlayer == null) continue;
 
-                        if (!localPlayer.isInsideFactory) UpdateAtmosphere(e.name, e.state);
+                        if (!localPlayer.isInsideFactory)
+                        {
+                            UpdateAtmosphere(e.name, e.state);
+                        } else if(localPlayer.isPlayerDead)
+                        {
+                            UpdateAtmosphere(e.name, false);
+                        }
                     }
                 }
             }
@@ -467,6 +473,7 @@ namespace BrutalCompanyMinus
 
             netObject = (GameObject)Assets.bundle.LoadAsset("BrutalCompanyMinus");
             netObject.AddComponent<Net>();
+            netObject.AddComponent<EnemySpawnCycle>();
 
             NetworkManager.Singleton.AddNetworkPrefab(netObject);
         }

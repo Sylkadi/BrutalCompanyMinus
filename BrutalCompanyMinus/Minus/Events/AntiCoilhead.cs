@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "Dont look at them...";
+            Descriptions = new List<string>() { "Dont look at them...", "Glowy eyes", "My favourite", "I hope you don't have friends when dealing with these" };
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 

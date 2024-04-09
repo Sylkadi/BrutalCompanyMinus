@@ -20,13 +20,12 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Description = "Everything is open!";
+            Descriptions = new List<string>() { "Everything is open!", "Someone left the door's open", "Every burgler's dream", "Experience true exploration", "You wont need be needing keys here" };
             ColorHex = "#008000";
             Type = EventType.Good;
 
             EventsToRemove = new List<string>() { nameof(FacilityGhost) };
         }
-
 
         public override void Execute() => Net.Instance.StartCoroutine(UnlockAll());
 

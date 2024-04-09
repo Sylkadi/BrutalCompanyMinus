@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Description = "The ground is sticky";
+            Descriptions = new List<string>() { "The ground is sticky", "It's very slow unless you wack it", "Don't get lost in the sauce", "It's mostly water and pain", "blob" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 

@@ -19,11 +19,11 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Description = "BEES!! wait...";
+            Descriptions = new List<string>() { "BEES!! wait...", "The facility is abuzz!", "Bee careful", "The inside is sweet", "Why was the bee fired from the barbershop? He only knew how to give a buzz cut." };
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            EventsToSpawnWith = new List<string>() { nameof(Bees) };
+            EventsToSpawnWith = new List<string>() { nameof(Roomba) };
 
             ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(2.0f, 0.05f, 2.0f, 5.0f));
             ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(3.0f, 0.084f, 3.0f, 8.0f));

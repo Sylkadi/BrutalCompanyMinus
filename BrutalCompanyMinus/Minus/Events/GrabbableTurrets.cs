@@ -20,12 +20,14 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Description = "Some turrets have turned into scrap...";
+            Descriptions = new List<string>() { "Some turrets have turned into scrap...", "You can now offically sell some of the turrets, enjoy", "You can bring these home for an automated defense system for intruders." };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
             ScaleList.Add(ScaleType.Rarity, new Scale(0.4f, 0.0084f, 0.4f, 0.9f));
         }
+
+        public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.Turret]);
 
         public override void Execute() => Active = true;
 
