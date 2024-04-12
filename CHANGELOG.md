@@ -1,4 +1,13 @@
 # ChangeLog
+  <summary>0.10.12</summary>
+  
+  - AllWeather event will no longer spawn with 20 instances of stormy(Oops)
+  - AllWeather will come with x1.6 scrapValue and x1.3 scrapAmount
+  - Bombardment from warzone will no longer hit the ship
+  - Buffed BigBonus default values
+  - Updated rng for object spawning
+  
+</details>
 <details>
   <summary>0.10.11</summary>
   
