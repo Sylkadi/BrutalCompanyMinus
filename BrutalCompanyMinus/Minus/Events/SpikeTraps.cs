@@ -19,27 +19,29 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Descriptions = new List<string>() { "Spikes!!!", "I recommend looking up", "hydraulic press" };
+            Descriptions = new List<string>() { "Spikes!!!", "I recommend looking up", "Hydraulic press!" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(8.0f, 0.167f, 8.0f, 18.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(12.0f, 0.25f, 12.0f, 27.0f));
+            ScaleList.Add(ScaleType.MinAmount, new Scale(5.0f, 0.167f, 5.0f, 15.0f));
+            ScaleList.Add(ScaleType.MaxAmount, new Scale(7.0f, 0.234f, 7.0f, 21.0f));
         }
 
-        public override bool AddEventIfOnly() => Compatibility.IsVersion50 && RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.SpikeRoofTrap]);
+        public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.SpikeRoofTrap]);
 
         public override void Execute()
         {
-            AnimationCurve curve = new AnimationCurve(new Keyframe(0f, Get(ScaleType.MaxInsideEnemy)), new Keyframe(1f, Get(ScaleType.MinInsideEnemy)));
-
-            foreach(SpawnableMapObject obj in RoundManager.Instance.currentLevel.spawnableMapObjects)
+            RoundManager.Instance.currentLevel.spawnableMapObjects = RoundManager.Instance.currentLevel.spawnableMapObjects.Add(new SpawnableMapObject()
             {
-                if(obj.prefabToSpawn.name == Assets.GetObject(Assets.ObjectName.SpikeRoofTrap).name)
-                {
-                    obj.numberToSpawn = curve;
-                }
-            }
+                prefabToSpawn = Assets.GetObject(Assets.ObjectName.SpikeRoofTrap),
+                numberToSpawn = new AnimationCurve(new Keyframe(0f, Get(ScaleType.MinAmount)), new Keyframe(1f, Get(ScaleType.MaxAmount))),
+                spawnFacingAwayFromWall = false,
+                spawnFacingWall = true,
+                spawnWithBackToWall = true,
+                spawnWithBackFlushAgainstWall = true,
+                requireDistanceBetweenSpawns = true,
+                disallowSpawningNearEntrances = false
+            });
         }
     }
 }

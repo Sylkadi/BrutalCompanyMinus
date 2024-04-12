@@ -21,14 +21,14 @@ namespace BrutalCompanyMinus
 
         public enum EnemyName
         {
-            Bracken, HoardingBug, CoilHead, Thumper, BunkerSpider, Jester, SnareFlea, Hygrodere, GhostGirl, SporeLizard, NutCracker, Masked, EyelessDog, ForestKeeper, EarthLeviathan, BaboonHawk, RoamingLocust, Manticoil, CircuitBee, Lasso, Butler, OldBird
+            Bracken, HoardingBug, CoilHead, Thumper, BunkerSpider, Jester, SnareFlea, Hygrodere, GhostGirl, SporeLizard, NutCracker, Masked, EyelessDog, ForestKeeper, EarthLeviathan, BaboonHawk, RoamingLocust, Manticoil, CircuitBee, Lasso, Butler, OldBird, FlowerSnake
         }
         internal static Dictionary<EnemyName, string> EnemyNameList = new Dictionary<EnemyName, string>() { 
             { EnemyName.SnareFlea, "Centipede" }, { EnemyName.BunkerSpider, "SandSpider" }, { EnemyName.HoardingBug, "HoarderBug" }, { EnemyName.Bracken, "Flowerman" }, { EnemyName.Thumper, "Crawler" },
             { EnemyName.Hygrodere, "Blob" }, { EnemyName.GhostGirl, "DressGirl" }, { EnemyName.SporeLizard, "Puffer" }, { EnemyName.NutCracker, "Nutcracker" }, { EnemyName.EyelessDog, "MouthDog" },
             { EnemyName.ForestKeeper, "ForestGiant" }, { EnemyName.EarthLeviathan, "SandWorm" }, { EnemyName.CircuitBee, "RedLocustBees" }, { EnemyName.BaboonHawk, "BaboonHawk" }, { EnemyName.CoilHead, "SpringMan" },
             { EnemyName.Jester, "Jester" }, { EnemyName.Lasso, "LassoMan" }, { EnemyName.Masked, "MaskedPlayerEnemy" }, { EnemyName.Manticoil, "Doublewing" }, { EnemyName.RoamingLocust, "DocileLocustBees" },
-            { EnemyName.Butler, "Butler" }, { EnemyName.OldBird, "RadMech" }
+            { EnemyName.Butler, "Butler" }, { EnemyName.OldBird, "RadMech" }, { EnemyName.FlowerSnake, "FlowerSnake" }
         };
 
         public enum ItemName
@@ -74,6 +74,7 @@ namespace BrutalCompanyMinus
         internal static Dictionary<string, GameObject> ObjectList = new Dictionary<string, GameObject>();
 
         internal static List<float> factorySizeMultiplierList = new List<float>();
+        internal static List<SpawnableMapObject[]> spawnableMapObjects = new List<SpawnableMapObject[]>();
         internal static List<float> averageScrapValueList = new List<float>();
         internal static List<AnimationCurve> insideSpawnChanceCurves = new List<AnimationCurve>(), outsideSpawnChanceCurves = new List<AnimationCurve>(), daytimeSpawnChanceCurves = new List<AnimationCurve>();
         internal static List<int> insideMaxPowerCounts = new List<int>(), outsideMaxPowerCounts = new List<int>(), daytimeMaxPowerCounts = new List<int>();
@@ -182,12 +183,6 @@ namespace BrutalCompanyMinus
 
             Log.LogInfo(string.Format("Finished generating 'EnemyList', Count:{0}", EnemyList.Count));
 
-            if(EnemyList.ContainsKey("Butler"))
-            {
-                Log.LogInfo("Game is v50, v50 event's will appear");
-                Compatibility.IsVersion50 = true;
-            }
-
             // Generate Item List
             Log.LogInfo("Generating 'ItemList'");
 
@@ -267,13 +262,16 @@ namespace BrutalCompanyMinus
 
             Log.LogInfo(string.Format("Map Count:{0}", factorySizeMultiplierList.Count));
 
+            Log.LogInfo("Generating configuration");
+            Configuration.CreateConfig();
+
             generatedList = true;
         }
 
-        private static bool generatedLevelScrapLists = false;
-        internal static void generateLevelScrapLists()
+        private static bool generatedOrignalValuesList = false;
+        internal static void generateOriginalValuesLists()
         {
-            if (generatedLevelScrapLists) return;
+            if (generatedOrignalValuesList) return;
             
             // Generate FactorySize List and animation curves list
             foreach (SelectableLevel level in StartOfRound.Instance.levels)
@@ -315,18 +313,47 @@ namespace BrutalCompanyMinus
                 outsideMaxPowerCounts.Add(level.maxOutsideEnemyPowerCount);
                 daytimeMaxPowerCounts.Add(level.maxDaytimeEnemyPowerCount);
 
+                spawnableMapObjects.Add(level.spawnableMapObjects);
+
             }
-            
-            generatedLevelScrapLists = true;
+            generatedOrignalValuesList = true;
         }
 
-        public static EnemyType GetEnemy(EnemyName name) => EnemyList[EnemyNameList[name]];
-        public static EnemyType GetEnemy(string name) => EnemyList[name];
+        public static EnemyType GetEnemy(EnemyName name) => GetEnemy(EnemyNameList[name]);
+        public static EnemyType GetEnemy(string name)
+        {
+            if (EnemyList.TryGetValue(name, out EnemyType enemyType)) return enemyType;
+            Log.LogWarning($"GetEnemy({name}) failed, returning an empty enemy type");
+            EnemyType empty = new EnemyType();
+            empty.enemyName = name;
+            empty.name = name;
+            return empty;
+        }
 
-        public static Item GetItem(ItemName name) => ItemList[ItemNameList[name]];
-        public static Item GetItem(string name) => ItemList[name];
+        public static EnemyType GetEnemyOrDefault(string name)
+        {
+            if (EnemyList.TryGetValue(name, out EnemyType enemyType)) return enemyType;
+            Log.LogWarning($"GetEnemyOrDefault({name}) failed, returning kamikazie bug.");
+            return kamikazieBug;
+        }
 
-        public static GameObject GetObject(ObjectName name) => ObjectList[ObjectNameList[name]];
-        public static GameObject GetObject(string name) => ObjectList[name];
+        public static Item GetItem(ItemName name) => GetItem(ItemNameList[name]);
+        public static Item GetItem(string name)
+        {
+            if(ItemList.TryGetValue(name, out Item item)) return item;
+            Log.LogWarning($"GetItem({name}) failed, returning an empty item");
+            Item empty = new Item();
+            empty.itemName = name;
+            empty.name = name;
+            return empty;
+        }
+
+        public static GameObject GetObject(ObjectName name) => GetObject(ObjectNameList[name]);
+        public static GameObject GetObject(string name)
+        {
+            if(ObjectList.TryGetValue(name, out GameObject obj)) return obj;
+            Log.LogWarning($"GetObject({name} failed, returning empty gameObject");
+            return new GameObject(name);
+        }
     }
 }

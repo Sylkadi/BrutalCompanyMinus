@@ -23,23 +23,17 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(50.0f, 0.84f, 50.0f, 100.0f));
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(10.0f, 0.34f, 10.0f, 30.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.034f, 2.0f, 4.0f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(3.0f, 0.05f, 3.0f, 6.0f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(5.0f, 0.084f, 5.0f, 10.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.BaboonHawk,
+                new Scale(10.0f, 0.34f, 10.0f, 30.0f),
+                new Scale(50.0f, 0.84f, 50.0f, 100.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(2.0f, 0.034f, 2.0f, 4.0f),
+                new Scale(3.0f, 0.05f, 3.0f, 6.0f),
+                new Scale(5.0f, 0.084f, 5.0f, 10.0f))
+            };
         }
 
-        public override void Execute()
-        {
-            EnemyType BaboonHawk = Assets.GetEnemy(Assets.EnemyName.BaboonHawk);
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, BaboonHawk, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, BaboonHawk, Get(ScaleType.OutsideEnemyRarity));
-
-            Manager.Spawn.OutsideEnemies(BaboonHawk, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
-            Manager.Spawn.InsideEnemies(BaboonHawk, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

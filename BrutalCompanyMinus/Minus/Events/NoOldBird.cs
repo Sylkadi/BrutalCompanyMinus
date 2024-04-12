@@ -26,7 +26,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Type = EventType.Remove;
         }
 
-        public override bool AddEventIfOnly() => Compatibility.IsVersion50 && Manager.SpawnExists(Assets.EnemyName.OldBird);
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.OldBird);
 
         public override void Execute() => Manager.RemoveSpawn(Assets.EnemyName.OldBird);
     }

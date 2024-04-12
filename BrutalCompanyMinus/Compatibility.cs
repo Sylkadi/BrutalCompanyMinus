@@ -4,7 +4,11 @@ using System.Reflection;
 using System.Text;
 using BepInEx.Bootstrap;
 using HarmonyLib;
+using Unity.Netcode;
 using UnityEngine;
+using static BrutalCompanyMinus.Minus.EventManager;
+using BrutalCompanyMinus.Minus.Events;
+using BrutalCompanyMinus.Minus;
 
 namespace BrutalCompanyMinus
 {
@@ -27,21 +31,17 @@ namespace BrutalCompanyMinus
             theFiendPresent = false,
             immortalSnailPresent = false,
             lockerPresent = false,
-            theGiantSpecimensPresent = false;
+            theGiantSpecimensPresent = false,
+            mimicsPresent = false,
+            footballPresent = false;
 
         internal static FieldInfo peeperSpawnChance = null;
-
-        internal static bool IsVersion50 = false;
+        internal static NetworkVariable<int>[] mimicNetworkSpawnChances = null;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PreInitSceneScript), "Awake")]
         private static void OnGameLoad()
         {
-            foreach(string x in Chainloader.PluginInfos.Keys)
-            {
-                Log.LogFatal(x);
-            }
-
             Assembly yippeeAssembly = GetAssembly("sunnobunno.YippeeMod");
             if(yippeeAssembly != null)
             {
@@ -75,24 +75,66 @@ namespace BrutalCompanyMinus
                     if(peeperSpawnChance != null)
                     {
                         Log.LogInfo("Found spawnChance Field, Peepers and NoPeepers event's will now occur");
-                        Minus.Events.NoPeepers.oldSpawnChance = (float)peeperSpawnChance.GetValue(null);
+                        NoPeepers.oldSpawnChance = (float)peeperSpawnChance.GetValue(null);
                         peepersPresent = true;
+                        moddedEvents.Add(new Peepers());
+                        moddedEvents.Add(new NoPeepers());
+                    }
+                }
+            }
+
+            Assembly mimicsAssembly = GetAssembly("x753.Mimics");
+            if(mimicsAssembly != null)
+            {
+                Log.LogInfo("Found mimicsMod, Will attempt to grab spawn rate network variables");
+
+                Type mimicNetworker = mimicsAssembly.GetType("Mimics.MimicNetworker");
+                Type mimic = mimicsAssembly.GetType("Mimics.Mimics");
+                if (mimicNetworker != null && mimic != null)
+                {
+                    mimicNetworkSpawnChances = new NetworkVariable<int>[6];
+
+                    for(int i = 0; i < 5; i++)
+                    {
+                        mimicNetworkSpawnChances[i] = (NetworkVariable<int>)mimicNetworker.GetField("SpawnWeight" + i, BindingFlags.Static | BindingFlags.Public).GetValue(null);
+                    }
+                    mimicNetworkSpawnChances[5] = (NetworkVariable<int>)mimicNetworker.GetField("SpawnWeightMax", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+
+                    bool isNull = false;
+                    foreach(NetworkVariable<int> variable in mimicNetworkSpawnChances)
+                    {
+                        if(variable == null)
+                        {
+                            isNull = true;
+                            break;
+                        }
+                    }
+                    FieldInfo spawnRates = mimic.GetField("SpawnRates", BindingFlags.Static | BindingFlags.Public);
+
+                    if(spawnRates != null && !isNull)
+                    {
+                        Log.LogInfo("Found spawn rate network variables, Mimics and noMimics events will now appear.");
+                        Minus.Handlers.Mimics.originalSpawnRateValues = (int[])spawnRates.GetValue(null);
+                        mimicsPresent = true;
+                        moddedEvents.Add(new Mimics());
+                        moddedEvents.Add(new NoMimics());
                     }
                 }
             }
 
             lethalEscapePresent = IsModPresent("xCeezy.LethalEscape", "Will prevent SafeOutside event from occuring.");
-            lethalThingsPresent = IsModPresent("evaisa.lethalthings", "Roomba and NoRoomba event will now occur.");
-            diversityPresent = IsModPresent("Chaos.Diversity", "Walker event will now occur.");
-            scopophobiaPresent = IsModPresent("Scopophobia", "Shy Guy and NoShyGuy event will now occur.");
-            lcOfficePresent = IsModPresent("Piggy.LCOffice", "Shrimp event will now occur.");
-            herobrinePresent = IsModPresent("Kittenji.HerobrineMod", "Herobrine event will now occur.");
-            sirenheadPresent = IsModPresent("Ccode.SirenHead", "SirenHead and NoSirenHead event will now occur.");
-            rollinggiantPresent = IsModPresent("nomnomab.rollinggiant", "RollingGiant and NoRollingGiant event will now occur.");
-            theFiendPresent = IsModPresent("com.RuthlessCompany", "TheFiend and NoFiend event will now occur.");
-            immortalSnailPresent = IsModPresent("ImmortalSnail", "ImmortalSnail and NoImmortalSnail event will now occur.");
-            lockerPresent = IsModPresent("com.zealsprince.locker", "Locker and NoLocker event will now occur.");
-            theGiantSpecimensPresent = IsModPresent("TheGiantSpecimens", "asdasd");
+            lethalThingsPresent = IsModPresent("evaisa.lethalthings", "Roomba and TeleporterTraps event will now occur.", new Roomba(), new TeleporterTraps());
+            diversityPresent = IsModPresent("Chaos.Diversity", "Walker event will now occur.", new Walkers());
+            scopophobiaPresent = IsModPresent("Scopophobia", "Shy Guy and NoShyGuy event will now occur.", new ShyGuy(), new NoShyGuy());
+            lcOfficePresent = IsModPresent("Piggy.LCOffice", "Shrimp event will now occur.", new Shrimp());
+            herobrinePresent = IsModPresent("Kittenji.HerobrineMod", "Herobrine event will now occur.", new Herobrine());
+            sirenheadPresent = IsModPresent("Ccode.SirenHead", "SirenHead event will now occur.", new SirenHead());
+            rollinggiantPresent = IsModPresent("nomnomab.rollinggiant", "RollingGiant and NoRollingGiant event will now occur.", new RollingGiants());
+            theFiendPresent = IsModPresent("com.RuthlessCompany", "TheFiend and NoFiend event will now occur.", new TheFiend(), new NoFiend());
+            immortalSnailPresent = IsModPresent("ImmortalSnail", "ImmortalSnail and NoImmortalSnail event will now occur.", new ImmortalSnail(), new NoImmortalSnails());
+            lockerPresent = IsModPresent("com.zealsprince.locker", "Locker and NoLocker event will now occur.", new Lockers(), new NoLockers());
+            theGiantSpecimensPresent = IsModPresent("TheGiantSpecimens", "GiantShowdown event will now occur.", new GiantShowdown());
+            footballPresent = IsModPresent("Kittenji.FootballEntity", "Football event will now occur.", new Football());
         }
 
         private static Assembly GetAssembly(string name)
@@ -104,10 +146,14 @@ namespace BrutalCompanyMinus
             return null;
         }
 
-        private static bool IsModPresent(string name, string logMessage)
+        private static bool IsModPresent(string name, string logMessage, params MEvent[] associatedEvents)
         {
             bool isPresent = Chainloader.PluginInfos.ContainsKey(name);
-            if (isPresent) Log.LogInfo($"{name} is present. {logMessage}");
+            if (isPresent)
+            {
+                moddedEvents.AddRange(associatedEvents);
+                Log.LogInfo($"{name} is present. {logMessage}");
+            }
             return isPresent;
         }
     }

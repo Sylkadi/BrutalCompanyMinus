@@ -492,19 +492,14 @@ namespace BrutalCompanyMinus
         [HarmonyPatch(typeof(StartOfRound), "ShipLeave")]
         private static void OnGameEnd()
         {
-            if(RoundManager.Instance.IsHost)
+            if(NetworkManager.Singleton.IsServer)
             {
                 // Randomize weather multipliers
                 Instance.UpdateCurrentWeatherMultipliersServerRpc();
-
                 Instance.SetRecievedServerRpc(false);
 
-                // If called on server
-                if (RoundManager.Instance.IsServer) // Why did i write if is Server when i already check if host?? just gona leave this here.
-                {
-                    Instance.currentWeatherEffects.Clear(); // Clear weather effects
-                    Instance.outsideObjectsToSpawn.Clear();
-                }
+                Instance.currentWeatherEffects.Clear(); // Clear weather effects
+                Instance.outsideObjectsToSpawn.Clear();
             }
         }
     }

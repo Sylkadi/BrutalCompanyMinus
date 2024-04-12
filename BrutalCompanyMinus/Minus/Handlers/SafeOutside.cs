@@ -10,6 +10,10 @@ namespace BrutalCompanyMinus.Minus.Handlers
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(RoundManager), "RefreshEnemiesList")]
-        private static void OnRefreshEnemiesList(ref RoundManager __instance) => __instance.currentOutsideEnemyPower = __instance.currentMaxOutsidePower;
+        private static void OnRefreshEnemiesList(ref RoundManager __instance)
+        {
+            if (!Events.SafeOutside.Active) return;
+            __instance.currentOutsideEnemyPower = __instance.currentMaxOutsidePower;
+        }
     }
 }

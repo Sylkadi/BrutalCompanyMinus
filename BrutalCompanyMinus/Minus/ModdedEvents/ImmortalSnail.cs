@@ -23,25 +23,19 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(10.0f, 0.5f, 10.0f, 40.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(5.0f, 0.167f, 5.0f, 15.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(1.0f, 0.05f, 1.0f, 4.0f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(0.0f, 0.034f, 0.0f, 2.0f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(0.0f, 0.034f, 0.0f, 2.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                "ImmortalSnail.EnemyType",
+                new Scale(10.0f, 0.5f, 10.0f, 40.0f),
+                new Scale(5.0f, 0.167f, 5.0f, 15.0f),
+                new Scale(2.0f, 0.034f, 1.0f, 4.0f),
+                new Scale(2.0f, 0.05f, 1.0f, 5.0f),
+                new Scale(0.0f, 0.034f, 0.0f, 2.0f),
+                new Scale(0.0f, 0.034f, 0.0f, 2.0f))
+            };
         }
 
         public override bool AddEventIfOnly() => Compatibility.immortalSnailPresent;
 
-        public override void Execute()
-        {
-            EnemyType ImmortalSnail = Assets.GetEnemy("ImmortalSnail.EnemyType");
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, ImmortalSnail, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, ImmortalSnail, Get(ScaleType.OutsideEnemyRarity));
-
-            Manager.Spawn.InsideEnemies(ImmortalSnail, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-            Manager.Spawn.OutsideEnemies(ImmortalSnail, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

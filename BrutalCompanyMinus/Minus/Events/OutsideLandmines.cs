@@ -20,7 +20,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Descriptions = new List<string>() { "There are landmines, Outside.", "This facility also has setup it's own booby traps outside", "What your step... but outside", "Iraq" };
+            Descriptions = new List<string>() { "There are landmines, Outside.", "This facility also has setup it's own booby traps outside", "Watch your step... but outside", "Iraq" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 

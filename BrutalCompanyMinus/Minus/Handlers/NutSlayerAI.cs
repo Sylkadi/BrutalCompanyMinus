@@ -927,7 +927,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
         }
 
-        public override void HitEnemy(int force = 1, PlayerControllerB playerWhoHit = null, bool playHitSFX = false)
+        public override void HitEnemy(int force = 1, PlayerControllerB playerWhoHit = null, bool playHitSFX = false, int hitID = -1)
         {
             if (Immortal) return;
             base.HitEnemy(force, playerWhoHit, playHitSFX);

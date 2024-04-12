@@ -14,6 +14,7 @@ using Discord;
 using System.Diagnostics;
 using BepInEx.Configuration;
 using System.Globalization;
+using static BrutalCompanyMinus.Configuration;
 
 namespace BrutalCompanyMinus
 {
@@ -48,6 +49,16 @@ namespace BrutalCompanyMinus
             
             // Load assets
             Assets.Load();
+
+            // Create config files
+            uiConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\UI_Settings.cfg", true);
+            difficultyConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Difficulty_Settings.cfg", true);
+            eventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Events.cfg", true);
+            weatherConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Weather_Settings.cfg", true);
+            customAssetsConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\Enemy_Scrap_Weights_Settings.cfg", true);
+            moddedEventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\ModdedEvents.cfg", true);
+            customEventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\CustomEvents.cfg", true);
+            allEnemiesConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\AllEnemies.cfg", true);
 
             // Patch all
             harmony.PatchAll();

@@ -23,25 +23,19 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(30.0f, 1.0f, 1.0f, 90.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(0.0f, 0.022f, 0.0f, 1.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(0.0f, 0.0167f, 0.0f, 2.0f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                "SirenHead",
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(30.0f, 1.0f, 1.0f, 90.0f),
+                new Scale(0.0f, 0.022f, 0.0f, 1.0f),
+                new Scale(0.0f, 0.0167f, 0.0f, 2.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f))
+            };
         }
 
         public override bool AddEventIfOnly() => Compatibility.sirenheadPresent;
 
-        public override void Execute()
-        {
-            EnemyType SirenHead = Assets.GetEnemy("SirenHead");
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, SirenHead, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, SirenHead, Get(ScaleType.OutsideEnemyRarity));
-
-            Manager.Spawn.InsideEnemies(SirenHead, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-            Manager.Spawn.OutsideEnemies(SirenHead, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

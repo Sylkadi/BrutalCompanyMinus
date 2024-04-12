@@ -23,17 +23,17 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(20.0f, 0.34f, 25.0f, 40.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.05f, 2.0f, 5.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.Masked,
+                new Scale(20.0f, 0.34f, 25.0f, 40.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(2.0f, 0.05f, 2.0f, 5.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f))
+            };
         }
 
-        public override void Execute()
-        {
-            EnemyType Masked = Assets.GetEnemy(Assets.EnemyName.Masked);
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Masked, Get(ScaleType.InsideEnemyRarity));
-            Manager.Spawn.InsideEnemies(Masked, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

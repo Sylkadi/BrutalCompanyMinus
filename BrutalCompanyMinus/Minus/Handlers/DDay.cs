@@ -43,7 +43,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             if(instance != null) DestroyInstance();
             instance = this;
-            spawnDenialNodes = Functions.GetSpawnDenialNodes();
+            spawnDenialNodes = Helper.GetSpawnDenialNodes();
 
             currentTime = 15.0f;
 

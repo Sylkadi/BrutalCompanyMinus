@@ -26,7 +26,7 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(Butlers), nameof(Hell) };
         }
 
-        public override bool AddEventIfOnly() => Compatibility.IsVersion50 && Manager.SpawnExists(Assets.EnemyName.Butler);
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.Butler);
 
         public override void Execute() => Manager.RemoveSpawn(Assets.EnemyName.Butler);
     }

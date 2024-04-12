@@ -23,19 +23,17 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(10.0f, 0.167f, 10.0f, 20.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(1.0f, 0.05f, 1.0f, 4.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.ForestKeeper,
+                new Scale(2.0f, 0.067f, 2.0f, 6.0f),
+                new Scale(10.0f, 0.167f, 10.0f, 20.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.05f, 1.0f, 4.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f)),
+            };
         }
 
-        public override void Execute()
-        {
-            EnemyType ForestGiant = Assets.GetEnemy(Assets.EnemyName.ForestKeeper);
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, ForestGiant, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, ForestGiant, Get(ScaleType.OutsideEnemyRarity));
-            Manager.Spawn.InsideEnemies(ForestGiant, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

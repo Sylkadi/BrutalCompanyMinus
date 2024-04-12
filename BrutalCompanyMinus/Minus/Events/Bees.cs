@@ -23,17 +23,23 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.CircuitBee,
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(2.0f, 0.034f, 2.0f, 4.0f),
+                new Scale(2.0f, 0.067f, 2.0f, 6.0f))
+            };
+
             ScaleList.Add(ScaleType.DaytimeEnemyRarity, new Scale(25.0f, 0.84f, 25.0f, 75.0f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(2.0f, 0.034f, 2.0f, 4.0f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
         }
 
         public override void Execute()
         {
-            EnemyType CircuitBee = Assets.GetEnemy(Assets.EnemyName.CircuitBee);
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.DaytimeEnemies, CircuitBee, Get(ScaleType.DaytimeEnemyRarity));
-            Manager.Spawn.OutsideEnemies(CircuitBee, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
+            ExecuteAllMonsterEvents();
+            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.DaytimeEnemies, Assets.EnemyName.CircuitBee, Get(ScaleType.DaytimeEnemyRarity));
         }
     }
 }

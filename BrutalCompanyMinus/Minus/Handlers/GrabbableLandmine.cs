@@ -482,7 +482,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             return !Physics.Linecast(base.transform.position, pos, out hit, 256);
         }
         
-        bool IHittable.Hit(int force, Vector3 hitDirection, PlayerControllerB playerWhoHit = null, bool playHitSFX = false)
+        bool IHittable.Hit(int force, Vector3 hitDirection, PlayerControllerB playerWhoHit = null, bool playHitSFX = false, int hitID = -1)
         {
             SetOffMineAnimation();
             sendingExplosionRPC = true;

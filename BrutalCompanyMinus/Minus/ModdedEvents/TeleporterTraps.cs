@@ -8,34 +8,34 @@ using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.Events
 {
-    internal class Turrets : MEvent
+    internal class TeleporterTraps : MEvent
     {
-        public override string Name() => nameof(Turrets);
+        public override string Name() => nameof(TeleporterTraps);
 
-        public static Turrets Instance;
+        public static TeleporterTraps Instance;
 
         public override void Initalize()
         {
             Instance = this;
 
             Weight = 3;
-            Descriptions = new List<string>() { "Turrets!!", "Home defense systems", "Panic and scream", "+Turrets" };
+            Descriptions = new List<string>() { "Teleporter Traps!", "These will teleport enemies" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.MinAmount, new Scale(5.0f, 0.167f, 5.0f, 12.0f));
-            ScaleList.Add(ScaleType.MaxAmount, new Scale(6.0f, 0.2f, 6.0f, 18.0f));
+            ScaleList.Add(ScaleType.MinAmount, new Scale(8.0f, 0.267f, 8.0f, 24.0f));
+            ScaleList.Add(ScaleType.MaxAmount, new Scale(10.0f, 0.34f, 10.0f, 30.0f));
         }
 
-        public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.Turret]);
+        public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == "TeleporterTrap");
 
         public override void Execute()
         {
             RoundManager.Instance.currentLevel.spawnableMapObjects = RoundManager.Instance.currentLevel.spawnableMapObjects.Add(new SpawnableMapObject()
             {
-                prefabToSpawn = Assets.GetObject(Assets.ObjectName.Turret),
+                prefabToSpawn = Assets.GetObject("TeleporterTrap"),
                 numberToSpawn = new AnimationCurve(new Keyframe(0f, Get(ScaleType.MinAmount)), new Keyframe(1f, Get(ScaleType.MaxAmount))),
-                spawnFacingAwayFromWall = true,
+                spawnFacingAwayFromWall = false,
                 spawnFacingWall = false,
                 spawnWithBackToWall = false,
                 spawnWithBackFlushAgainstWall = false,

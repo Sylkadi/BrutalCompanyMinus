@@ -25,6 +25,11 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(RealityShift) };
 
+            scrapTransmutationEvent = new ScrapTransmutationEvent(
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.AirHorn), rarity = 50 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.ClownHorn), rarity = 50 }
+            );
+
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
         }
 
@@ -41,10 +46,7 @@ namespace BrutalCompanyMinus.Minus.Events
         public override void Execute()
         {
             Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
-            Manager.TransmuteScrap(
-                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.AirHorn), rarity = 50 },
-                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem(Assets.ItemName.ClownHorn), rarity = 50 }
-            );
+            scrapTransmutationEvent.Execute();
         }
     }
 }

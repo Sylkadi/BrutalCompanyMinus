@@ -19,23 +19,21 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 1;
-            Descriptions = new List<string>() { "I want to go home", "Lovely...", "Have you tried crying?" };
+            Descriptions = new List<string>() { "I want to go home", "Lovely...", "Freeee birdd" };
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(10.0f, 0.34f, 10.0f, 30.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(5.0f, 0.167f, 5.0f, 15.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(2.0f, 0.067f, 2.0f, 6.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.Jester,
+                new Scale(10.0f, 0.34f, 10.0f, 30.0f),
+                new Scale(5.0f, 0.167f, 5.0f, 15.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(2.0f, 0.067f, 2.0f, 6.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f))
+            };
         }
 
-        public override void Execute()
-        {
-            EnemyType Jester = Assets.GetEnemy(Assets.EnemyName.Jester);
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Jester, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Jester, Get(ScaleType.OutsideEnemyRarity));
-            Manager.Spawn.InsideEnemies(Jester, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

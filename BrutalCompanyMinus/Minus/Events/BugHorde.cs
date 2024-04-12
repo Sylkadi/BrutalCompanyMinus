@@ -23,29 +23,27 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            EventsToRemove = new List<string>() { nameof(HoardingBugs) };
-            EventsToSpawnWith = new List<string> { nameof(ScarceOutsideScrap), nameof(KamikazieBugs) };
+            EventsToRemove = new List<string>() { nameof(HoardingBugs), nameof(KamikazieBugs) };
+            EventsToSpawnWith = new List<string> { nameof(ScarceOutsideScrap) };
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(50.0f, 0.84f, 50.0f, 100.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(10.0f, 0.34f, 10.0f, 30.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(10.0f, 0.167f, 10.0f, 20.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(15.0f, 0.167f, 15.0f, 25.0f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(2.0f, 0.034f, 2.0f, 4.0f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(3.0f, 0.05f, 3.0f, 6.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.HoardingBug,
+                new Scale(50.0f, 0.84f, 50.0f, 100.0f),
+                new Scale(10.0f, 0.34f, 10.0f, 30.0f),
+                new Scale(5.0f, 0.084f, 5.0f, 10.0f),
+                new Scale(7.0f, 0.084f, 7.0f, 12.0f),
+                new Scale(2.0f, 0.034f, 2.0f, 4.0f),
+                new Scale(3.0f, 0.05f, 3.0f, 6.0f)), new MonsterEvent(
+                Assets.kamikazieBug,
+                new Scale(50.0f, 0.84f, 50.0f, 100.0f),
+                new Scale(10.0f, 0.34f, 10.0f, 30.0f),
+                new Scale(5.0f, 0.084f, 5.0f, 10.0f),
+                new Scale(7.0f, 0.084f, 7.0f, 12.0f),
+                new Scale(2.0f, 0.034f, 2.0f, 4.0f),
+                new Scale(3.0f, 0.05f, 3.0f, 6.0f))
+            };
         }
 
-        public override void Execute()
-        {
-            EnemyType HoardingBug = Assets.GetEnemy(Assets.EnemyName.HoardingBug);
-            EnemyType KamikazieBug = Assets.kamikazieBug;
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, HoardingBug, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, HoardingBug, Get(ScaleType.OutsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, KamikazieBug, Get(ScaleType.OutsideEnemyRarity));
-
-            Manager.Spawn.OutsideEnemies(HoardingBug, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
-            Manager.Spawn.OutsideEnemies(KamikazieBug, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
-            Manager.Spawn.InsideEnemies(HoardingBug, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

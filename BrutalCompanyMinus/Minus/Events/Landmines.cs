@@ -19,28 +19,29 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Descriptions = new List<string>() { "Watch your step", "This facility is rigged", "Landmines, yes" };
+            Descriptions = new List<string>() { "Watch your step", "This facility is rigged", "Landmines, yes", "+Landmines" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(12.0f, 0.3f, 12.0f, 30.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(16.0f, 0.44f, 16.0f, 42.0f));
+            ScaleList.Add(ScaleType.MinAmount, new Scale(8.0f, 0.267f, 8.0f, 24.0f));
+            ScaleList.Add(ScaleType.MaxAmount, new Scale(10.0f, 0.34f, 10.0f, 30.0f));
         }
 
         public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.Landmine]);
 
         public override void Execute()
         {
-            AnimationCurve curve = new AnimationCurve(new Keyframe(0f, Get(ScaleType.MaxInsideEnemy)), new Keyframe(1f, Get(ScaleType.MinInsideEnemy)));
-
-            foreach(SpawnableMapObject obj in RoundManager.Instance.currentLevel.spawnableMapObjects)
+            RoundManager.Instance.currentLevel.spawnableMapObjects = RoundManager.Instance.currentLevel.spawnableMapObjects.Add(new SpawnableMapObject()
             {
-                if(obj.prefabToSpawn.name == Assets.GetObject(Assets.ObjectName.Landmine).name)
-                {
-                    obj.numberToSpawn = curve;
-                }
-            }
-
+                prefabToSpawn = Assets.GetObject(Assets.ObjectName.Turret),
+                numberToSpawn = new AnimationCurve(new Keyframe(0f, Get(ScaleType.MinAmount)), new Keyframe(1f, Get(ScaleType.MaxAmount))),
+                spawnFacingAwayFromWall = false,
+                spawnFacingWall = false,
+                spawnWithBackToWall = false,
+                spawnWithBackFlushAgainstWall = false,
+                requireDistanceBetweenSpawns = false,
+                disallowSpawningNearEntrances = false
+            });
         }
     }
 }

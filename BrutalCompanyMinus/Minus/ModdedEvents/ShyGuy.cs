@@ -23,25 +23,19 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#800000";
             Type = EventType.VeryBad;
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(8.0f, 0.4f, 8.0f, 32.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(0.0f, 0.022f, 0.0f, 1.0f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(0.0f, 0.034f, 0.0f, 2.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                "ShyGuyDef",
+                new Scale(8.0f, 0.4f, 8.0f, 32.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(0.0f, 0.022f, 0.0f, 1.0f),
+                new Scale(0.0f, 0.034f, 0.0f, 2.0f))
+            };
         }
 
         public override bool AddEventIfOnly() => Compatibility.scopophobiaPresent;
 
-        public override void Execute()
-        {
-            EnemyType shyGuy = Assets.GetEnemy("ShyGuyDef");
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, shyGuy, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, shyGuy, Get(ScaleType.OutsideEnemyRarity));
-
-            Manager.Spawn.InsideEnemies(shyGuy, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-            Manager.Spawn.OutsideEnemies(shyGuy, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

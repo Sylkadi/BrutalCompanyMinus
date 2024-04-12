@@ -20,11 +20,13 @@ namespace BrutalCompanyMinus.Minus.Handlers
         internal static List<SpawnableEnemyWithRarity> insideEnemies = new List<SpawnableEnemyWithRarity>();
         internal static List<SpawnableEnemyWithRarity> outsideEnemies = new List<SpawnableEnemyWithRarity>();
         internal static List<SpawnableEnemyWithRarity> daytimeEnemies = new List<SpawnableEnemyWithRarity>();
+        internal static List<SpawnableMapObject> spawnableMapObjects = new List<SpawnableMapObject>();
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StartOfRound), "Start")]
         private static void onStartOfRoundStart()
         {
+            if (!Configuration.Initalized) return;
             Log.LogInfo("Executing OnGameStart() for all events");
             foreach(MEvent e in EventManager.events)
             {
@@ -57,6 +59,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             if (!RoundManager.Instance.IsHost || __instance.currentLevel.levelID == 3) return;
 
             Manager.currentLevel = __instance.currentLevel;
+            int levelIndex = Manager.GetLevelIndex();
 
             Log.LogInfo(string.Format("Storing un-modified level paramaters on level:{0}", __instance.currentLevel.name));
             // Store parameters before any changes made
@@ -66,26 +69,22 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
             Log.LogInfo("Resetting level values before changing.");
 
-            foreach (SpawnableMapObject obj in __instance.currentLevel.spawnableMapObjects)
-            {
-                if (obj.prefabToSpawn.name == "Landmine") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 3.0f));
-                if (obj.prefabToSpawn.name == "TurretContainer") obj.numberToSpawn = new AnimationCurve(new Keyframe(0, 3.0f));
-            }
+            __instance.currentLevel.spawnableMapObjects = Assets.spawnableMapObjects[levelIndex];
 
             // Reset spawn chances
             __instance.currentLevel.enemySpawnChanceThroughoutDay.ClearKeys();
             __instance.currentLevel.outsideEnemySpawnChanceThroughDay.ClearKeys();
             __instance.currentLevel.daytimeEnemySpawnChanceThroughDay.ClearKeys();
-            foreach (Keyframe key in Assets.insideSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.enemySpawnChanceThroughoutDay.AddKey(key);
-            foreach (Keyframe key in Assets.outsideSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.outsideEnemySpawnChanceThroughDay.AddKey(key);
-            foreach (Keyframe key in Assets.daytimeSpawnChanceCurves[Manager.GetLevelIndex()].keys) __instance.currentLevel.daytimeEnemySpawnChanceThroughDay.AddKey(key);
+            foreach (Keyframe key in Assets.insideSpawnChanceCurves[levelIndex].keys) __instance.currentLevel.enemySpawnChanceThroughoutDay.AddKey(key);
+            foreach (Keyframe key in Assets.outsideSpawnChanceCurves[levelIndex].keys) __instance.currentLevel.outsideEnemySpawnChanceThroughDay.AddKey(key);
+            foreach (Keyframe key in Assets.daytimeSpawnChanceCurves[levelIndex].keys) __instance.currentLevel.daytimeEnemySpawnChanceThroughDay.AddKey(key);
 
             Events.GrabbableLandmines.LandmineDisabled = false;
             foreach (MEvent e in EventManager.events) e.Executed = false;
 
-            RoundManager.Instance.currentLevel.maxEnemyPowerCount = Assets.insideMaxPowerCounts[Manager.GetLevelIndex()];
-            RoundManager.Instance.currentLevel.maxOutsideEnemyPowerCount = Assets.outsideMaxPowerCounts[Manager.GetLevelIndex()];
-            RoundManager.Instance.currentLevel.maxDaytimeEnemyPowerCount = Assets.daytimeMaxPowerCounts[Manager.GetLevelIndex()];
+            RoundManager.Instance.currentLevel.maxEnemyPowerCount = Assets.insideMaxPowerCounts[levelIndex];
+            RoundManager.Instance.currentLevel.maxOutsideEnemyPowerCount = Assets.outsideMaxPowerCounts[levelIndex];
+            RoundManager.Instance.currentLevel.maxDaytimeEnemyPowerCount = Assets.daytimeMaxPowerCounts[levelIndex];
 
             // Reset bonus hp
             Manager.bonusEnemyHp = 0;

@@ -26,12 +26,13 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(Dogs), nameof(Hell), nameof(Shrimp) };
         }
 
-        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.EyelessDog) || Manager.SpawnExists("ShrimpEnemy");
+        public override bool AddEventIfOnly() => Manager.SpawnExists(Assets.EnemyName.EyelessDog) || Manager.SpawnExists("ShrimpEnemy") || Manager.SpawnExists("Football");
 
         public override void Execute()
         {
             Manager.RemoveSpawn(Assets.EnemyName.EyelessDog);
             Manager.RemoveSpawn("ShrimpEnemy");
+            Manager.RemoveSpawn("Football");
         }
     }
 }

@@ -23,20 +23,17 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(25.0f, 0.417f, 25.0f, 50.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(5.0f, 0.17f, 5.0f, 15.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(1.0f, 0.05f, 1.0f, 4.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.Thumper,
+                new Scale(25.0f, 0.417f, 25.0f, 50.0f),
+                new Scale(5.0f, 0.17f, 5.0f, 15.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.05f, 1.0f, 4.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f))
+            };
         }
 
-        public override void Execute()
-        {
-            EnemyType Thumper = Assets.GetEnemy(Assets.EnemyName.Thumper);
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Thumper, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Thumper, Get(ScaleType.OutsideEnemyRarity));
-
-            Manager.Spawn.InsideEnemies(Thumper, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

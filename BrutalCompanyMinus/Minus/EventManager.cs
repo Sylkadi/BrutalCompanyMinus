@@ -67,6 +67,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.Masked(),
             new Events.Butlers(),
             new Events.SpikeTraps(),
+            new Events.FlowerSnake(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),
@@ -112,32 +113,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.NoSpikeTraps()
         };
 
-        internal static List<MEvent> moddedEvents = new List<MEvent>() {
-            // Very Good
-            // Good
-            // Neutral
-            // Bad
-            new Events.RollingGiants(),
-            new Events.Lockers(),
-            new Events.Peepers(),
-            new Events.Roomba(),
-            new Events.Shrimp(),
-            new Events.ImmortalSnail(),
-            // Very Bad
-            new Events.Herobrine(),
-            new Events.TheFiend(),
-            new Events.SirenHead(),
-            new Events.Walkers(),
-            new Events.GiantShowdown(),
-            new Events.ShyGuy(),
-            new Events.Walkers(),
-            // No Enemy
-            new Events.NoLockers(),
-            new Events.NoPeepers(),
-            new Events.NoShyGuy(),
-            new Events.NoSirenHead(),
-            new Events.NoRollingGiants()
-        };
+        internal static List<MEvent> moddedEvents = new List<MEvent>();
 
         internal static List<MEvent> customEvents = new List<MEvent>();
 
@@ -152,14 +128,14 @@ namespace BrutalCompanyMinus.Minus
 
         public static void AddEvents(params MEvent[] _event) => events.AddRange(_event);
 
-        internal static MEvent RandomWeightedEvent(List<MEvent> _events)
+        internal static MEvent RandomWeightedEvent(List<MEvent> _events, System.Random rng)
         {
             int WeightedSum = 0;
             foreach (MEvent e in _events) WeightedSum += e.Weight;
 
             foreach (MEvent e in _events)
             {
-                if (UnityEngine.Random.Range(0, WeightedSum) < e.Weight)
+                if (rng.Next(0, WeightedSum) < e.Weight)
                 {
                     return e;
                 }
@@ -178,13 +154,13 @@ namespace BrutalCompanyMinus.Minus
             foreach (MEvent e in events) eventsToChooseForm.Add(e);
 
             // Decide how many events to spawn
-            System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + 32345);
+            System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + 32345 + Environment.TickCount);
             int eventsToSpawn = (int)MEvent.Scale.Compute(Configuration.eventsToSpawn, MEvent.EventType.Neutral) + RoundManager.Instance.GetRandomWeightedIndex(Configuration.weightsForExtraEvents.IntArray(), rng);
                 
             // Spawn events
             for (int i = 0; i < eventsToSpawn; i++)
             {
-                MEvent newEvent = RandomWeightedEvent(eventsToChooseForm);
+                MEvent newEvent = RandomWeightedEvent(eventsToChooseForm, rng);
 
                 if (!newEvent.AddEventIfOnly()) // If event condition is false, remove event from eventsToChoosefrom and iterate again
                 {
@@ -301,7 +277,7 @@ namespace BrutalCompanyMinus.Minus
             Manager.currentTerminal = GameObject.FindObjectOfType<Terminal>();
             Manager.daysPassed = StartOfRound.Instance.gameStats.daysSpent;
 
-            Assets.generateLevelScrapLists();
+            Assets.generateOriginalValuesLists();
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
 

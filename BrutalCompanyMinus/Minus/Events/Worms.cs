@@ -25,32 +25,24 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(SnareFleas) };
 
-            ScaleList.Add(ScaleType.InsideEnemyRarity, new Scale(5.0f, 0.17f, 5.0f, 15.0f));
-            ScaleList.Add(ScaleType.OutsideEnemyRarity, new Scale(30.0f, 1.0f, 30.0f, 90.0f));
-            ScaleList.Add(ScaleType.MinInsideEnemy, new Scale(1.0f, 0.034f, 0.0f, 2.0f));
-            ScaleList.Add(ScaleType.MaxInsideEnemy, new Scale(1.0f, 0.05f, 0.0f, 3.0f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(1.0f, 0.034f, 1.0f, 3.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.EarthLeviathan,
+                new Scale(5.0f, 0.17f, 5.0f, 15.0f),
+                new Scale(30.0f, 1.0f, 30.0f, 90.0f),
+                new Scale(1.0f, 0.034f, 0.0f, 2.0f),
+                new Scale(1.0f, 0.05f, 0.0f, 3.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.034f, 1.0f, 3.0f)), new MonsterEvent(
+                Assets.EnemyName.SnareFlea,
+                new Scale(50.0f, 0.84f, 50.0f, 100.0f),
+                new Scale(20.0f, 0.67f, 20.0f, 60.0f),
+                new Scale(7.0f, 0.15f, 7.0f, 16.0f),
+                new Scale(10.0f, 0.234f, 10.0f, 24.0f),
+                new Scale(3.0f, 0.1f, 3.0f, 9.0f),
+                new Scale(5.0f, 0.117f, 5.0f, 12.0f))
+            };
         }
-        
-        public override void Execute()
-        {
-            EnemyType Worm = Assets.GetEnemy(Assets.EnemyName.EarthLeviathan);
 
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, Worm, Get(ScaleType.InsideEnemyRarity));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, Worm, Get(ScaleType.OutsideEnemyRarity));
-
-            Manager.Spawn.OutsideEnemies(Worm, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
-            Manager.Spawn.InsideEnemies(Worm, UnityEngine.Random.Range(Get(ScaleType.MinInsideEnemy), Get(ScaleType.MaxInsideEnemy) + 1));
-
-            if (SnareFleas.Instance == null || !SnareFleas.Instance.Enabled) return;
-
-            EnemyType SnareFlea = Assets.GetEnemy(Assets.EnemyName.SnareFlea);
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.OutsideEnemies, SnareFlea, (int)(Scale.Compute(SnareFleas.Instance.ScaleList[ScaleType.OutsideEnemyRarity], EventType.Bad) * 3.0f));
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.Enemies, SnareFlea, (int)(Scale.Compute(SnareFleas.Instance.ScaleList[ScaleType.InsideEnemyRarity], EventType.Bad) * 1.333f));
-            Manager.Spawn.OutsideEnemies(SnareFlea, UnityEngine.Random.Range((int)Scale.Compute(SnareFleas.Instance.ScaleList[ScaleType.MinInsideEnemy]), (int)Scale.Compute(SnareFleas.Instance.ScaleList[ScaleType.MaxInsideEnemy]) + 1));
-            Manager.Spawn.InsideEnemies(SnareFlea, UnityEngine.Random.Range((int)(Scale.Compute(SnareFleas.Instance.ScaleList[ScaleType.MinInsideEnemy]) * 2.5f), (int)(Scale.Compute(SnareFleas.Instance.ScaleList[ScaleType.MaxInsideEnemy]) * 2.5f) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

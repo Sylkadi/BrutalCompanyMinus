@@ -23,17 +23,17 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FFFFFF";
             Type = EventType.Neutral;
 
-            ScaleList.Add(ScaleType.DaytimeEnemyRarity, new Scale(25.0f, 0.0f, 25.0f, 25.0f));
-            ScaleList.Add(ScaleType.MinOutsideEnemy, new Scale(5.0f, 0.0f, 5.0f, 5.0f));
-            ScaleList.Add(ScaleType.MaxOutsideEnemy, new Scale(8.0f, 0.0f, 8.0f, 8.0f));
+            monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
+                Assets.EnemyName.RoamingLocust,
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(5.0f, 0.0f, 5.0f, 5.0f),
+                new Scale(8.0f, 0.0f, 8.0f, 8.0f))
+            };
         }
 
-        public override void Execute()
-        {
-            EnemyType Locust = Assets.GetEnemy(Assets.EnemyName.RoamingLocust);
-
-            Manager.AddEnemyToPoolWithRarity(ref RoundManager.Instance.currentLevel.DaytimeEnemies, Locust, Get(ScaleType.DaytimeEnemyRarity));
-            Manager.Spawn.OutsideEnemies(Locust, UnityEngine.Random.Range(Get(ScaleType.MinOutsideEnemy), Get(ScaleType.MaxOutsideEnemy) + 1));
-        }
+        public override void Execute() => ExecuteAllMonsterEvents();
     }
 }
