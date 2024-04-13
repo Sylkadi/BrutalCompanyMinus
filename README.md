@@ -1,9 +1,10 @@
 # Brutal Company Minus
 ![Screenshot](https://i.imgur.com/jS0vFm2.jpg)
 #### This mod is required on all clients
-#### Makes the game harder
+#### Makes the game harder, download this mod if you want to suffer occasionally
 #### Config is fully generated when you load on a moon.
 #### Mod is highly configurable
+#### Comes with modded events that only appear with said mods installed
 
 # Features
 <details>
@@ -171,6 +172,83 @@
 | Nutslayer | Spawns the Nutslayer inside the facility, kills everything... comes with gloomy, thumpers, spiders and masked. |
 | Hell | Great reward, but at what cost... |
 | AllWeather | Acts as Eclipsed, Stormy, Flooded and Raining all in one day |
+    
+  </details>
+  
+</details>
+
+<details>
+  <summary><b>Modded Event List</b></summary>
+  
+  - These events will only appear with said mods installed
+  - Currently supported mods are Lethalthings, Diversity, Scopophobia, HerobrineMod, SirenHead, RollingGiant, TheFiend, Lockers, TheGiantSpecimens, Football, Mimics and Peepers
+  
+  <details>
+    <summary><b>Very Good</b></summary>
+    
+| Name | Description |
+|-|-|
+| None | None |
+  </details>
+
+  <details>
+    <summary><b>Good</b></summary>
+
+| Name | Description |
+|-|-|
+| None | None |
+  </details>
+
+  <details>
+    <summary><b>Remove Enemy</b></summary>
+    - These will also prevent any event with that 'enemy' to be picked.
+    
+
+| Name | Description |
+|-|-|
+| No Lockers | Prevents lockers from spawning |
+| No ImmortalSnail | Prevents the immortal snail from spawning |
+| No Fiend | Prevents the fiend from appearing |
+| No ShyGuy | Prevents the shy guy from appearing |
+| No Peepers | Prevents the peepers from appearing | 
+| No Mimics | Prevents mimics from spawning |
+  </details>
+
+  <details>
+    <summary><b>Neutral</b></summary>
+
+| Name | Description |
+|-|-|
+| None | None |
+  </details>
+
+  <details>
+    <summary><b>Bad</b></summary>
+
+| Name | Description |
+|-|-|
+| Roomba | Spawns boombas inside and sometimes outside |
+| TeleporterTraps | Spawns teleporters traps inside |
+| Mimics | Increased mimics amount |
+| Peepers | Spawns peepers inside and outside |
+| Shrimp | Spawns the shrimp inside |
+| RollingGiants | Spawns the rolling giants inside |
+| ImmortalSnail | Spawns the immortal snail inside |
+| Lockers | Spawns the lockers inside |
+| Football | Spawns football inside |
+  </details>
+
+  <details>
+    <summary><b>Very Bad</b></summary>
+    
+| Name | Description |
+|-|-|
+| The Fiend | Will spawn the fiend |
+| Herobrine | Will spawn herobrine |
+| Sirenhead | Will spawn the sirenhead |
+| Walkers | Will spawn the walker |
+| ShyGuy | Will spawn the shyguy | 
+| GiantShowdown | Will spawn the redwood giant and giants outside |
     
   </details>
   
