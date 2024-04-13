@@ -57,6 +57,7 @@
 | Big Delivery | Spawns a shipment with a bunch of items |
 | Plenty Outside Scrap | Spawns scrap outside |
 | Black Friday | Everything will go on sale |
+| Safe Outside | Will prevents enemies from spawning outside and certain events |
   </details>
 
   <details>
@@ -105,6 +106,9 @@
 | No Maksks | Removes Masked and removes related scraps |
 | No Turrets | Removes Turret |
 | No Landmines | Removes Landmine |
+| No OldBirds | Removes Oldbird |
+| No Butlers | Removes butlers |
+| No Spiketraps | Removes spiketraps |
   </details>
 
   <details>
@@ -147,6 +151,9 @@
 | Reality Warp | Attempting to grab scrap will make it transform into something else, sometimes a landmine or turret |
 | Kamikazie Bugs | Hoarding bugs will now blow up when angered | 
 | Masked | Spawned masked enemies |
+| Butlers | Will Spawn butlers |
+| SpikeTraps | Will spawn spike traps inside |
+| FlowerSnake | Will spawn flower snakes inside and outside |
   </details>
 
   <details>
@@ -172,6 +179,8 @@
 | Nutslayer | Spawns the Nutslayer inside the facility, kills everything... comes with gloomy, thumpers, spiders and masked. |
 | Hell | Great reward, but at what cost... |
 | AllWeather | Acts as Eclipsed, Stormy, Flooded and Raining all in one day |
+| Worms | Will spawn worms inside and outside and snare fleas inside and outside |
+| OldBirds | Will spawn old birds and comes with Landmines and Outside Landmines |
     
   </details>
   
