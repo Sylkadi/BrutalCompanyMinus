@@ -41,6 +41,7 @@
   - (RemoveEnemy) NoPeepers: Prevents peepers from spawning
   - (RemoveEnemy) NoMimics: Prevents mimics from appearing
 
+  - Events descriptions will vary, nearly every event will have atleast 3 descriptions or more, some 2
   - Event count will now scale (2 => day:0, 3 => day:25, 4 => day:50)
   - There is now a no scale option in the config
   - You can now change which enemies spawns for events(And all inside and outside spawns)
