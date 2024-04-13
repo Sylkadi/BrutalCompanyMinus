@@ -1,4 +1,60 @@
 # ChangeLog
+<details>
+  <summary>0.11.0</summary>
+
+  - v50 update
+  - Added 9 new vanilla events
+
+  - (VeryGood) SafeOutside: Prevents spawning outside and related events
+  - (Bad) Butlers: Spawns butlers
+  - (Bad) SpikeTraps: Spawns spike traps
+  - (Bad) FlowerSnake: Spawns flower snakes
+  - (VeryBad) Worms: Spawns worms outside and inside and comes with alot of snare fleas
+  - (VeryBad) OldBirds: Spawns Oldbirds inside and outside and comes with landmines and outside landmines
+  - (RemoveEnemy) NoOldbirds: Prevents oldbirds from spawning and related events
+  - (RemoveEnemy) NoButlers: Prevents butlers from spawning and related events
+  - (RemoveEnemy) NoSpikeTraps: Prevents spike traps from spawning and related events
+
+  - Added 21 modded events (Will only appear if related mods are downloaded) ()
+  - Current supported mods are Lethalthings, Diversity, Scopophobia, HerobrineMod, SirenHead, RollingGiant, TheFiend, Lockers, TheGiantSpecimens, Football, Mimics and Peepers
+  - Dm me on the lethal modding discord in the brutal company minus thread if there is any other you want to add
+
+  - (Bad) Roomba: Spawns boombas inside and sometimes outside
+  - (Bad) TeleporterTraps: Spawns teleporter traps inside
+  - (Bad) Mimics: Increased spawn rates of mimics
+  - (Bad) Peepers: Spawns peepers outside and inside
+  - (Bad) Shrimp: Spawns shrimps inside
+  - (Bad) Rollinggiants: Spawns rolling giants
+  - (Bad) ImmortalSnail: Spawns the immortal snail
+  - (Bad) Lockers: Spawns lockers inside
+  - (Bad) Football: Spawns football
+  - (VeryBad) TheFiend: Spawns the fiend
+  - (Verybad) Herobrine: Spawns herobrine
+  - (Verybad) Sirenhead: Spawns sirenheads
+  - (VeryBad) Walkers: Spawns walkers
+  - (VeryBad) ShyGuy: Spawns shyguys
+  - (VeryBad) GiantShowdown: Spawns redwoodgiants and giants outside
+  - (RemoveEnemy) NoLockers: Prevents the lockers from spawning 
+  - (RemoveEnemy) NoImmortalSnail: Prevents the immmortal snail from spawning
+  - (RemoveEnemy) NoFiend: Prevents the fiend from spawning
+  - (RemoveEnemy) NoShyGuy: Prevents Shyguy from spawning
+  - (RemoveEnemy) NoPeepers: Prevents peepers from spawning
+  - (RemoveEnemy) NoMimics: Prevents mimics from appearing
+
+  - Event count will now scale (2 => day:0, 3 => day:25, 4 => day:50)
+  - There is now a no scale option in the config
+  - You can now change which enemies spawns for events(And all inside and outside spawns)
+  - You can now modify scrap transmuation events
+  - Yippeee is now compatible with kamikazie bugs, kamikazie bugs will now say yippeeeee
+  - Updated some events
+  - Removed scrap and enemies weights config
+  - Added 'all' and 'allall' config options which will allow spawning of all enemies on all moons, these will make the game harder
+  - Made some slight event changes
+  - Reduced default density values on tree related events
+  - And other stuff i forgor about
+
+</details>
+<details>
   <summary>0.10.12</summary>
   
   - AllWeather event will no longer spawn with 20 instances of stormy(Oops)
