@@ -33,7 +33,7 @@ namespace BrutalCompanyMinus.Minus.Events
         {
             RoundManager.Instance.currentLevel.spawnableMapObjects = RoundManager.Instance.currentLevel.spawnableMapObjects.Add(new SpawnableMapObject()
             {
-                prefabToSpawn = Assets.GetObject(Assets.ObjectName.Turret),
+                prefabToSpawn = Assets.GetObject(Assets.ObjectName.Landmine),
                 numberToSpawn = new AnimationCurve(new Keyframe(0f, Get(ScaleType.MinAmount)), new Keyframe(1f, Get(ScaleType.MaxAmount))),
                 spawnFacingAwayFromWall = false,
                 spawnFacingWall = false,
