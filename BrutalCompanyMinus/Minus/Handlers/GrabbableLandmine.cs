@@ -71,10 +71,11 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             if (!RoundManager.Instance.IsHost) return;
 
-            if(Events.GrabbableLandmines.Active)
+            if (Events.GrabbableLandmines.Active)
             {
                 __instance.StartCoroutine(destroySelfAndReplace(__instance));
-            } else
+            }
+            else
             {
                 seed++;
                 System.Random rng = new System.Random(seed);
@@ -127,11 +128,12 @@ namespace BrutalCompanyMinus.Minus.Handlers
             if (countDown > 0.0f)
             {
                 countDown -= Time.deltaTime;
-            } 
+            }
             if (dropSafetyTime > 0.0f)
             {
                 dropSafetyTime -= Time.deltaTime;
-            } else
+            }
+            else
             {
                 mineGrabbed = false;
             }
@@ -204,10 +206,11 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [ClientRpc]
         private void playMineTickSourceClientRpc(bool toggle)
         {
-            if(toggle)
+            if (toggle)
             {
                 mineTickSource.Play();
-            } else
+            }
+            else
             {
                 mineTickSource.Stop();
             }
@@ -215,6 +218,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public void ToggleMine(bool enabled)
         {
+            
             if (mineActivated != enabled)
             {
                 mineActivated = enabled;
@@ -481,7 +485,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             return !Physics.Linecast(base.transform.position, pos, out hit, 256);
         }
-        
+
         bool IHittable.Hit(int force, Vector3 hitDirection, PlayerControllerB playerWhoHit = null, bool playHitSFX = false, int hitID = -1)
         {
             SetOffMineAnimation();
@@ -489,7 +493,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             ExplodeMineServerRpc();
             return true;
         }
-       
+
     }
 
 }

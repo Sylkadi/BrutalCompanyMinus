@@ -33,6 +33,7 @@ namespace BrutalCompanyMinus.Minus.Events
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f))
             };
         }
+
         public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

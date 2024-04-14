@@ -932,13 +932,12 @@ namespace BrutalCompanyMinus.Minus.Handlers
             StartCoroutine(FlicketLights(4.2f, 0.15f));
 
             // Fast
-            StartCoroutine(FlicketLights(4.34f, 0.5f));
+            StartCoroutine(FlicketLights(4.36f, 0.5f));
             StartCoroutine(FlicketLights(4.46f, 0.5f));
             StartCoroutine(FlicketLights(4.59f, 0.5f));
             StartCoroutine(FlicketLights(4.71f, 0.5f));
             StartCoroutine(FlicketLights(4.84f, 0.5f));
             StartCoroutine(FlicketLights(4.96f, 0.5f));
-            StartCoroutine(FlicketLights(5.09f, 0.5f));
             StartCoroutine(FlicketLights(5.09f, 0.5f));
             StartCoroutine(FlicketLights(5.21f, 0.5f));
             StartCoroutine(FlicketLights(5.34f, 0.5f));

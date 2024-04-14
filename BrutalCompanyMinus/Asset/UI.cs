@@ -9,6 +9,8 @@ using HarmonyLib;
 using GameNetcodeStuff;
 using System.Globalization;
 using UnityEngine.InputSystem.Controls;
+using Discord;
+using Unity.Netcode;
 
 namespace BrutalCompanyMinus
 {

@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Descriptions = new List<string>() { "Lockers", "They look like iron maidens", "The chance of you dying has increased" };
+            Descriptions = new List<string>() { "Lockers", "They remind me of iron maidens", "The chance of you dying has increased" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
