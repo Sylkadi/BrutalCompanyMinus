@@ -1,5 +1,11 @@
 # ChangeLog
 <details>
+  <summary>0.11.1</summary>
+  
+  - Landmine event will now properly spawn landmines instead of turrets...
+
+</details>
+<details>
   <summary>0.11.0</summary>
 
   - v50 update
