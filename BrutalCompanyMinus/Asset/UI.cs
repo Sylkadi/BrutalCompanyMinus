@@ -117,7 +117,10 @@ namespace BrutalCompanyMinus
         {
             // Generate Text
             string text = "<br>Events:<br>";
-            foreach (MEvent e in events) text += string.Format("-<color={0}>{1}</color><br>", e.ColorHex, e.Descriptions[UnityEngine.Random.Range(0, e.Descriptions.Count)]);
+            foreach (string eventDescription in EventManager.currentEventDescriptions)
+            {
+                text += eventDescription + "<br>";
+            }
 
             // Extra properties
             if (Configuration.ShowExtraProperties.Value)
@@ -196,9 +199,9 @@ namespace BrutalCompanyMinus
             if (Configuration.showEventsInChat.Value)
             {
                 HUDManager.Instance.AddTextToChatOnServer("<color=#FFFFFF>Events:</color>");
-                foreach (MEvent e in EventManager.currentEvents)
+                foreach (string eventDescription in EventManager.currentEventDescriptions)
                 {
-                    HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Descriptions[UnityEngine.Random.Range(0, e.Descriptions.Count)]));
+                    HUDManager.Instance.AddTextToChatOnServer(eventDescription);
                 }
             }
         }

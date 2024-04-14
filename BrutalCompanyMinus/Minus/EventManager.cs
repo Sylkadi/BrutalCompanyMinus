@@ -123,6 +123,8 @@ namespace BrutalCompanyMinus.Minus
 
         internal static List<MEvent> currentEvents = new List<MEvent>();
 
+        internal static List<string> currentEventDescriptions = new List<string>();
+
         internal static float eventTypeSum = 0;
         internal static float[] eventTypeCount = new float[] { };
 
@@ -269,6 +271,15 @@ namespace BrutalCompanyMinus.Minus
             for (int i = 0; i < eventTypeAmount; i++) eventTypeSum += eventTypeCount[i];
         }
 
+        internal static void UpdateEventDescriptions(List<MEvent> events)
+        {
+            currentEventDescriptions.Clear();
+            foreach(MEvent e in events)
+            {
+                currentEventDescriptions.Add($"<color={e.ColorHex}>{e.Descriptions[UnityEngine.Random.Range(0, e.Descriptions.Count)]}</color>");
+            }
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
         private static void ModifyLevel(ref SelectableLevel newLevel)
@@ -317,12 +328,14 @@ namespace BrutalCompanyMinus.Minus
             ApplyEvents(currentEvents);
             ApplyEvents(additionalEvents);
 
+            UpdateEventDescriptions(currentEvents);
+
             if (Configuration.showEventsInChat.Value && !Configuration.DisplayUIAfterShipLeaves.Value)
             {
                 HUDManager.Instance.AddTextToChatOnServer("<color=#FFFFFF>Events:</color>");
-                foreach (MEvent e in currentEvents)
+                foreach(string eventDescription in currentEventDescriptions)
                 {
-                    HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}</color>", e.ColorHex, e.Descriptions[UnityEngine.Random.Range(0, e.Descriptions.Count)]));
+                    HUDManager.Instance.AddTextToChatOnServer(eventDescription);
                 }
             }
 
