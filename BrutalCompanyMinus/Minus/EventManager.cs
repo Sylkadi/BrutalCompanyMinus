@@ -47,7 +47,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.HeavyRain(),
             // Bad
             new Events.HoardingBugs(),
-            new Events.Roomba(),
+            new Events.Bees(),
             new Events.Landmines(),
             new Events.Lizard(),
             new Events.Slimes(),
