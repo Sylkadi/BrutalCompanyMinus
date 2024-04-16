@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using System.Linq;
+using BepInEx;
+using static BrutalCompanyMinus.Minus.MEvent;
+using System.Globalization;
 
 namespace BrutalCompanyMinus
 {
     internal static class Helper
     {
+        public static CultureInfo en = new CultureInfo("en-US"); // This is important, no touchy
+
         public static List<Vector3> GetOutsideNodes() => GameObject.FindGameObjectsWithTag("OutsideAINode").Select(n => n.transform.position).ToList();
         public static List<Vector3> GetSpawnDenialNodes()
         {
@@ -131,6 +136,44 @@ namespace BrutalCompanyMinus
 
             }
             return mostCommon;
+        }
+
+        public static Scale getScale(string from)
+        {
+            float[] values = ParseValuesFromString(from);
+            return new Scale(values[0], values[1], values[2], values[3]);
+        }
+
+        public static string GetStringFromScale(Scale from) => $"{from.Base.ToString(en)}, {from.Increment.ToString(en)}, {from.MinCap.ToString(en)}, {from.MaxCap.ToString(en)}";
+
+        public static float[] ParseValuesFromString(string from)
+        {
+            return from.Split(',').Select(x => float.Parse(x, en)).ToArray();
+        }
+
+        public static string StringsToList(List<string> strings, string seperator) // This is confusing naming
+        {
+            string text = "";
+            foreach (string s in strings)
+            {
+                text += s;
+                text += seperator;
+            }
+            if (strings.Count > 0) text = text.Substring(0, text.Length - seperator.Length);
+            return text;
+        }
+
+        public static List<string> ListToStrings(string text)
+        {
+            if (text.IsNullOrWhiteSpace()) return new List<string>();
+            text = text.Replace(" ", "");
+            return text.Split(',').ToList();
+        }
+
+        public static List<string> ListToDescriptions(string text)
+        {
+            if (text.IsNullOrWhiteSpace()) return new List<string>() { "" };
+            return text.Split("|").ToList();
         }
 
         public static IList<Vector2> ComputeConvexHull(List<Vector2> points, bool sortInPlace = false) // Taken from https://gist.github.com/dLopreiato/7fd142d0b9728518552188794b8a750c

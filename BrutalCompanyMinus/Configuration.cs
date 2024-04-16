@@ -1,30 +1,15 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BrutalCompanyMinus.Minus;
-using BrutalCompanyMinus;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Events;
 using static BrutalCompanyMinus.Minus.MEvent;
-using System.Reflection.Emit;
-using static UnityEngine.EventSystems.EventTrigger;
-using MonoMod.Utils;
-using System.Diagnostics;
 using HarmonyLib;
-using System.Numerics;
 using UnityEngine;
-using System.Collections.Concurrent;
 using System.Globalization;
 using BrutalCompanyMinus.Minus.Events;
-using System.Reflection;
 using static BrutalCompanyMinus.Minus.Handlers.EnemySpawnCycle;
 using static BrutalCompanyMinus.Assets;
-using System.Security;
-using static ES3;
-using UnityEngine.Experimental.AI;
+using static BrutalCompanyMinus.Helper;
 
 namespace BrutalCompanyMinus
 {
@@ -46,6 +31,7 @@ namespace BrutalCompanyMinus
         public static List<ScrapTransmutationEvent> transmutationEvents = new List<ScrapTransmutationEvent>();
 
         // Difficulty Settings
+        public static ConfigEntry<bool> enableTerminalCommands;
         public static ConfigEntry<bool> useCustomWeights, showEventsInChat;
         public static Scale eventsToSpawn;
         public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier;
@@ -83,8 +69,8 @@ namespace BrutalCompanyMinus
 
         private static void Initalize()
         {
-
             // Difficulty Settings
+            enableTerminalCommands = difficultyConfig.Bind("_TerminalCommands", "Enable terminal Commands?", false, "Type MHELP into the terminal to show all commands, this can be used to force events or pay credits and other things.");
             useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
             eventsToSpawn = getScale(difficultyConfig.Bind("_Event Settings", "Event amount scale", "2, 0.0417, 2.0, 4.0", "The base amount of events   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events.", "40, 40, 15, 5", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
@@ -179,7 +165,7 @@ namespace BrutalCompanyMinus
                     Dictionary<ScaleType, Scale> scales = new Dictionary<ScaleType, Scale>();
                     foreach (KeyValuePair<ScaleType, Scale> obj in e.ScaleList)
                     {
-                        scales.Add(obj.Key, getScale(toConfig.Bind(e.Name(), obj.Key.ToString(), getStringFromScale(obj.Value), ScaleInfoList[obj.Key] + "   " + scaleDescription).Value));
+                        scales.Add(obj.Key, getScale(toConfig.Bind(e.Name(), obj.Key.ToString(), GetStringFromScale(obj.Value), ScaleInfoList[obj.Key] + "   " + scaleDescription).Value));
                     }
                     eventScales.Add(scales);
 
@@ -192,13 +178,13 @@ namespace BrutalCompanyMinus
                     for(int i = 0; i < e.monsterEvents.Count; i++)
                     {
                         newMonsterEvents.Add(new MonsterEvent(
-                            toConfig.Bind(e.Name(), $"Enemy {i} name", e.monsterEvents[i].enemy.name, "Inputting an invalid enemy name will cause it to return an empty enemyType").Value,
-                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.InsideEnemyRarity}", getStringFromScale(e.monsterEvents[i].insideSpawnRarity), $"{ScaleInfoList[ScaleType.InsideEnemyRarity]}   {scaleDescription}").Value),
-                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.OutsideEnemyRarity}", getStringFromScale(e.monsterEvents[i].outsideSpawnRarity), $"{ScaleInfoList[ScaleType.OutsideEnemyRarity]}   {scaleDescription}").Value),
-                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.MinInsideEnemy}", getStringFromScale(e.monsterEvents[i].minInside), $"{ScaleInfoList[ScaleType.MinInsideEnemy]}   {scaleDescription}").Value),
-                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.MaxInsideEnemy}", getStringFromScale(e.monsterEvents[i].maxInside), $"{ScaleInfoList[ScaleType.MaxInsideEnemy]}   {scaleDescription}").Value),
-                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.MinOutsideEnemy}", getStringFromScale(e.monsterEvents[i].minOutside), $"{ScaleInfoList[ScaleType.MinOutsideEnemy]}   {scaleDescription}").Value),
-                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.MaxOutsideEnemy}", getStringFromScale(e.monsterEvents[i].maxOutside), $"{ScaleInfoList[ScaleType.MaxOutsideEnemy]}   {scaleDescription}").Value)
+                            toConfig.Bind(e.Name(), $"Enemy {i} Name", e.monsterEvents[i].enemy.name, "Inputting an invalid enemy name will cause it to return an empty enemyType").Value,
+                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.InsideEnemyRarity}", GetStringFromScale(e.monsterEvents[i].insideSpawnRarity), $"{ScaleInfoList[ScaleType.InsideEnemyRarity]}   {scaleDescription}").Value),
+                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.OutsideEnemyRarity}", GetStringFromScale(e.monsterEvents[i].outsideSpawnRarity), $"{ScaleInfoList[ScaleType.OutsideEnemyRarity]}   {scaleDescription}").Value),
+                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.MinInsideEnemy}", GetStringFromScale(e.monsterEvents[i].minInside), $"{ScaleInfoList[ScaleType.MinInsideEnemy]}   {scaleDescription}").Value),
+                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.MaxInsideEnemy}", GetStringFromScale(e.monsterEvents[i].maxInside), $"{ScaleInfoList[ScaleType.MaxInsideEnemy]}   {scaleDescription}").Value),
+                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.MinOutsideEnemy}", GetStringFromScale(e.monsterEvents[i].minOutside), $"{ScaleInfoList[ScaleType.MinOutsideEnemy]}   {scaleDescription}").Value),
+                            getScale(toConfig.Bind(e.Name(), $"{e.monsterEvents[i].enemy.name} {ScaleType.MaxOutsideEnemy}", GetStringFromScale(e.monsterEvents[i].maxOutside), $"{ScaleInfoList[ScaleType.MaxOutsideEnemy]}   {scaleDescription}").Value)
                         ));
                     }
                     monsterEvents.Add(newMonsterEvents);
@@ -307,6 +293,27 @@ namespace BrutalCompanyMinus
                 else
                 {
                     newEvents.Add(e);
+                    switch(e.Type)
+                    {
+                        case EventType.VeryBad:
+                            EventManager.allVeryBad.Add(e);
+                            break;
+                        case EventType.Bad:
+                            EventManager.allBad.Add(e);
+                            break;
+                        case EventType.Neutral:
+                            EventManager.allNeutral.Add(e);
+                            break;
+                        case EventType.Good:
+                            EventManager.allGood.Add(e);
+                            break;
+                        case EventType.VeryGood:
+                            EventManager.allVeryGood.Add(e);
+                            break;
+                        case EventType.Remove:
+                            EventManager.allRemove.Add(e);
+                            break;
+                    }
                 }
             }
             EventManager.events = newEvents;
@@ -484,44 +491,6 @@ namespace BrutalCompanyMinus
         private static void OnTerminalAwake()
         {
             Manager.currentTerminal = GameObject.FindObjectOfType<Terminal>();
-        }
-
-        private static Scale getScale(string from)
-        {
-            float[] values = ParseValuesFromString(from);
-            return new Scale(values[0], values[1], values[2], values[3]);
-        }
-
-        private static string getStringFromScale(Scale from) => $"{from.Base.ToString(en)}, {from.Increment.ToString(en)}, {from.MinCap.ToString(en)}, {from.MaxCap.ToString(en)}";
-
-        private static float[] ParseValuesFromString(string from)
-        {
-            return from.Split(',').Select(x => float.Parse(x, en)).ToArray();
-        }
-
-        private static string StringsToList(List<string> strings, string seperator)
-        {
-            string text = "";
-            foreach (string s in strings)
-            {
-                text += s;
-                text += seperator;
-            }
-            if (strings.Count > 0) text = text.Substring(0, text.Length - seperator.Length);
-            return text;
-        }
-
-        private static List<string> ListToStrings(string text)
-        {
-            if (text.IsNullOrWhiteSpace()) return new List<string>();
-            text = text.Replace(" ", "");
-            return text.Split(',').ToList();
-        }
-
-        private static List<string> ListToDescriptions(string text)
-        {
-            if (text.IsNullOrWhiteSpace()) return new List<string>() { "" };
-            return text.Split("|").ToList();
         }
     }
 }

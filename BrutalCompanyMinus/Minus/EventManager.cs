@@ -123,6 +123,10 @@ namespace BrutalCompanyMinus.Minus
 
         internal static List<MEvent> currentEvents = new List<MEvent>();
 
+        internal static List<MEvent> forcedEvents = new List<MEvent>();
+
+        internal static List<MEvent> allVeryGood = new List<MEvent>(), allGood = new List<MEvent>(), allNeutral = new List<MEvent>(), allBad = new List<MEvent>(), allVeryBad = new List<MEvent>(), allRemove = new List<MEvent>();
+
         internal static List<string> currentEventDescriptions = new List<string>();
 
         internal static float eventTypeSum = 0;
@@ -163,6 +167,22 @@ namespace BrutalCompanyMinus.Minus
             for (int i = 0; i < eventsToSpawn; i++)
             {
                 MEvent newEvent = RandomWeightedEvent(eventsToChooseForm, rng);
+
+                bool foundForcedEvent = false;
+                foreach (MEvent forcedEvent in forcedEvents)
+                {
+                    if (forcedEvent.Name() == newEvent.Name())
+                    {
+                        eventsToChooseForm.RemoveAll(x => x.Name() == forcedEvent.Name());
+                        foundForcedEvent = true;
+                        break;
+                    }
+                }
+                if(foundForcedEvent)
+                {
+                    i--;
+                    continue;
+                }
 
                 if (!newEvent.AddEventIfOnly()) // If event condition is false, remove event from eventsToChoosefrom and iterate again
                 {
@@ -327,6 +347,19 @@ namespace BrutalCompanyMinus.Minus
 
             ApplyEvents(currentEvents);
             ApplyEvents(additionalEvents);
+
+            foreach(MEvent forcedEvent in forcedEvents)
+            {
+                forcedEvent.Execute();
+
+                foreach(string additionalEvent in forcedEvent.EventsToSpawnWith)
+                {
+                    MEvent.GetEvent(additionalEvent).Execute();
+                }
+            }
+
+            currentEvents.AddRange(forcedEvents);
+            forcedEvents.Clear();
 
             UpdateEventDescriptions(currentEvents);
 

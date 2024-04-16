@@ -119,7 +119,7 @@ namespace BrutalCompanyMinus
             string text = "<br>Events:<br>";
             foreach (string eventDescription in EventManager.currentEventDescriptions)
             {
-                text += eventDescription + "<br>";
+                text += $"-{eventDescription}<br>";
             }
 
             // Extra properties

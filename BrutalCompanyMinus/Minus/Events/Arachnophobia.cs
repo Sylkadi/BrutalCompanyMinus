@@ -27,7 +27,7 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToSpawnWith = new List<string>() { nameof(LeaflessTrees) };
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
-                Assets.antiCoilHead,
+                Assets.EnemyName.BunkerSpider,
                 new Scale(50.0f, 0.84f, 50.0f, 100.0f),
                 new Scale(10.0f, 0.34f, 10.0f, 30.0f),
                 new Scale(4.0f, 0.084f, 3.0f, 9.0f),
