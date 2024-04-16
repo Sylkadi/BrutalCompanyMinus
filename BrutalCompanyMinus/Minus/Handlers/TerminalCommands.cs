@@ -275,12 +275,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 if (mCommand.command.ToLower() != command) continue;
 
-                if (!Configuration.enableTerminalCommands.Value)
-                {
-                    Respond("You need to have [Enable terminal Commands?] set to true located inside Difficulty_Settings.cfg to use " + command);
-                    break;
-                }
-
                 mCommand.execute(arguments);
             }
 

@@ -31,7 +31,6 @@ namespace BrutalCompanyMinus
         public static List<ScrapTransmutationEvent> transmutationEvents = new List<ScrapTransmutationEvent>();
 
         // Difficulty Settings
-        public static ConfigEntry<bool> enableTerminalCommands;
         public static ConfigEntry<bool> useCustomWeights, showEventsInChat;
         public static Scale eventsToSpawn;
         public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier;
@@ -70,7 +69,6 @@ namespace BrutalCompanyMinus
         private static void Initalize()
         {
             // Difficulty Settings
-            enableTerminalCommands = difficultyConfig.Bind("_TerminalCommands", "Enable terminal Commands?", false, "Type MHELP into the terminal to show all commands, this can be used to force events or pay credits and other things.");
             useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
             eventsToSpawn = getScale(difficultyConfig.Bind("_Event Settings", "Event amount scale", "2, 0.0417, 2.0, 4.0", "The base amount of events   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
             weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events.", "40, 40, 15, 5", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
