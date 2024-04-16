@@ -245,6 +245,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public static void Respond(string text, bool clearPreviousText = true)
         {
+            Log.LogInfo(text);
             response = text;
             _clearPreviousText = clearPreviousText;
         }
