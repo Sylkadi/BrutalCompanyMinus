@@ -14,7 +14,7 @@
   - (Very Bad) Toilhead: Spawns toilheads
 
   - Alot of numbers ahead
-  - Added arrows to the UI so you can more easily scrol.
+  - Added arrows to the UI so you can more easily scroll.
   - Added 3 new scaling options, scaleByDaysPassed, scaleByScrapInShip and scaleByMoonGrade.
   - Mod will now use a difficulty value to scale things, this go from 0 => 100, old scaling was 0 => 60 from days passed.
   
