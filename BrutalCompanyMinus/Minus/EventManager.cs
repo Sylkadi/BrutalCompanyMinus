@@ -1,4 +1,5 @@
 ﻿using BrutalCompanyMinus.Minus.Handlers;
+using com.github.zehsteam.ToilHead.MonoBehaviours;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,8 @@ namespace BrutalCompanyMinus.Minus
             new Events.ScarceOutsideScrap(),
             new Events.FragileEnemies(),
             new Events.FullAccess(),
+            new Events.EarlyShip(),
+            new Events.MoreExits(),
             // Neutral
             new Events.Nothing(),
             new Events.Locusts(),
@@ -68,6 +71,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.Butlers(),
             new Events.SpikeTraps(),
             new Events.FlowerSnake(),
+            new Events.LateShip(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),
@@ -131,6 +135,7 @@ namespace BrutalCompanyMinus.Minus
 
         internal static float eventTypeSum = 0;
         internal static float[] eventTypeCount = new float[] { };
+
 
         public static void AddEvents(params MEvent[] _event) => events.AddRange(_event);
 
@@ -304,16 +309,18 @@ namespace BrutalCompanyMinus.Minus
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
         private static void ModifyLevel(ref SelectableLevel newLevel)
         {
+            Manager.daysPassed = StartOfRound.Instance.gameStats.daysSpent;
+            Manager.ComputeDifficultyValues();
+
             Manager.currentLevel = newLevel;
             Manager.currentTerminal = GameObject.FindObjectOfType<Terminal>();
-            Manager.daysPassed = StartOfRound.Instance.gameStats.daysSpent;
 
             Assets.generateOriginalValuesLists();
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients
             if (!RoundManager.Instance.IsHost || newLevel.levelID == 3) return;
 
             LevelModifications.ResetValues(StartOfRound.Instance);
-
+            
             // Apply weather multipliers
             foreach (Weather e in Net.Instance.currentWeatherMultipliers)
             {
@@ -321,7 +328,6 @@ namespace BrutalCompanyMinus.Minus
                 {
                     Manager.scrapValueMultiplier *= e.scrapValueMultiplier;
                     Manager.scrapAmountMultiplier *= e.scrapAmountMultiplier;
-                    Manager.currentLevel.factorySizeMultiplier *= e.factorySizeMultiplier;
                 }
             }
 
@@ -357,6 +363,7 @@ namespace BrutalCompanyMinus.Minus
                     MEvent.GetEvent(additionalEvent).Execute();
                 }
             }
+
 
             currentEvents.AddRange(forcedEvents);
             forcedEvents.Clear();

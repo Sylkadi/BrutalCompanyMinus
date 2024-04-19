@@ -20,7 +20,7 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Descriptions = new List<string>() { "Corporate is feeling good today.", "The company is giving you credits for exisiting", "■ ■ ■", "It's never enough." };
+            Descriptions = new List<string>() { "Corporate is feeling good today.", "The company is giving you credits for existing", "■ ■ ■", "It's never enough." };
             ColorHex = "#008000";
             Type = EventType.Good;
 

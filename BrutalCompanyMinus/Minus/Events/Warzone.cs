@@ -1,4 +1,5 @@
 ﻿using BrutalCompanyMinus;
+using BrutalCompanyMinus.Minus.MonoBehaviours;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace BrutalCompanyMinus.Minus.Events
         public override void OnShipLeave()
         {
             Active = false;
-            Handlers.DDay.DestroyInstance();
+            DDay.DestroyInstance();
         }
 
         public override void OnGameStart() => Active = false;

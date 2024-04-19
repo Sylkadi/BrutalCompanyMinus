@@ -10,6 +10,7 @@ using HarmonyLib;
 using Unity.Netcode;
 using BrutalCompanyMinus.Minus.Events;
 using System.Reflection.Emit;
+using JetBrains.Annotations;
 
 namespace BrutalCompanyMinus
 {
@@ -69,6 +70,14 @@ namespace BrutalCompanyMinus
         };
         
 
+        public static GameObject hangarShip
+        {
+            get
+            {
+                return GameObject.Find("/Environment/HangarShip");
+            }
+        }
+
         internal static Dictionary<string, EnemyType> EnemyList = new Dictionary<string, EnemyType>();
         internal static Dictionary<string, Item> ItemList = new Dictionary<string, Item>();
         internal static Dictionary<string, GameObject> ObjectList = new Dictionary<string, GameObject>();
@@ -86,7 +95,7 @@ namespace BrutalCompanyMinus
         // Custom Assets
         internal static EnemyType antiCoilHead, nutSlayer, kamikazieBug;
         internal static Item slayerShotgun, grabbableTurret, grabbableLandmine;
-        internal static GameObject artilleryShell, artillerySirens;
+        internal static GameObject artilleryShell, artillerySirens, bunkerEntrance, bunkerEscape;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
@@ -102,8 +111,10 @@ namespace BrutalCompanyMinus
 
             artilleryShell = (GameObject)customAssetBundle.LoadAsset("ArtilleryShell");
             artillerySirens = (GameObject)customAssetBundle.LoadAsset("DDay");
+            bunkerEntrance = (GameObject)customAssetBundle.LoadAsset("BunkerEntrance");
+            bunkerEscape = (GameObject)customAssetBundle.LoadAsset("BunkerEscape");
 
-            RegisterNetworkPrefabs(antiCoilHead.enemyPrefab, nutSlayer.enemyPrefab, kamikazieBug.enemyPrefab, slayerShotgun.spawnPrefab, grabbableTurret.spawnPrefab, grabbableLandmine.spawnPrefab, artillerySirens);
+            RegisterNetworkPrefabs(antiCoilHead.enemyPrefab, nutSlayer.enemyPrefab, kamikazieBug.enemyPrefab, slayerShotgun.spawnPrefab, grabbableTurret.spawnPrefab, grabbableLandmine.spawnPrefab, artillerySirens, bunkerEntrance, bunkerEscape);
         }
 
         private static void RegisterNetworkPrefabs(params GameObject[] objects)

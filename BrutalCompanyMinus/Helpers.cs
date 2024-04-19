@@ -6,6 +6,7 @@ using System.Linq;
 using BepInEx;
 using static BrutalCompanyMinus.Minus.MEvent;
 using System.Globalization;
+using BrutalCompanyMinus.Minus;
 
 namespace BrutalCompanyMinus
 {
@@ -14,37 +15,13 @@ namespace BrutalCompanyMinus
         public static CultureInfo en = new CultureInfo("en-US"); // This is important, no touchy
 
         public static List<Vector3> GetOutsideNodes() => GameObject.FindGameObjectsWithTag("OutsideAINode").Select(n => n.transform.position).ToList();
+
+        public static List<Vector3> GetInsideAINodes() => GameObject.FindGameObjectsWithTag("AINode").Select(n => n.transform.position).ToList();
         public static List<Vector3> GetSpawnDenialNodes()
         {
             List<Vector3> nodes = GameObject.FindGameObjectsWithTag("SpawnDenialPoint").Select(n => n.transform.position).ToList();
             nodes.Add(GameObject.FindGameObjectWithTag("ItemShipLandingNode").transform.position);
-
-            switch (RoundManager.Instance.currentLevel.name) // Custom denial points so spawned objects dont block something
-            {
-                case "ExperimentationLevel":
-                    nodes.Add(new Vector3(-72, 0, -100));
-                    nodes.Add(new Vector3(-72, 0, -45));
-                    nodes.Add(new Vector3(-72, 0, 15));
-                    nodes.Add(new Vector3(-72, 0, 75));
-                    nodes.Add(new Vector3(-30, 2, -30));
-                    nodes.Add(new Vector3(-20, -2, 75));
-                    break;
-                case "AssuranceLevel":
-                    nodes.Add(new Vector3(63, -2, -43));
-                    nodes.Add(new Vector3(120, -1, 75));
-                    break;
-                case "OffenseLevel":
-                    nodes.Add(new Vector3(120, 10, -65));
-                    break;
-                case "DineLevel":
-                    nodes.Add(new Vector3(-40, 0, 80));
-                    break;
-                case "TitanLevel":
-                    nodes.Add(new Vector3(-16, -3, 5));
-                    nodes.Add(new Vector3(-50, 20, -30));
-                    break;
-            }
-
+            nodes.AddRange(GameObject.FindObjectsOfType<EntranceTeleport>().Select(i => i.gameObject.transform.position).ToList());
             return nodes;
         }
 
@@ -67,6 +44,57 @@ namespace BrutalCompanyMinus
             }
             newMapObjects[toObjects.Length] = newObject;
             return newMapObjects;
+        }
+
+        public static string GetDifficultyColorHex(float difficulty, float cap) // (0, 255, 0) => (0, 127, 0) => (255, 0, 0) => (127, 0, 0) => (40, 0, 0) => (15, 0, 0)
+        {
+            if (cap < 1) cap = 1.0f;
+            difficulty *= Configuration.difficultyMaxCap.Value / cap;
+
+            if (difficulty < 0.0f) difficulty = 0.0f;
+
+            float r = 0.0f, g = 0.0f;
+            if(difficulty >= 0.0f && difficulty < 10.0f)
+            {
+                g = 1.0f;
+            } else if (difficulty >= 10.0f && difficulty < 20.0f)
+            {
+                g = 1.5f - (difficulty * 0.05f);
+            } else if(difficulty >= 20.0f && difficulty < 35.0f)
+            {
+                r = (difficulty * 0.067f) - 1.3334f;
+                g = 1.16667f - (difficulty * 0.034f);
+            } else if (difficulty >= 35.0f && difficulty < 60.0f)
+            {
+                r = 1.7f - (difficulty * 0.02f);
+            } else if (difficulty >= 60.0f)
+            {
+                r = 1 - (difficulty * 0.0084f);
+            }
+
+            return ((int)Mathf.Clamp(r * 255, 15.0f, 255.0f)).ToString("X2") + ((int)Mathf.Clamp(g * 255, 0.0f, 255.0f)).ToString("X2") + "00";
+        }
+
+        public static string GetDifficultyText(float difficulty)
+        {
+            string difficultyText = "Easy";
+            if (difficulty >= 15.0f && difficulty < 30.0f)
+            {
+                difficultyText = "Medium";
+            }
+            else if (difficulty >= 30.0f && difficulty < 50.0f)
+            {
+                difficultyText = "Hard";
+            }
+            else if(difficulty >= 50.0f && difficulty < 75.0f)
+            {
+                difficultyText = "Very hard";
+            } 
+            else if(difficulty >= 75.0f)
+            {
+                difficultyText = "Insane";
+            }
+            return difficultyText;
         }
 
         public static Vector3 GetSafePosition(List<Vector3> nodes, List<Vector3> denialNodes, float radius, int seed)
@@ -102,6 +130,15 @@ namespace BrutalCompanyMinus
             }
 
             return position;
+        }
+
+        public static bool IsSafe(Vector3 testNode, List<Vector3> fromNodes, float radius)
+        {
+            foreach(Vector3 node in fromNodes)
+            {
+                if(Vector3.Distance(testNode, node) <= radius) return false;
+            }
+            return true;
         }
 
         public static string MostCommon(List<string> list)

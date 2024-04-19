@@ -19,6 +19,9 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using UnityEngine.AI;
 using System.Xml.Linq;
+using UnityEngine.Animations.Rigging;
+using BrutalCompanyMinus.Minus.MonoBehaviours;
+using BrutalCompanyMinus.Minus.Events;
 
 namespace BrutalCompanyMinus.Minus
 {
@@ -26,7 +29,12 @@ namespace BrutalCompanyMinus.Minus
     public class Manager
     {
 
-        public static int daysPassed = -1;
+        internal static int daysPassed = -1;
+        internal static float difficulty = 0.0f;
+        internal static float daysDifficulty = 0.0f;
+        internal static float scrapInShipDifficulty = 0.0f;
+        internal static float moonGradeDifficulty = 0.0f;
+
         public static SelectableLevel currentLevel;
         public static Terminal currentTerminal;
 
@@ -54,6 +62,9 @@ namespace BrutalCompanyMinus.Minus
 
         internal static bool transmuteScrap = false;
         internal static List<SpawnableItemWithRarity> ScrapToTransmuteTo = new List<SpawnableItemWithRarity>();
+
+        internal static bool moveTime = false;
+        internal static float moveTimeAmount = 0.0f;
 
         public static class Spawn
         {
@@ -158,13 +169,15 @@ namespace BrutalCompanyMinus.Minus
 
             public static void OutsideScrap(int Amount) => randomItemsToSpawnOutsideCount += Amount;
 
-            internal static void DoSpawnOutsideEnemies()
+            internal static List<EnemyAI> DoSpawnOutsideEnemies()
             {
                 if(Events.SafeOutside.Active)
                 {
                     Log.LogInfo("Outside spawning prevented by OutsideSafe");
-                    return;
+                    return new List<EnemyAI>();
                 }
+
+                List<EnemyAI> spawnedEnemies = new List<EnemyAI>();
 
                 List<Vector3> OutsideAiNodes = Helper.GetOutsideNodes();
                 List<Vector3> SpawnDenialNodes = Helper.GetSpawnDenialNodes();
@@ -184,15 +197,20 @@ namespace BrutalCompanyMinus.Minus
                             Helper.GetSafePosition(OutsideAiNodes, SpawnDenialNodes, 20.0f, seed++),
                             Quaternion.Euler(Vector3.zero));
 
-                        RoundManager.Instance.SpawnedEnemies.Add(obj.GetComponent<EnemyAI>());
+                        EnemyAI ai = obj.GetComponent<EnemyAI>();
+                        spawnedEnemies.Add(ai);
+                        RoundManager.Instance.SpawnedEnemies.Add(ai);
 
                         obj.gameObject.GetComponentInChildren<NetworkObject>().Spawn(destroyWithScene: true);
                     }
                 }
                 enemiesToSpawnOutside.Clear();
+                return spawnedEnemies;
             }
-            internal static void DoSpawnInsideEnemies()
+            internal static List<EnemyAI> DoSpawnInsideEnemies()
             {
+                List<EnemyAI> spawnedEnemies = new List<EnemyAI>();
+
                 // Spawn Inside enemies
                 for (int i = 0; i < enemiesToSpawnInside.Count; i++)
                 {
@@ -210,11 +228,16 @@ namespace BrutalCompanyMinus.Minus
                         GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(enemiesToSpawnInside[i].obj, position, rotation);
 
                         gameObject.GetComponentInChildren<NetworkObject>().Spawn(true);
-                        EnemyAI component = gameObject.GetComponent<EnemyAI>();
-                        RoundManager.Instance.SpawnedEnemies.Add(component);
+                        EnemyAI ai = gameObject.GetComponent<EnemyAI>();
+
+                        spawnedEnemies.Add(ai);
+
+                        RoundManager.Instance.SpawnedEnemies.Add(ai);
                     }
                 }
                 enemiesToSpawnInside.Clear();
+
+                return spawnedEnemies;
             }
 
             internal static ScrapSpawnInfo DoSpawnScrapOutside(int Amount)
@@ -397,11 +420,64 @@ namespace BrutalCompanyMinus.Minus
             return 0;
         }
 
+        public static void AddTime(float seconds)
+        {
+            moveTime = true;
+            moveTimeAmount += seconds;
+        }
+
         public static void AddEnemyHp(int amount) => bonusEnemyHp += amount;
         public static void AddInsidePower(int amount) => bonusMaxInsidePowerCount += amount;
         public static void AddOutsidePower(int amount) => bonusMaxOutsidePowerCount += amount;
 
         public static void MultiplySpawnCap(float multiplier) => spawncapMultipler *= multiplier;
+
+        public static void ComputeDifficultyValues()
+        {
+            difficulty = 0.0f;
+
+            if (Configuration.scaleByDaysPassed.Value)
+            {
+
+                daysDifficulty = Mathf.Clamp(daysPassed * Configuration.daysPassedDifficultyMultiplier.Value, 0.0f, Configuration.daysPassedDifficultyCap.Value);
+                difficulty += daysDifficulty;
+            }
+            if (Configuration.scaleByScrapInShip.Value)
+            {
+                scrapInShipDifficulty = Mathf.Clamp(GetScrapInShip() * Configuration.scrapInShipDifficultyMultiplier.Value, 0.0f, Configuration.scrapInShipDifficultyCap.Value);
+                difficulty += scrapInShipDifficulty;
+            }
+            if (Configuration.scaleByMoonGrade.Value)
+            {
+                if (Configuration.gradeAdditives.TryGetValue(StartOfRound.Instance.currentLevel.riskLevel, out float value))
+                {
+                    moonGradeDifficulty = value;
+                    difficulty += value;
+                }
+                else
+                {
+                    moonGradeDifficulty = Configuration.gradeAdditives["Other"];
+                    difficulty += moonGradeDifficulty;
+                }
+            }
+
+            difficulty = Mathf.Clamp(difficulty, 0.0f, Configuration.difficultyMaxCap.Value);
+        }
+
+        public static float GetScrapInShip()
+        {
+            GameObject hangarShip = Assets.hangarShip;
+            if (hangarShip == null) return 0;
+
+            GrabbableObject[] itemsInShip = hangarShip.GetComponentsInChildren<GrabbableObject>();
+
+            int count = 0;
+            foreach (GrabbableObject item in itemsInShip)
+            {
+                if (item != null) count += item.scrapValue;
+            }
+            return count;
+        }
 
         internal static void SampleMap()
         {
@@ -613,6 +689,21 @@ namespace BrutalCompanyMinus.Minus
         }
 
         [HarmonyPostfix]
+        [HarmonyPatch(typeof(TimeOfDay), nameof(TimeOfDay.MoveGlobalTime))]
+        private static void OnMoveGlobaTime(ref float ___timeUntilDeadline, ref float ___globalTime)
+        {
+            if(moveTime)
+            {
+                ___timeUntilDeadline -= moveTimeAmount;
+                ___globalTime += moveTimeAmount;
+
+                moveTimeAmount = 0.0f;
+                moveTime = false;
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPriority(Priority.First)]
         [HarmonyPatch(typeof(RoundManager), "FinishGeneratingLevel")]
         private static void ObjectSpawnHandling()
         {
@@ -625,7 +716,7 @@ namespace BrutalCompanyMinus.Minus
             // Net objects
             foreach (ObjectInfo obj in insideObjectsToSpawnOutside) Spawn.OutsideObjects(obj.obj, new Vector3(0.0f, -0.05f, 0.0f), obj.density, -1, 250); // 250 Cap for outside landmines and turrets as such
         }
-        
+
         private static IEnumerator DelayedExecution() // Delay this to fix trees not spawning in correctly on clients
         {
             yield return new WaitForSeconds(5.0f);
@@ -641,8 +732,26 @@ namespace BrutalCompanyMinus.Minus
         {
             if (RoundManager.Instance.allEnemyVents.Length == 0) return;
 
-            Spawn.DoSpawnInsideEnemies();
-            Spawn.DoSpawnOutsideEnemies();
+            List<EnemyAI> spawnedAI = new List<EnemyAI>();
+
+            spawnedAI.AddRange(Spawn.DoSpawnInsideEnemies());
+            spawnedAI.AddRange(Spawn.DoSpawnOutsideEnemies());
+
+            if(ToilHead.spawnToilHeads && Compatibility.toilheadPresent)
+            {
+                foreach(EnemyAI ai in spawnedAI) 
+                {
+                    if (ai == null || ai.enemyType.enemyName != "Spring") continue;
+                    try
+                    {
+                        com.github.zehsteam.ToilHead.Api.SetToilHeadOnServer(ai);
+                    } catch
+                    {
+                        Log.LogError("Failed to set toilhead from API");
+                    }
+                }
+                ToilHead.spawnToilHeads = false;
+            }
         }
 
         internal struct ObjectInfo

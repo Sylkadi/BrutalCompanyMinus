@@ -23,6 +23,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#008000";
             Type = EventType.Good;
 
+            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
+
             EventsToRemove = new List<string>() { nameof(RealityShift) };
         }
 
@@ -39,6 +41,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override void Execute()
         {
+            Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
+
             List<SpawnableItemWithRarity> SmallScrapList = new List<SpawnableItemWithRarity>();
             foreach (SpawnableItemWithRarity item in RoundManager.Instance.currentLevel.spawnableScrap)
             {
@@ -53,7 +57,7 @@ namespace BrutalCompanyMinus.Minus.Events
             // Scale scrap amount abit more
             float scrapValue = (chosenScrap.spawnableItem.minValue + chosenScrap.spawnableItem.maxValue) * 0.25f; // Intentionally
             if (scrapValue <= 0) scrapValue = 40;
-            Manager.scrapAmountMultiplier *= Mathf.Clamp(Mathf.Log(Assets.averageScrapValueList[Manager.GetLevelIndex()] / scrapValue, 5) + 1, 1.0f, 2.0f); // Range : [1.0f, 2.0f]
+            Manager.scrapAmountMultiplier *= Mathf.Clamp(Mathf.Log(Assets.averageScrapValueList[Manager.GetLevelIndex()] / scrapValue, 5) + 1, 1.0f, 4.0f); // Range : [1.0f, 4.0f]
         }
     }
 }

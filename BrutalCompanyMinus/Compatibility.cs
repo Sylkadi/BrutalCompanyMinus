@@ -9,6 +9,7 @@ using UnityEngine;
 using static BrutalCompanyMinus.Minus.EventManager;
 using BrutalCompanyMinus.Minus.Events;
 using BrutalCompanyMinus.Minus;
+using BepInEx;
 
 namespace BrutalCompanyMinus
 {
@@ -33,7 +34,10 @@ namespace BrutalCompanyMinus
             lockerPresent = false,
             theGiantSpecimensPresent = false,
             mimicsPresent = false,
-            footballPresent = false;
+            footballPresent = false,
+            emergencyDicePresent = false,
+            toilheadPresent = false,
+            goldScrapPresent = false;
 
         internal static FieldInfo peeperSpawnChance = null;
         internal static NetworkVariable<int>[] mimicNetworkSpawnChances = null;
@@ -43,18 +47,18 @@ namespace BrutalCompanyMinus
         private static void OnGameLoad()
         {
             Assembly yippeeAssembly = GetAssembly("sunnobunno.YippeeMod");
-            if(yippeeAssembly != null)
+            if (yippeeAssembly != null)
             {
                 Log.LogInfo("Found YippeeMod, Will attempt to replace kamikazie bug SFX");
 
                 Type type = yippeeAssembly.GetType("YippeeMod.YippeeModBase");
-                if(type != null)
+                if (type != null)
                 {
                     FieldInfo localField = type.GetField("newSFX", BindingFlags.Static | BindingFlags.NonPublic);
-                    if(localField != null)
+                    if (localField != null)
                     {
                         yippeeNewSFX = (AudioClip[])localField.GetValue(null);
-                        if(yippeeNewSFX != null)
+                        if (yippeeNewSFX != null)
                         {
                             Log.LogInfo("YippeeMod compatibility succeeded.");
                             yippeeModCompatibilityMode = true;
@@ -64,15 +68,15 @@ namespace BrutalCompanyMinus
             }
 
             Assembly peepersAssembly = GetAssembly("x753.Peepers");
-            if(peepersAssembly != null)
+            if (peepersAssembly != null)
             {
                 Log.LogInfo("Found PeepersMod, Will attempt to get spawnChance field.");
 
                 Type type = peepersAssembly.GetType("LCPeeper.Peeper");
-                if(type != null)
+                if (type != null)
                 {
                     peeperSpawnChance = type.GetField("PeeperSpawnChance", BindingFlags.Static | BindingFlags.Public);
-                    if(peeperSpawnChance != null)
+                    if (peeperSpawnChance != null)
                     {
                         Log.LogInfo("Found spawnChance Field, Peepers and NoPeepers event's will now occur");
                         NoPeepers.oldSpawnChance = (float)peeperSpawnChance.GetValue(null);
@@ -84,7 +88,7 @@ namespace BrutalCompanyMinus
             }
 
             Assembly mimicsAssembly = GetAssembly("x753.Mimics");
-            if(mimicsAssembly != null)
+            if (mimicsAssembly != null)
             {
                 Log.LogInfo("Found mimicsMod, Will attempt to grab spawn rate network variables");
 
@@ -94,16 +98,16 @@ namespace BrutalCompanyMinus
                 {
                     mimicNetworkSpawnChances = new NetworkVariable<int>[6];
 
-                    for(int i = 0; i < 5; i++)
+                    for (int i = 0; i < 5; i++)
                     {
                         mimicNetworkSpawnChances[i] = (NetworkVariable<int>)mimicNetworker.GetField("SpawnWeight" + i, BindingFlags.Static | BindingFlags.Public).GetValue(null);
                     }
                     mimicNetworkSpawnChances[5] = (NetworkVariable<int>)mimicNetworker.GetField("SpawnWeightMax", BindingFlags.Static | BindingFlags.Public).GetValue(null);
 
                     bool isNull = false;
-                    foreach(NetworkVariable<int> variable in mimicNetworkSpawnChances)
+                    foreach (NetworkVariable<int> variable in mimicNetworkSpawnChances)
                     {
-                        if(variable == null)
+                        if (variable == null)
                         {
                             isNull = true;
                             break;
@@ -111,7 +115,7 @@ namespace BrutalCompanyMinus
                     }
                     FieldInfo spawnRates = mimic.GetField("SpawnRates", BindingFlags.Static | BindingFlags.Public);
 
-                    if(spawnRates != null && !isNull)
+                    if (spawnRates != null && !isNull)
                     {
                         Log.LogInfo("Found spawn rate network variables, Mimics and noMimics events will now appear.");
                         Minus.Handlers.Mimics.originalSpawnRateValues = (int[])spawnRates.GetValue(null);
@@ -122,7 +126,8 @@ namespace BrutalCompanyMinus
                 }
             }
 
-            lethalEscapePresent = IsModPresent("xCeezy.LethalEscape", "Will prevent SafeOutside event from occuring.");
+            lethalEscapePresent = IsModPresent("xCeezy.LethalEscape", "Will prevent SafeOutside event from occuring.") || IsModPresent("AudioKnight.StarlancerEnemyEscape", "Will prevent SafeOutside event from occuring");
+
             lethalThingsPresent = IsModPresent("evaisa.lethalthings", "Roomba and TeleporterTraps event will now occur.", new Roomba(), new TeleporterTraps());
             diversityPresent = IsModPresent("Chaos.Diversity", "Walker event will now occur.", new Walkers());
             scopophobiaPresent = IsModPresent("Scopophobia", "Shy Guy and NoShyGuy event will now occur.", new ShyGuy(), new NoShyGuy());
@@ -135,8 +140,11 @@ namespace BrutalCompanyMinus
             lockerPresent = IsModPresent("com.zealsprince.locker", "Locker and NoLocker event will now occur.", new Lockers(), new NoLockers());
             theGiantSpecimensPresent = IsModPresent("TheGiantSpecimens", "GiantShowdown event will now occur.", new GiantShowdown());
             footballPresent = IsModPresent("Kittenji.FootballEntity", "Football event will now occur.", new Football());
+            toilheadPresent = IsModPresent("com.github.zehsteam.ToilHead", "Toilhead event will now occur", new ToilHead());
+            emergencyDicePresent = IsModPresent("Theronguard.EmergencyDice", "BadDice and Dice event will now occur.", new BadDice(), new Dice());
+            goldScrapPresent = IsModPresent("LCGoldScrapMod", "CityOfGold event will now occur", new CityOfGold());
         }
-
+        
         private static Assembly GetAssembly(string name)
         {
             if(Chainloader.PluginInfos.ContainsKey(name))

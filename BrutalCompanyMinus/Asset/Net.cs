@@ -16,6 +16,7 @@ using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.AI;
 using System.Runtime.InteropServices;
+using BrutalCompanyMinus.Minus.MonoBehaviours;
 
 namespace BrutalCompanyMinus
 {
@@ -67,6 +68,9 @@ namespace BrutalCompanyMinus
                         {
                             UpdateAtmosphere(e.name, e.state);
                         } else if(localPlayer.isPlayerDead)
+                        {
+                            UpdateAtmosphere(e.name, false);
+                        } else
                         {
                             UpdateAtmosphere(e.name, false);
                         }
@@ -189,7 +193,7 @@ namespace BrutalCompanyMinus
         {
             // Showcase Events
             UI.Instance.curretShowCaseEventTime = UI.Instance.showCaseEventTime;
-            UI.Instance.panelBackground.SetActive(true); // Show text
+            UI.Instance.TogglePanel(true);
             UI.Instance.panelScrollBar.value = 1.0f; // Start from top
             UI.Instance.showCaseEvents = true;
         }

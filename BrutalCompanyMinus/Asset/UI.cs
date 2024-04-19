@@ -20,13 +20,13 @@ namespace BrutalCompanyMinus
         public static UI Instance { get; private set; }
         public static GameObject eventUIObject { get; set; }
 
-        public GameObject panelBackground;
-        public TextMeshProUGUI panelText, letter;
+        public GameObject panelBackground, upArrowPanel, downArrowPanel;
+        public TextMeshProUGUI panelText, letter, upArrow, downArrow;
         public Scrollbar panelScrollBar;
 
         public string key = "K";
 
-        public KeyControl keyControl;
+        public KeyControl keyControl, upKeyControl, downKeyControl;
 
         public bool showCaseEvents = false;
 
@@ -71,6 +71,18 @@ namespace BrutalCompanyMinus
                         case "Scrollbar":
                             if (panelScrollBar == null) panelScrollBar = comp.GetComponent<Scrollbar>();
                             break;
+                        case "UpArrowPannel":
+                            if(upArrowPanel == null) upArrowPanel = comp.gameObject;
+                            break;
+                        case "DownArrowPanel":
+                            if(downArrowPanel == null) downArrowPanel = comp.gameObject;
+                            break;
+                        case "UpArrow":
+                            if (upArrow == null) upArrow = comp.GetComponent<TextMeshProUGUI>();
+                            break;
+                        case "DownArrow":
+                            if (downArrow == null) downArrow = comp.GetComponent<TextMeshProUGUI>();
+                            break;
                     }
                 } catch
                 {
@@ -82,6 +94,9 @@ namespace BrutalCompanyMinus
             if (keyboard != null && Configuration.EnableUI.Value)
             {
                 keyControl = keyboard.FindKeyOnCurrentKeyboardLayout(key);
+
+                downKeyControl = keyboard.downArrowKey;
+                upKeyControl = keyboard.upArrowKey;
 
                 keyboard.onTextInput += OnKeyboardInput;
             }
@@ -98,7 +113,30 @@ namespace BrutalCompanyMinus
                 {
                     panelScrollBar.value = 1.0f; // Reset to top
                     showCaseEvents = false;
-                    panelBackground.SetActive(false);
+                    TogglePanel(false);
+                }
+            }
+
+            if (panelBackground.activeSelf && downKeyControl != null && upKeyControl != null)
+            {
+                if(downKeyControl.isPressed)
+                {
+                    showCaseEvents = false;
+                    downArrow.color = new Color(0.0f, 1.0f, 0.0f);
+                    panelScrollBar.value -= Time.deltaTime * Configuration.scrollSpeed.Value;
+                } else
+                {
+                    downArrow.color = new Color(0.0f, 0.6f, 0.0f);
+                }
+
+                if (upKeyControl.isPressed)
+                {
+                    showCaseEvents = false;
+                    upArrow.color = new Color(0.0f, 1.0f, 0.0f);
+                    panelScrollBar.value += Time.deltaTime * Configuration.scrollSpeed.Value;
+                } else
+                {
+                    upArrow.color = new Color(0.0f, 0.6f, 0.0f);
                 }
             }
         }
@@ -127,9 +165,18 @@ namespace BrutalCompanyMinus
             {
                 float ScrapValueMultiplier = RoundManager.Instance.scrapValueMultiplier * Manager.scrapValueMultiplier;
                 if (Configuration.NormaliseScrapValueDisplay.Value) ScrapValueMultiplier *= 2.5f;
+
+                text +=
+                    $"<br>Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Helper.GetDifficultyText(Manager.difficulty)}</color>" +
+                    $"<br> -Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Manager.difficulty:F1}</color>";
+
+                if (Configuration.scaleByDaysPassed.Value) text += $"<br> -Day: <color=#{Helper.GetDifficultyColorHex(Manager.daysDifficulty, Configuration.daysPassedDifficultyCap.Value)}>{plusMinusExclusive(Manager.daysDifficulty)}{Manager.daysDifficulty:F1}</color>";
+                if (Configuration.scaleByScrapInShip.Value) text += $"<br> -Ship Scrap: <color=#{Helper.GetDifficultyColorHex(Manager.scrapInShipDifficulty, Configuration.scrapInShipDifficultyCap.Value)}>{plusMinusExclusive(Manager.scrapInShipDifficulty)}{Manager.scrapInShipDifficulty:F1}</color>";
+                if (Configuration.scaleByMoonGrade.Value) text += $"<br> -Moon risk: <color=#{Helper.GetDifficultyColorHex(Manager.moonGradeDifficulty, Configuration.gradeAdditives["S+++"])}>{plusMinusExclusive(Manager.moonGradeDifficulty)}{Manager.moonGradeDifficulty:F1}</color>";
+
+                text += "<br><br>Other:";
+                
                 text += 
-                    $"<br>Difficulty:" +
-                    $"<br> -Day: {Manager.daysPassed}" +
                     $"<br> -Scrap Value: x{ScrapValueMultiplier:F2}" +
                     $"<br> -Scrap Amount: x{(RoundManager.Instance.scrapAmountMultiplier * Manager.scrapAmountMultiplier):F2}" +
                     $"<br> -Factory Size: x{RoundManager.Instance.currentLevel.factorySizeMultiplier:F2}" +
@@ -149,6 +196,8 @@ namespace BrutalCompanyMinus
             return s;
         }
 
+        private static string plusMinusExclusive(float value) => (value < 0) ? "" : "+";
+
         public static void ClearText() => Net.Instance.textUI.Value = new FixedString4096Bytes(" ");
 
         public void OnKeyboardInput(char input)
@@ -163,15 +212,15 @@ namespace BrutalCompanyMinus
             }
             if (pressed && keyPressEnabledTyping && keyPressEnabledTerminal && keyPressEnabledSettings)
             {
-                bool newState = !UI.Instance.panelBackground.activeSelf;
+                bool newState = !panelBackground.activeSelf;
 
-                if (!newState && UI.Instance.showCaseEvents)
+                if (!newState && showCaseEvents)
                 {
-                    UI.Instance.showCaseEvents = false;
-                    UI.Instance.panelScrollBar.value = 1.0f; // Reset to top
+                    showCaseEvents = false;
+                    panelScrollBar.value = 1.0f; // Reset to top
                 }
 
-                UI.Instance.panelBackground.SetActive(newState);
+                TogglePanel(newState);
             }
         }
 
@@ -180,6 +229,13 @@ namespace BrutalCompanyMinus
             if (Configuration.EnableUI.Value) keyboard.onTextInput -= OnKeyboardInput;
         }
 
+        public void TogglePanel(bool state)
+        {
+            panelBackground.SetActive(state);
+            upArrowPanel.SetActive(state);
+            downArrowPanel.SetActive(state);
+            letter.color = new Color(0, state ? 1.0f : 0.6f, 0);
+        }
 
         [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]

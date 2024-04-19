@@ -13,19 +13,17 @@ namespace BrutalCompanyMinus.Minus
 
         public float scrapValueMultiplier;
         public float scrapAmountMultiplier;
-        public float factorySizeMultiplier;
 
-        public Weather(LevelWeatherType weatherType, float scrapValueMultiplier, float scrapAmountMultiplier, float factorySizeMultiplier)
+        public Weather(LevelWeatherType weatherType, float scrapValueMultiplier, float scrapAmountMultiplier)
         {
             this.weatherType = weatherType;
             this.scrapValueMultiplier = scrapValueMultiplier;
             this.scrapAmountMultiplier = scrapAmountMultiplier;
-            this.factorySizeMultiplier = factorySizeMultiplier;
         }
 
         public static Weather operator *(Weather left, Weather right)
         {
-            return new Weather(left.weatherType, left.scrapValueMultiplier * right.scrapValueMultiplier, left.scrapAmountMultiplier * right.scrapAmountMultiplier, left.factorySizeMultiplier * right.factorySizeMultiplier);
+            return new Weather(left.weatherType, left.scrapValueMultiplier * right.scrapValueMultiplier, left.scrapAmountMultiplier * right.scrapAmountMultiplier);
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -36,7 +34,6 @@ namespace BrutalCompanyMinus.Minus
                 reader.ReadValueSafe(out weatherType);
                 reader.ReadValueSafe(out scrapValueMultiplier);
                 reader.ReadValueSafe(out scrapAmountMultiplier);
-                reader.ReadValueSafe(out factorySizeMultiplier);
             }
             else
             {
@@ -44,7 +41,6 @@ namespace BrutalCompanyMinus.Minus
                 writer.WriteValueSafe(weatherType);
                 writer.WriteValueSafe(scrapValueMultiplier);
                 writer.WriteValueSafe(scrapAmountMultiplier);
-                writer.WriteValueSafe(factorySizeMultiplier);
             }
         }
 
@@ -74,7 +70,7 @@ namespace BrutalCompanyMinus.Minus
             {
                 float minInclusive = Configuration.weatherRandomRandomMinInclusive.Value, maxInclusive = Configuration.weatherRandomRandomMaxInclusive.Value;
 
-                Weather multipliers = new Weather(currentWeatherMultipliers[i].weatherType, UnityEngine.Random.Range(minInclusive, maxInclusive), UnityEngine.Random.Range(minInclusive, maxInclusive), UnityEngine.Random.Range(minInclusive, maxInclusive));
+                Weather multipliers = new Weather(currentWeatherMultipliers[i].weatherType, UnityEngine.Random.Range(minInclusive, maxInclusive), UnityEngine.Random.Range(minInclusive, maxInclusive));
 
                 switch (currentWeatherMultipliers[i].weatherType)
                 {
@@ -134,7 +130,7 @@ namespace BrutalCompanyMinus.Minus
         {
             // Add format text
             int index = modifiedDisplayText.IndexOf("INFO.");
-            if (index > 0) modifiedDisplayText = modifiedDisplayText.Insert(index + 5, "\nFormat: (xScrapValue, xScrapAmount, xFactorySize)");
+            if (index > 0) modifiedDisplayText = modifiedDisplayText.Insert(index + 5, "\nFormat: (xScrapValue, xScrapAmount)");
 
             // Create index list of '*' on all moons
             List<int> indexList = new List<int>();
@@ -172,9 +168,8 @@ namespace BrutalCompanyMinus.Minus
                         if (moonTextList[i].Contains(w.weatherType.ToString()))
                         {
                             string multiplierText =
-                                " (x" + w.scrapValueMultiplier.ToString("F2") +
-                                ", x" + w.scrapAmountMultiplier.ToString("F2") +
-                                ", x" + w.factorySizeMultiplier.ToString("F2") + ")";
+                                " (x" + w.scrapValueMultiplier.ToString("F2", Configuration.en) +
+                                ", x" + w.scrapAmountMultiplier.ToString("F2", Configuration.en) + ")";
                             moonTextList[i] = moonTextList[i].Insert(moonTextList[i].Length, multiplierText);
                         }
                     }
@@ -182,9 +177,8 @@ namespace BrutalCompanyMinus.Minus
                 else // Moon weather is 'none'
                 {
                     string multiplierText =
-                        "x" + Net.Instance.currentWeatherMultipliers[0].scrapValueMultiplier.ToString("F2") +
-                        ", x" + Net.Instance.currentWeatherMultipliers[0].scrapAmountMultiplier.ToString("F2") +
-                        ", x" + Net.Instance.currentWeatherMultipliers[0].factorySizeMultiplier.ToString("F2");
+                        "x" + Net.Instance.currentWeatherMultipliers[0].scrapValueMultiplier.ToString("F2", Configuration.en) +
+                        ", x" + Net.Instance.currentWeatherMultipliers[0].scrapAmountMultiplier.ToString("F2", Configuration.en);
                     moonTextList[i] = moonTextList[i].Insert(moonTextList[i].Length - 1, "( " + multiplierText + ")");
                 }
 
@@ -204,7 +198,7 @@ namespace BrutalCompanyMinus.Minus
         {
             // Add format text
             int index = modifiedDisplayText.IndexOf("INFO.");
-            if (index > 0) modifiedDisplayText = modifiedDisplayText.Insert(index + 5, "\nFormat: [xScrapValue, xScrapAmount, xFactorySize]");
+            if (index > 0) modifiedDisplayText = modifiedDisplayText.Insert(index + 5, "\nFormat: (xScrapValue, xScrapAmount)");
 
             // Update moon text list
             int planeTimeCount = modifiedDisplayText.Split("[planetTime]").Length - 1;
@@ -220,7 +214,7 @@ namespace BrutalCompanyMinus.Minus
                     if (w.weatherType != weatherType) continue;
 
                     string addExtraSpace = (w.weatherType == LevelWeatherType.None) ? "" : " ";
-                    string replacement = $"[planetTime]{addExtraSpace}(x{w.scrapValueMultiplier.ToString("F2", Configuration.en)}, x{w.scrapAmountMultiplier.ToString("F2", Configuration.en)}, x{w.factorySizeMultiplier.ToString("F2", Configuration.en)})";
+                    string replacement = $"[planetTime]{addExtraSpace}(x{w.scrapValueMultiplier.ToString("F2", Configuration.en)}, x{w.scrapAmountMultiplier.ToString("F2", Configuration.en)})";
                     modifiedDisplayText = planeTimeRegex.Replace(modifiedDisplayText, replacement, 1, index);
                 }
             }

@@ -29,8 +29,8 @@ namespace BrutalCompanyMinus.Minus.Events
                 Assets.EnemyName.EarthLeviathan,
                 new Scale(5.0f, 0.17f, 5.0f, 15.0f),
                 new Scale(30.0f, 1.0f, 30.0f, 90.0f),
-                new Scale(1.0f, 0.034f, 0.0f, 2.0f),
-                new Scale(1.0f, 0.05f, 0.0f, 3.0f),
+                new Scale(1.0f, 0.0f, 1.0f, 1.0f),
+                new Scale(1.0f, 0.0f, 1.0f, 1.0f),
                 new Scale(1.0f, 0.034f, 1.0f, 3.0f),
                 new Scale(1.0f, 0.034f, 1.0f, 3.0f)), new MonsterEvent(
                 Assets.EnemyName.SnareFlea,
