@@ -96,8 +96,8 @@ namespace BrutalCompanyMinus
             daysPassedDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per days passed?", 1.0f, "");
             daysPassedDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Days passed difficulty cap", 60.0f, "Days passed difficulty scaling wont add beyond this.");
             scaleByScrapInShip = difficultyConfig.Bind("Difficuly Scaling", "Scale by scrap in ship?", true, "Will add to difficulty depending on how much scrap is inside the ship.");
-            scrapInShipDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per scrap value in ship?", 0.00134f, "By default if scrap in ship is 7,500 => Difficulty +10.0, if 15,0000 => +20.0");
-            scrapInShipDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Days passed difficulty cap", 25.0f, "Scrap in ship difficulty scaling wont add beyond this.");
+            scrapInShipDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per scrap value in ship?", 0.0025f, "By default if scrap in ship is 4,000 => Difficulty +10.0, if 12,0000 => +30.0, or +1.0 per 400 scrap in ship");
+            scrapInShipDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Days passed difficulty cap", 30.0f, "Scrap in ship difficulty scaling wont add beyond this.");
             scaleByMoonGrade = difficultyConfig.Bind("Difficuly Scaling", "Scale by moon grade?", true, "Will add to difficulty depending on grade of moon you land on.");
             gradeAdditives = new Dictionary<string, float>()
             {
