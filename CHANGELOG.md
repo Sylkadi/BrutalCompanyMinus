@@ -1,5 +1,46 @@
 # ChangeLog
 <details>
+  <summary>0.12.0</summary>
+  
+  - Added 3 new vanilla events
+  - (Good) MoreExits: Spawns more entrances and exits into the facility
+  - (Good) EarlyShip: Ship arrives earlier than usual
+  - (Bad) LateShip: Ship arrives later than usual
+
+  - Added 4 new mooded events (ToilHeads, EmergencyDice and LCGoldScrapMod)
+  - (VeryGood) CityOfGold: Uses only LCGoldScrapMod scrap table
+  - (Good) Dice: Spawns only dice
+  - (Very Bad) BadDice: Only spawns bad dice
+  - (Very Bad) Toilhead: Spawns toilheads
+
+  - Alot of numbers ahead
+  - Added arrows to the UI so you can more easily scrol.
+  - Added 3 new scaling options, scaleByDaysPassed, scaleByScrapInShip and scaleByMoonGrade.
+  - Mod will now use a difficulty value to scale things, this go from 0 => 100, old scaling was 0 => 60 from days passed.
+  
+  - scaleByDaysPassed will add 1 difficulty per day
+  - scaleByScrapInShip will add 1 difficulty per 400 scrap value in ship
+  - scaleByMoonGrade will add (D => -8), (C => -8), (B => -4), (A => +5), (S => +10), (S+ => +15), (S++ => +20), (S+++ => +30), (Other => +10) difficulty
+
+  - Updated eventType rarity scales
+  - VeryBad (Difficulty:0 => 0) to (Difficulty:100 => 40)
+  - Bad (Difficulty:0 => 53) to (Difficulty:100 => 13)
+  - Neutral (Difficulty:0 => 15) to (Difficulty:30 => 10)
+  - Good (Difficulty:0 => 20) to (Difficulty:30 => 15)
+  - VeryGood (Difficulty:0 => 2) to (Difficulty:100 => 12)
+  - Remove (Difficulty:0 => 15) to (Difficulty:30 => 10)
+
+  - Updated weatherMultipliers
+  - Removed factorySizeMultiplier
+  - Rainy (x1.05, x1.00)
+  - Foggy (x1.15, x1.10)
+  - Flooded (x1.25, x1.15)
+  - Stormy (x1.35, x1.20)
+  - Eclipsed (x1.35, x1.20)
+
+  - Some other stuff i forgot about
+</details>
+<details>
   <summary>0.11.3</summary>
   
   - UI event descriptions and chat event descriptions should now match.
