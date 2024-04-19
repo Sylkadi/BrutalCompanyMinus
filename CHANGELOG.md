@@ -1,5 +1,22 @@
 # ChangeLog
 <details>
+  <summary>0.11.3</summary>
+  
+  - UI event descriptions and chat event descriptions should now match.
+  - Arachnophobia event should no longer spawn anti coilheads
+  - Bees event should now appear
+
+  - Added terminal commands which only host can use, to display all commands type 'mhelp' into the terminal.
+  - MHELP => Provides help information for commands.
+  - MEVENT => Forces a mEvent to occur for next day.
+  - MCLEAR => Clears the forced event list.
+  - MEVENTS => Displays all events.
+  - MPAY => Adds or subtracts credits.
+  - MENEMIES => Displays all enemies.
+  - MITEMS => Displays all items.
+
+</details>
+<details>
   <summary>0.11.1</summary>
   
   - Landmine event will now properly spawn landmines instead of turrets...

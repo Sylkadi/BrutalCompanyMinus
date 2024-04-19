@@ -16,7 +16,15 @@
   - Events will come in 6 main types and are categorized by color
   - These types all have there own weights to get that type of event, this can be changed in the config to use custom set weights instead of type weights.
 
-![Screenshot](https://i.imgur.com/xlanuOi.jpg)
+| Event Type | Base Weight |
+|-|-|
+| Very Good | 5 |
+| Good | 18 |
+| Neutral | 12 |
+| Bad | 43 |
+| Very Bad | 10 |
+| Remove Enemy | 12 |
+
 </details>
 <details>
   <summary><b>Weather Multipliers</b></summary>
@@ -39,6 +47,31 @@
 | Foggy      | 1.20        | 1.10         | 1.00         |
 | Flooded    | 1.30        | 1.15         | 1.00         |
 | Eclipsed   | 1.50        | 1.25         | 1.00         |
+</details>
+
+<details>
+  <summary><b>Terminal Commands</b></summary>
+    
+  - The mod has commands that only host can use, to display all commands type 'mhelp' into the terminal.
+
+![Screenshot](https://i.imgur.com/Xhk9RnL.png)
+
+  - Example of 'mevents' command.
+
+![Screenshot](https://i.imgur.com/eFrKnge.png)
+
+  - Example of 'mevents nutcracker' command.
+
+![Screenshot](https://i.imgur.com/RuXFo9A.png)
+
+  - Example of 'mevent hell hell nutcrack' command.
+
+![Screenshot](https://i.imgur.com/Wr9TDlK.png)
+
+  - Example of 'menemies' command.
+
+![Screenshot](https://i.imgur.com/GVSGqo0.png)
+
 </details>
 
 <details>
@@ -278,7 +311,7 @@ The formula used to compute the **scale** is `Base + (DaysPassed * Increment)`.
 ## Difficulty Config 
 Location: `BrutalCompanyMinus\Difficulty_Settings.cfg`
 
-`Ignore Scale Cap`: This will ignore **MinCap** and **MaxCap** allowing for infinite scaling.
+`Ingore scaling`: Setting this to true will stop the mod from sacling as the days pass.
 
 `Spawn Chance Multiplier`: A **scale** that multiplys the spawn rate.
 
@@ -380,25 +413,8 @@ Location: `BrutalCompanyMinus\UI_Settings.cfg`
 
 `UI Time`: The time the UI will appear for when popped up.
 
-## Custom Enemy/Scrap weights config.
-Location: `BrutalCompanyMinus\Enemy_Scrap_Weights_Settings.cfg`
-
-`Enable`: Enable generation of enemy/scrap weight configs?
-
-`Custom Enemy Weights`: Generate configs of weights for every enemy on every moon?
-
-`Custom Scrap Weights`: Generate configs of weights for every scrap on every moon?
-
-`Enable All Enemies`: Will enable all enemies to spawn on every moon, requires **Custom Enemy Weights** to be enabled.
-
-`Enable All Scrap`: Will enable all scrap to spawn on every moon, requires **Custom Scrap Weights** to be enabled.
-
-`All Enemies Default Weights`: The weight for if an enemy dosen't exist on the moon to be set to.
-
-`All Scrap Default Weights`: The weight for if a scrap dosen't exist on the moon to be set to.
-
 ## Events
-Location: `BrutalCompanyMinus\Events.cfg`
+Location: `BrutalCompanyMinus\CustomEvents.cfg`
 
 This will contain conifgurable options for every single event.
 
