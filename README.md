@@ -16,21 +16,21 @@
   - Events will come in 6 main types and are categorized by color
   - These types all have there own weights to get that type of event, this can be changed in the config to use custom set weights instead of type weights.
 
-| Event Type | Base Weight |
-|-|-|
-| Very Good | 5 |
-| Good | 18 |
-| Neutral | 12 |
-| Bad | 43 |
-| Very Bad | 10 |
-| Remove Enemy | 12 |
+| Event Type | Base Weight | Increment | MinCap | MaxCap |
+|-|-|-|-|-|
+| Very Good | 2 | 0.1 | 5 | 12 |
+| Good | 23 | -0.267 | 15 | 23 |
+| Neutral | 15 | -0.167 | 10 | 15 |
+| Bad | 50 | -0.4 | 10 | 50 |
+| Very Bad | 0 | 0.4 | 0 | 40 |
+| Remove Enemy | 15 | -0.167 | 10 | 15 |
 
 </details>
 <details>
   <summary><b>Weather Multipliers</b></summary>
 
-  - Weathers will now come with scrapValue, scrapAmount and factorySize multipliers.
-  - These will also be displayed ingame on the terminal in this format <mark>(xScrapValue, xScrapAmount, xFactorySize)</mark> as such
+  - Weathers will now come with scrapValue and scrapAmount multipliers.
+  - These will also be displayed ingame on the terminal in this format <mark>(xScrapValue, xScrapAmount)</mark> as such
 ![Screenshot](https://i.imgur.com/biZv8ck.jpg)
 
   - You can also enable randomize weather multipliers in the config, which will give abit of rng to the weathers after every day.
@@ -38,15 +38,15 @@
 
 **WARNING: Setting a factory size value below 1.00 may crash your game**
 
-| Weather    | Scrap value | Scrap amount | Factory Size |
-|------------|-------------|--------------|--------------|
-| None       | 1.00        | 1.00         | 1.00         |
-| DustClouds | 1.10        | 1.05         | 1.00         |
-| Rainy      | 1.10        | 1.05         | 1.00         |
-| Stormy     | 1.40        | 1.20         | 1.00         |
-| Foggy      | 1.20        | 1.10         | 1.00         |
-| Flooded    | 1.30        | 1.15         | 1.00         |
-| Eclipsed   | 1.50        | 1.25         | 1.00         |
+| Weather    | Scrap value | Scrap amount | 
+|------------|-------------|--------------|
+| None       | 1.00        | 1.00         |
+| DustClouds | 1.05        | 1.00         |
+| Rainy      | 1.05        | 1.00         |
+| Stormy     | 1.35        | 1.25         |
+| Foggy      | 1.15        | 1.10         |
+| Flooded    | 1.25        | 1.15         |
+| Eclipsed   | 1.35        | 1.25         |
 </details>
 
 <details>
@@ -112,6 +112,8 @@
 | Scarce Outside Scrap | Spawns scrap outside |
 | Fragile Enemies | Decreases enemy hp |
 | Full Access | All Doors are unlocked and open and big doors are all unlocked, prevents facility ghost. |
+| Early Ship | Time will start earlier |
+| More exits | Spawns entrances and exits |
   </details>
 
   <details>
@@ -185,8 +187,9 @@
 | Kamikazie Bugs | Hoarding bugs will now blow up when angered | 
 | Masked | Spawned masked enemies |
 | Butlers | Will Spawn butlers |
-| SpikeTraps | Will spawn spike traps inside |
-| FlowerSnake | Will spawn flower snakes inside and outside |
+| Spike Traps | Will spawn spike traps inside |
+| Flower Snake | Will spawn flower snakes inside and outside |
+| Late Ship | Time will start a little later |
   </details>
 
   <details>
@@ -223,14 +226,14 @@
   <summary><b>Modded Event List</b></summary>
   
   - These events will only appear with said mods installed
-  - Currently supported mods are Lethalthings, Diversity, Scopophobia, HerobrineMod, SirenHead, RollingGiant, TheFiend, Lockers, TheGiantSpecimens, Football, Mimics and Peepers
+  - Currently supported mods are Lethalthings, Diversity, Scopophobia, HerobrineMod, SirenHead, RollingGiant, TheFiend, Lockers, TheGiantSpecimens, Football, Mimics, LCGoldScrapMod, Toilhead, EmergencyDice and Peepers
   
   <details>
     <summary><b>Very Good</b></summary>
     
 | Name | Description |
 |-|-|
-| None | None |
+| CityOfGold | Will only spawn golden scrap |
   </details>
 
   <details>
@@ -238,7 +241,7 @@
 
 | Name | Description |
 |-|-|
-| None | None |
+| Dice | Only spawns various dice |
   </details>
 
   <details>
@@ -291,6 +294,7 @@
 | Walkers | Will spawn the walker |
 | ShyGuy | Will spawn the shyguy | 
 | GiantShowdown | Will spawn the redwood giant and giants outside |
+| Bad Dice | Only spawns bad dice |
     
   </details>
   
