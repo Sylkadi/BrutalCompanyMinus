@@ -24,9 +24,9 @@
 
   - Updated eventType rarity scales
   - VeryBad (Difficulty:0 => 0) to (Difficulty:100 => 40)
-  - Bad (Difficulty:0 => 53) to (Difficulty:100 => 13)
+  - Bad (Difficulty:0 => 50) to (Difficulty:100 => 10)
   - Neutral (Difficulty:0 => 15) to (Difficulty:30 => 10)
-  - Good (Difficulty:0 => 20) to (Difficulty:30 => 15)
+  - Good (Difficulty:0 => 23) to (Difficulty:30 => 15)
   - VeryGood (Difficulty:0 => 2) to (Difficulty:100 => 12)
   - Remove (Difficulty:0 => 15) to (Difficulty:30 => 10)
 
