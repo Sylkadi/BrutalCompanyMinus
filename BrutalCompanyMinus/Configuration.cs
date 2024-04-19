@@ -83,10 +83,10 @@ namespace BrutalCompanyMinus
             eventTypeScales = new Scale[6]
             {
                 getScale(difficultyConfig.Bind("_EventType Weights", "VeryBad event rarity scale", "0, 0.4, 0, 40", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "Bad event rarity scale", "53, -0.4, 13, 53", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Bad event rarity scale", "50, -0.4, 10, 53", scaleDescription).Value),
                 getScale(difficultyConfig.Bind("_EventType Weights", "Neutral event rarity scale", "15, -0.167, 10, 15", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "Good event rarity scale", "20, -0.167, 15, 20", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event rarity scale", "2, 0.1, 2, 12", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Good event rarity scale", "23, -0.267, 15, 23", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event rarity scale", "2, 0.1, 5, 12", scaleDescription).Value),
                 getScale(difficultyConfig.Bind("_EventType Weights", "Remove event rarity scale", "15, -0.167, 10, 15", "These events remove something   " + scaleDescription).Value)
             };
 
@@ -159,7 +159,7 @@ namespace BrutalCompanyMinus
             dustCloudMultiplier = createWeatherSettings(new Weather(LevelWeatherType.DustClouds, 1.05f, 1.00f));
             rainyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Rainy, 1.05f, 1.00f));
             stormyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Stormy, 1.35f, 1.20f));
-            foggyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Foggy, 1.20f, 1.10f));
+            foggyMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Foggy, 1.15f, 1.10f));
             floodedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Flooded, 1.25f, 1.15f));
             eclipsedMultiplier = createWeatherSettings(new Weather(LevelWeatherType.Eclipsed, 1.35f, 1.20f));
 
