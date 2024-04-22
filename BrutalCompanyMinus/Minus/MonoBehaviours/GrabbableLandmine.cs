@@ -101,8 +101,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                 try
                 {
                     __instance.transform.parent.gameObject.GetComponent<NetworkObject>().Despawn(destroy: true);
-                }
-                catch
+                } catch
                 {
 
                 }
@@ -135,6 +134,8 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             if (countDown <= 0.0f && onBlowUpSchedule)
             {
                 onBlowUpSchedule = false;
+                dropSafetyTime = -1.0f;
+                mineGrabbed = false;
                 playMineTickSourceServerRpc(false);
                 ExplodeMineServerRpc();
             }
@@ -150,7 +151,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             base.Update();
         }
 
-        private void onGrab()
+        private void OnGrab()
         {
             mineGrabbed = true;
             onBlowUpSchedule = true;
@@ -159,7 +160,13 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             playMineTickSourceServerRpc(true);
         }
 
-        private void onDiscard()
+        [ServerRpc(RequireOwnership = false)]
+        private void OnGrabServerRpc() => OnGrabClientRpc();
+
+        [ClientRpc]
+        private void OnGrabClientRpc() => OnGrab();
+
+        private void OnDisacrd()
         {
             mineGrabbed = true;
             onBlowUpSchedule = false;
@@ -168,28 +175,38 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             playMineTickSourceServerRpc(false);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        private void OnDiscardServerRpc() => OnDiscardClientRpc();
+
+        [ClientRpc]
+        private void OnDiscardClientRpc() => OnDisacrd();
+
         public override void GrabItem()
         {
             base.GrabItem();
-            onGrab();
+            OnGrab();
+            OnGrabServerRpc();
         }
 
         public override void DiscardItem()
         {
             base.DiscardItem();
-            onDiscard();
+            OnDisacrd();
+            OnDiscardServerRpc();
         }
 
         public override void GrabItemFromEnemy(EnemyAI enemy)
         {
             base.GrabItemFromEnemy(enemy);
-            onGrab();
+            OnGrab();
+            OnGrabServerRpc();
         }
 
         public override void DiscardItemFromEnemy()
         {
             base.DiscardItemFromEnemy();
-            onDiscard();
+            OnDisacrd();
+            OnDiscardServerRpc();
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -267,7 +284,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         private void OnTriggerEnter(Collider other)
         {
-            if (hasExploded || pressMineDebounceTimer > 0f || mineGrabbed || Events.GrabbableLandmines.LandmineDisabled)
+            if (hasExploded || pressMineDebounceTimer > 0f || mineGrabbed || Events.GrabbableLandmines.LandmineDisabled || dropSafetyTime > 0.0f)
             {
                 return;
             }
@@ -316,7 +333,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         private void OnTriggerExit(Collider other)
         {
-            if (hasExploded || !mineActivated || mineGrabbed || Events.GrabbableLandmines.LandmineDisabled)
+            if (hasExploded || !mineActivated || mineGrabbed || Events.GrabbableLandmines.LandmineDisabled || dropSafetyTime > 0.0f)
             {
                 return;
             }
@@ -350,7 +367,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         private void TriggerMineOnLocalClientByExiting()
         {
-            if (!hasExploded || !mineGrabbed)
+            if (!hasExploded || !mineGrabbed || dropSafetyTime <= 0.0f)
             {
                 SetOffMineAnimation();
                 sendingExplosionRPC = true;
@@ -379,7 +396,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         public void SetOffMineAnimation()
         {
-            if (dropSafetyTime > 0.0f) return;
+            if (dropSafetyTime > 0.0f || mineGrabbed) return;
             hasExploded = true;
             mineAnimator.SetTrigger("detonate");
             mineAudio.PlayOneShot(mineTrigger, 1f);
@@ -398,10 +415,18 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         public void Detonate()
         {
-            if (dropSafetyTime > 0.0f) return;
+            if (dropSafetyTime > 0.0f || mineGrabbed) return;
+            
             mineAudio.pitch = UnityEngine.Random.Range(0.93f, 1.07f);
             mineAudio.PlayOneShot(mineDetonate, 1f);
             SpawnExplosion(transform.position + Vector3.up, spawnExplosionEffect: false, 5.7f, 6.4f);
+            if (NetworkManager.Singleton.IsServer) StartCoroutine(DestroyObject());
+        }
+
+        private IEnumerator DestroyObject()
+        {
+            yield return new WaitForSeconds(5.0f);
+            gameObject.GetComponent<NetworkObject>().Despawn(destroy: true);
         }
 
         public static void SpawnExplosion(Vector3 explosionPosition, bool spawnExplosionEffect = false, float killRange = 1f, float damageRange = 1f)
@@ -480,15 +505,16 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         {
             return !Physics.Linecast(transform.position, pos, out hit, 256);
         }
-        
+
         bool IHittable.Hit(int force, Vector3 hitDirection, PlayerControllerB playerWhoHit = null, bool playHitSFX = false, int hitID = -1)
         {
+            if (mineGrabbed) return false;
             SetOffMineAnimation();
             sendingExplosionRPC = true;
             ExplodeMineServerRpc();
             return true;
         }
-        
+
     }
 
 }

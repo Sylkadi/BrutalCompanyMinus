@@ -103,6 +103,8 @@ namespace BrutalCompanyMinus
             base.OnNetworkDespawn();
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public int GiveSeed() => _seed++;
 
         [ClientRpc]
         public void ClearGameObjectsClientRpc()

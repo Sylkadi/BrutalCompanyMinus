@@ -108,15 +108,16 @@ namespace BrutalCompanyMinus.Minus
                 {
                     randomSeedValue++;
 
-                    UnityEngine.Random.InitState(randomSeedValue); // Important or wont be same on all clients
+                    UnityEngine.Random.InitState(randomSeedValue++); // Important or wont be same on all clients
+                    System.Random rng = new System.Random(randomSeedValue);
                     Vector3 position = new Vector3(0.0f, 0.0f, 0.0f);
                     if (radius != -1.0f || outsideObjectSpawnNodes.Count == 0)
                     {
-                        position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(RoundManager.Instance.outsideAINodes[UnityEngine.Random.Range(0, RoundManager.Instance.outsideAINodes.Length)].transform.position, radius);
+                        position = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(RoundManager.Instance.outsideAINodes[UnityEngine.Random.Range(0, RoundManager.Instance.outsideAINodes.Length)].transform.position, radius, RoundManager.Instance.navHit, rng);
                     }
                     else
                     {
-                        position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(outsideObjectSpawnNodes[UnityEngine.Random.Range(0, outsideObjectSpawnNodes.Count)], outsideObjectSpawnRadius);
+                        position = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(outsideObjectSpawnNodes[UnityEngine.Random.Range(0, outsideObjectSpawnNodes.Count)], outsideObjectSpawnRadius, RoundManager.Instance.navHit, rng);
                     }
                     Quaternion rotation = obj.transform.rotation;
 
@@ -710,7 +711,7 @@ namespace BrutalCompanyMinus.Minus
             SampleMap();
 
             // Client side objects
-            Spawn.randomSeedValue = StartOfRound.Instance.randomMapSeed + 2; // Reset seed value
+            Spawn.randomSeedValue = StartOfRound.Instance.randomMapSeed + 2 + Net.Instance.GiveSeed(); // Reset seed value
             RoundManager.Instance.StartCoroutine(DelayedExecution());
 
             // Net objects
