@@ -28,16 +28,16 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.nutSlayer,
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.04f, 1.0f, 5.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
                 new Scale(1.0f, 0.0f, 1.0f, 1.0f),
                 new Scale(1.0f, 0.0f, 1.0f, 1.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f))
             };
 
-            ScaleList.Add(ScaleType.SpawnMultiplier, new Scale(1.35f, 0.01084f, 1.35f, 2.0f));
-            ScaleList.Add(ScaleType.SpawnCapMultiplier, new Scale(1.5f, 0.0417f, 1.5f, 4.0f));
+            ScaleList.Add(ScaleType.SpawnMultiplier, new Scale(1.25f, 0.0075f, 1.25f, 2.0f));
+            ScaleList.Add(ScaleType.SpawnCapMultiplier, new Scale(1.4f, 0.016f, 1.4f, 3.0f));
         }
 
         public override void Execute() 

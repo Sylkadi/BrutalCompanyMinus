@@ -25,12 +25,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.EnemyName.EyelessDog,
-                new Scale(15.0f, 0.5f, 25.0f, 45.0f),
-                new Scale(15.0f, 0.5f, 25.0f, 45.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(2.0f, 0.05f, 1.0f, 5.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(1.0f, 0.05f, 1.0f, 5.0f))
+                new Scale(10.0f, 0.4f, 10.0f, 50.0f),
+                new Scale(20.0f, 0.8f, 20.0f, 100.0f),
+                new Scale(1.0f, 0.03f, 1.0f, 4.0f),
+                new Scale(1.0f, 0.04f, 1.0f, 5.0f),
+                new Scale(1.0f, 0.03f, 1.0f, 4.0f),
+                new Scale(2.0f, 0.04f, 2.0f, 6.0f))
             };
         }
 

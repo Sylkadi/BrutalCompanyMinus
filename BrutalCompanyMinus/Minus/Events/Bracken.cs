@@ -26,12 +26,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.EnemyName.Bracken,
-                new Scale(25.0f, 0.84f, 25.0f, 75.0f),
-                new Scale(5.0f, 0.167f, 5.0f, 15.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(2.0f, 0.067f, 2.0f, 6.0f),
-                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
-                new Scale(0.0f, 0.0f, 0.0f, 0.0f))
+                new Scale(20.0f, 0.8f, 20.0f, 100.0f),
+                new Scale(5.0f, 0.2f, 5.0f, 25.0f),
+                new Scale(3.0f, 0.06f, 3.0f, 9.0f),
+                new Scale(4.0f, 0.08f, 4.0f, 12.0f),
+                new Scale(0.0f, 0.02f, 0.0f, 1.0f),
+                new Scale(0.0f, 0.03f, 0.0f, 3.0f))
             };
         }
 

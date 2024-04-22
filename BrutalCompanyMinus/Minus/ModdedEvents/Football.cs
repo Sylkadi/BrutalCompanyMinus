@@ -25,12 +25,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 "Football",
-                new Scale(3.0f, 0.2f, 3.0f, 15.0f),
-                new Scale(2.0f, 0.1f, 4.0f, 8.0f),
-                new Scale(1.0f, 0.04f, 1.0f, 3.0f),
-                new Scale(1.0f, 0.04f, 1.0f, 3.0f),
-                new Scale(0.0f, 0.025f, 0.0f, 1.0f),
-                new Scale(0.0f, 0.05f, 0.0f, 2.0f))
+                new Scale(5.0f, 0.2f, 5.0f, 25.0f),
+                new Scale(2.0f, 0.08f, 2.0f, 10.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(0.0f, 0.0075f, 0.0f, 1.0f),
+                new Scale(0.0f, 0.02f, 0.0f, 2.0f))
             };
         }
 

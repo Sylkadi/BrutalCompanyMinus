@@ -25,15 +25,15 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.EnemyName.FlowerSnake,
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(2.0f, 0.084f, 2.0f, 7.0f),
-                new Scale(4.0f, 0.117f, 0.0f, 11.0f),
-                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
-                new Scale(0.0f, 0.0f, 0.0f, 0.0f))
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(3.0f, 0.06f, 3.0f, 9.0f),
+                new Scale(4.0f, 0.08f, 4.0f, 12.0f),
+                new Scale(2.0f, 0.04f, 2.0f, 6.0f),
+                new Scale(3.0f, 0.06f, 3.0f, 9.0f))
             };
 
-            ScaleList.Add(ScaleType.DaytimeEnemyRarity, new Scale(50.0f, 0.84f, 25.0f, 100.0f));
+            ScaleList.Add(ScaleType.DaytimeEnemyRarity, new Scale(20.0f, 0.8f, 20.0f, 100.0f));
         }
 
         public override void Execute()

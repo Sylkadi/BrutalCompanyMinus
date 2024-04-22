@@ -27,12 +27,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.EnemyName.OldBird,
-                new Scale(1.0f, 0.84f, 1.0f, 6.0f),
-                new Scale(30.0f, 1.0f, 30.0f, 90.0f),
-                new Scale(1.0f, 0.017f, 1.0f, 2.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(1.0f, 0.067f, 1.0f, 5.0f))
+                new Scale(1.0f, 0.4f, 1.0f, 5.0f),
+                new Scale(33.0f, 0.66f, 33.0f, 100.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(2.0f, 0.04f, 2.0f, 6.0f))
             };
         }
 

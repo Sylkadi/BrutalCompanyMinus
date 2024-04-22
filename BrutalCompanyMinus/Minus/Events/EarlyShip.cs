@@ -27,8 +27,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(LateShip) };
 
-            ScaleList.Add(ScaleType.MinAmount, new Scale(-45.0f, -0.917f, -100.0f, -45.0f));
-            ScaleList.Add(ScaleType.MaxAmount, new Scale(-60.0f, -0.67f, -100.0f, -60.0f));
+            ScaleList.Add(ScaleType.MinAmount, new Scale(-45.0f, -0.55f, -100.0f, -45.0f));
+            ScaleList.Add(ScaleType.MaxAmount, new Scale(-60.0f, -0.55f, -100.0f, -60.0f));
         }
 
         public override void Execute() => Manager.AddTime(UnityEngine.Random.Range(Getf(ScaleType.MinAmount), Getf(ScaleType.MaxAmount)));

@@ -25,12 +25,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 "ImmortalSnail.EnemyType",
-                new Scale(10.0f, 0.5f, 10.0f, 40.0f),
-                new Scale(5.0f, 0.167f, 5.0f, 15.0f),
-                new Scale(2.0f, 0.034f, 1.0f, 4.0f),
-                new Scale(2.0f, 0.05f, 1.0f, 5.0f),
-                new Scale(0.0f, 0.034f, 0.0f, 2.0f),
-                new Scale(0.0f, 0.034f, 0.0f, 2.0f))
+                new Scale(10.0f, 0.4f, 10.0f, 50.0f),
+                new Scale(5.0f, 0.2f, 5.0f, 25.0f),
+                new Scale(2.0f, 0.05f, 2.0f, 7.0f),
+                new Scale(2.0f, 0.07f, 2.0f, 9.0f),
+                new Scale(0.0f, 0.02f, 0.0f, 2.0f),
+                new Scale(0.0f, 0.02f, 0.0f, 2.0f))
             };
         }
 

@@ -25,12 +25,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 "PeeperType",
-                new Scale(25.0f, 0.417f, 25.0f, 50.0f),
-                new Scale(4.0f, 0.134f, 4.0f, 12.0f),
-                new Scale(5.0f, 0.117f, 5.0f, 12.0f),
-                new Scale(6.0f, 0.2f, 6.0f, 18.0f),
-                new Scale(7.0f, 0.184f, 7.0f, 18.0f),
-                new Scale(10.0f, 0.267f, 10.0f, 26.0f))
+                new Scale(10.0f, 0.4f, 10.0f, 50.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(3.0f, 0.06f, 3.0f, 9.0f),
+                new Scale(4.0f, 0.09f, 4.0f, 12.0f),
+                new Scale(3.0f, 0.12f, 3.0f, 15.0f),
+                new Scale(4.0f, 0.16f, 4.0f, 20.0f))
             };
         }
 

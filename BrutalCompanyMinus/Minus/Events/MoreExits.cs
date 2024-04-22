@@ -23,8 +23,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#008000";
             Type = EventType.Good;
 
-            ScaleList.Add(ScaleType.MinAmount, new Scale(2.0f, 0.005f, 2.0f, 4.0f));
-            ScaleList.Add(ScaleType.MaxAmount, new Scale(3.0f, 0.005f, 3.0f, 6.0f));
+            ScaleList.Add(ScaleType.MinAmount, new Scale(2.0f, 0.03f, 2.0f, 5.0f));
+            ScaleList.Add(ScaleType.MaxAmount, new Scale(3.0f, 0.05f, 3.0f, 8.0f));
         }
 
         public override void Execute() => MonoBehaviours.Passage.SpawnBunkerPassage(UnityEngine.Random.Range(Get(ScaleType.MinAmount), Get(ScaleType.MaxAmount) + 1));

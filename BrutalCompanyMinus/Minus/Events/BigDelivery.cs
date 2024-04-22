@@ -25,8 +25,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(SmallDeilvery) };
 
-            ScaleList.Add(ScaleType.MinItemAmount, new Scale(4.0f, 0.134f, 4.0f, 12.0f));
-            ScaleList.Add(ScaleType.MaxItemAmount, new Scale(6.0f, 0.2f, 6.0f, 18.0f));
+            ScaleList.Add(ScaleType.MinItemAmount, new Scale(5.0f, 0.1f, 5.0f, 15.0f));
+            ScaleList.Add(ScaleType.MaxItemAmount, new Scale(7.0f, 0.14f, 7.0f, 21.0f));
             ScaleList.Add(ScaleType.MinValue, new Scale(60.0f, 0.0f, 60.0f, 60.0f));
             ScaleList.Add(ScaleType.MaxValue, new Scale(99999.0f, 0.0f, 99999.0f, 99999.0f));
         }

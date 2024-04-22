@@ -26,18 +26,25 @@ namespace BrutalCompanyMinus.Minus.Events
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 "PinkGiantObj",
                 new Scale(1.0f, 0.0f, 1.0f, 1.0f),
-                new Scale(30.0f, 1.0f, 1.0f, 90.0f),
+                new Scale(33.0f, 0.66f, 33.0f, 100.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
-                new Scale(0.0f, 0.02f, 0.0f, 1.0f),
-                new Scale(2.0f, 0.034f, 2.0f, 4.0f),
-                new Scale(2.0f, 0.034f, 2.0f, 4.0f)), new MonsterEvent(
+                new Scale(0.0f, 0.0095f, 0.0f, 1.0f),
+                new Scale(2.0f, 0.02f, 2.0f, 4.0f),
+                new Scale(2.0f, 0.02f, 2.0f, 4.0f)), new MonsterEvent(
+                "DriftwoodGiantObj",
+                new Scale(1.0f, 0.0f, 1.0f, 1.0f),
+                new Scale(33.0f, 0.66f, 33.0f, 100.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
+                new Scale(4.0f, 0.04f, 4.0f, 8.0f),
+                new Scale(4.0f, 0.04f, 4.0f, 8.0f)), new MonsterEvent(
                 Assets.EnemyName.ForestKeeper,
                 new Scale(1.0f, 0.0f, 1.0f, 1.0f),
-                new Scale(60.0f, 0.67f, 1.0f, 100.0f),
+                new Scale(33.0f, 0.66f, 33.0f, 100.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
-                new Scale(8.0f, 0.134f, 8.0f, 16.0f),
-                new Scale(8.0f, 0.134f, 8.0f, 16.0f))
+                new Scale(4.0f, 0.04f, 4.0f, 8.0f),
+                new Scale(4.0f, 0.04f, 4.0f, 8.0f))
             };
         }
 

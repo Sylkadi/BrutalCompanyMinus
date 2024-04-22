@@ -25,7 +25,9 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.Rarity, new Scale(0.4f, 0.0084f, 0.4f, 0.9f));
+            ScaleList.Add(ScaleType.Rarity, new Scale(0.33f, 0.0066f, 0.33f, 1.0f));
+            ScaleList.Add(ScaleType.MinAmount, new Scale(2.0f, 0.08f, 2.0f, 10.0f));
+            ScaleList.Add(ScaleType.MaxAmount, new Scale(3.0f, 0.12f, 3.0f, 15.0f));
         }
 
         public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.Landmine]);
@@ -33,6 +35,17 @@ namespace BrutalCompanyMinus.Minus.Events
         public override void Execute() {
             Active = true;
             LandmineDisabled = false;
+            RoundManager.Instance.currentLevel.spawnableMapObjects = RoundManager.Instance.currentLevel.spawnableMapObjects.Add(new SpawnableMapObject()
+            {
+                prefabToSpawn = Assets.GetObject(Assets.ObjectName.Landmine),
+                numberToSpawn = new AnimationCurve(new Keyframe(0f, Get(ScaleType.MinAmount)), new Keyframe(1f, Get(ScaleType.MaxAmount))),
+                spawnFacingAwayFromWall = false,
+                spawnFacingWall = false,
+                spawnWithBackToWall = false,
+                spawnWithBackFlushAgainstWall = false,
+                requireDistanceBetweenSpawns = false,
+                disallowSpawningNearEntrances = false
+            });
         } 
 
         public override void OnShipLeave() {

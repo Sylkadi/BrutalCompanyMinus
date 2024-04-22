@@ -25,12 +25,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.EnemyName.Hygrodere,
-                new Scale(20.0f, 0.67f, 25.0f, 60.0f),
-                new Scale(8.0f, 0.27f, 8.0f, 24.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(2.0f, 0.067f, 1.0f, 6.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(2.0f, 0.067f, 1.0f, 6.0f))
+                new Scale(10.0f, 0.4f, 10.0f, 50.0f),
+                new Scale(5.0f, 0.2f, 5.0f, 25.0f),
+                new Scale(1.0f, 0.03f, 1.0f, 4.0f),
+                new Scale(1.0f, 0.06f, 1.0f, 7.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f))
             };
         }
 

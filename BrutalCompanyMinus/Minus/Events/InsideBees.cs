@@ -30,13 +30,13 @@ namespace BrutalCompanyMinus.Minus.Events
                 Assets.EnemyName.CircuitBee,
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
-                new Scale(3.0f, 0.05f, 2.0f, 6.0f),
-                new Scale(3.0f, 0.084f, 3.0f, 8.0f),
-                new Scale(4.0f, 0.067f, 4.0f, 8.0f),
-                new Scale(4.0f, 0.134f, 4.0f, 12.0f))
+                new Scale(3.0f, 0.05f, 2.0f, 9.0f),
+                new Scale(4.0f, 0.084f, 3.0f, 12.0f),
+                new Scale(3.0f, 0.06f, 3.0f, 9.0f),
+                new Scale(5.0f, 0.1f, 5.0f, 15.0f))
             };
 
-            ScaleList.Add(ScaleType.DaytimeEnemyRarity, new Scale(50.0f, 0.84f, 50.0f, 100.0f));
+            ScaleList.Add(ScaleType.DaytimeEnemyRarity, new Scale(20.0f, 0.8f, 20.0f, 100.0f));
         }
 
         public override void Execute()

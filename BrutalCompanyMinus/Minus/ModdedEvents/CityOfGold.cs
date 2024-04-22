@@ -26,6 +26,7 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(GoldenBars) };
 
             scrapTransmutationEvent = new ScrapTransmutationEvent(
+                new Scale(0.5f, 0.008f, 0.5f, 0.9f),
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("GoldenEggbeaterLCGoldScrapMod"), rarity = 1 },
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("GoldMugLCGoldScrapMod"), rarity = 1 },
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("GoldJugLCGoldScrapMod"), rarity = 1 },
@@ -60,7 +61,7 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(RealityShift) };
 
-            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
+            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.5f));
         }
 
         public override bool AddEventIfOnly()

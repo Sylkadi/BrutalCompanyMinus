@@ -25,10 +25,10 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.EnemyName.GhostGirl,
+                new Scale(20.0f, 0.8f, 20.0f, 100.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
-                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
-                new Scale(2.0f, 0.067f, 2.0f, 6.0f),
-                new Scale(3.0f, 0.1f, 3.0f, 9.0f),
+                new Scale(3.0f, 0.06f, 3.0f, 9.0f),
+                new Scale(3.0f, 0.09f, 3.0f, 12.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f))
             };

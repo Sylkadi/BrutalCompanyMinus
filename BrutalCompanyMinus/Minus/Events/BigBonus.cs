@@ -25,8 +25,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(Bonus) };
 
-            ScaleList.Add(ScaleType.MinCash, new Scale(280.0f, 8.67f, 280.0f, 800.0f));
-            ScaleList.Add(ScaleType.MaxCash, new Scale(350.0f, 13.34f, 350.0f, 1150.0f));
+            ScaleList.Add(ScaleType.MinCash, new Scale(330.0f, 7.7f, 330.0f, 1100.0f));
+            ScaleList.Add(ScaleType.MaxCash, new Scale(400.0f, 10.5f, 400.0f, 1450.0f));
         }
 
         public override void Execute() => Manager.PayCredits(UnityEngine.Random.Range(Get(ScaleType.MinCash), Get(ScaleType.MaxCash) + 1));

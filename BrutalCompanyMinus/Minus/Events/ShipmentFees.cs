@@ -24,8 +24,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.MinCut, new Scale(0.1f, 0.0034f, 0.1f, 0.3f));
-            ScaleList.Add(ScaleType.MaxCut, new Scale(0.2f, 0.0067f, 0.2f, 0.6f));
+            ScaleList.Add(ScaleType.MinCut, new Scale(0.2f, 0.004f, 0.2f, 0.6f));
+            ScaleList.Add(ScaleType.MaxCut, new Scale(0.3f, 0.006f, 0.3f, 0.9f));
         }
 
         public override void Execute() => Active = true;

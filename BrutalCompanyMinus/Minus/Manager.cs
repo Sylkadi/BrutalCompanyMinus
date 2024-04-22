@@ -41,6 +41,19 @@ namespace BrutalCompanyMinus.Minus
         internal static float terrainArea = 0.0f;
         internal static string terrainTag = "";
         internal static string terrainName = "";
+        private static GameObject _terrainObject;
+        internal static GameObject terrainObject
+        {
+            get 
+            {
+                if (_terrainObject == null) SampleMap();
+                return _terrainObject;
+            }
+            private set 
+            { 
+                _terrainObject = value; 
+            }
+        }
         internal static List<Vector3> outsideObjectSpawnNodes = new List<Vector3>();
         internal static float outsideObjectSpawnRadius = 0.0f;
 
@@ -61,6 +74,7 @@ namespace BrutalCompanyMinus.Minus
         internal static float spawnChanceMultiplier = 1.0f, spawncapMultipler = 1.0f;
 
         internal static bool transmuteScrap = false;
+        internal static List<float> scrapTransmuteAmount = new List<float>();
         internal static List<SpawnableItemWithRarity> ScrapToTransmuteTo = new List<SpawnableItemWithRarity>();
 
         internal static bool moveTime = false;
@@ -109,15 +123,14 @@ namespace BrutalCompanyMinus.Minus
                     randomSeedValue++;
 
                     UnityEngine.Random.InitState(randomSeedValue++); // Important or wont be same on all clients
-                    System.Random rng = new System.Random(randomSeedValue);
                     Vector3 position = new Vector3(0.0f, 0.0f, 0.0f);
                     if (radius != -1.0f || outsideObjectSpawnNodes.Count == 0)
                     {
-                        position = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(RoundManager.Instance.outsideAINodes[UnityEngine.Random.Range(0, RoundManager.Instance.outsideAINodes.Length)].transform.position, radius, RoundManager.Instance.navHit, rng);
+                        position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(RoundManager.Instance.outsideAINodes[UnityEngine.Random.Range(0, RoundManager.Instance.outsideAINodes.Length)].transform.position, radius);
                     }
                     else
                     {
-                        position = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(outsideObjectSpawnNodes[UnityEngine.Random.Range(0, outsideObjectSpawnNodes.Count)], outsideObjectSpawnRadius, RoundManager.Instance.navHit, rng);
+                        position = RoundManager.Instance.GetRandomNavMeshPositionInRadius(outsideObjectSpawnNodes[UnityEngine.Random.Range(0, outsideObjectSpawnNodes.Count)], outsideObjectSpawnRadius);
                     }
                     Quaternion rotation = obj.transform.rotation;
 
@@ -386,9 +399,10 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
-        public static void TransmuteScrap(params SpawnableItemWithRarity[] Items)
+        public static void TransmuteScrap(float amount, params SpawnableItemWithRarity[] Items)
         {
             transmuteScrap = true;
+            scrapTransmuteAmount.Add(Mathf.Clamp(amount, 0.0f, 1.0f));
             ScrapToTransmuteTo.AddRange(Items);
         }
 
@@ -540,6 +554,18 @@ namespace BrutalCompanyMinus.Minus
 
             terrainTag = Helper.MostCommon(hits.Select(x => x.collider.gameObject.tag).ToList());
             terrainName = Helper.MostCommon(hits.Select(x => x.collider.gameObject.name).ToList());
+
+            GameObject terrainMap = GameObject.FindGameObjectWithTag(Manager.terrainTag);
+            GameObject[] objects = GameObject.FindGameObjectsWithTag(Manager.terrainTag);
+            foreach (GameObject obj in objects)
+            {
+                if (obj.name == Manager.terrainName)
+                {
+                    terrainMap = obj;
+                }
+            }
+
+            terrainObject = terrainMap;
         }
 
         public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, EnemyType enemy, int rarity) => DoAddEnemyToPoolWithRarity(ref list, enemy, rarity);

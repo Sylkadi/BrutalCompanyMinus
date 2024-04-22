@@ -32,15 +32,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             
             try
             {
-                GameObject terrainMap = GameObject.FindGameObjectWithTag(Manager.terrainTag);
-                GameObject[] objects = GameObject.FindGameObjectsWithTag(Manager.terrainTag);
-                foreach (GameObject obj in objects)
-                {
-                    if (obj.name == Manager.terrainName)
-                    {
-                        terrainMap = obj;
-                    }
-                }
+                GameObject terrainMap = Manager.terrainObject;
 
                 float y = -100.0f;
                 if (terrainMap != null) y = terrainMap.transform.position.y - 100.0f;

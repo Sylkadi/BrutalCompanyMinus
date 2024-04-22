@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
+using HarmonyLib;
+using UnityEngine.Rendering;
+using BrutalCompanyMinus.Minus.MonoBehaviours;
 
 namespace BrutalCompanyMinus.Minus.Events
 {
@@ -14,6 +17,8 @@ namespace BrutalCompanyMinus.Minus.Events
         public override string Name() => nameof(FullAccess);
 
         public static FullAccess Instance;
+
+        public static bool Active = false;
 
         public override void Initalize()
         {
@@ -27,12 +32,10 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(FacilityGhost) };
         }
 
-        public override void Execute() => Net.Instance.StartCoroutine(UnlockAll());
+        public override void Execute() => Active = true;
 
-        public IEnumerator UnlockAll()
-        {
-            yield return new WaitForSeconds(11.5f);
-            Net.Instance.UnlockAndOpenAllDoorsServerRpc();
-        }
+        public override void OnShipLeave() => Active = false;
+
+        public override void OnGameStart() => Active = false;
     }
 }

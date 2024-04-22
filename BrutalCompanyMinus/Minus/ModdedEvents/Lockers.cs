@@ -25,12 +25,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 "LockerEnemy",
-                new Scale(20.0f, 0.67f, 20.0f, 60.0f),
-                new Scale(3.0f, 0.084f, 3.0f, 9.0f),
-                new Scale(1.0f, 0.05f, 1.0f, 4.0f),
-                new Scale(2.0f, 0.05f, 2.0f, 5.0f),
-                new Scale(0.0f, 0.05f, 0.0f, 1.0f),
-                new Scale(0.0f, 0.084f, 0.0f, 2.0f))
+                new Scale(10.0f, 0.4f, 10.0f, 50.0f),
+                new Scale(5.0f, 0.1f, 5.0f, 15.0f),
+                new Scale(1.0f, 0.04f, 1.0f, 5.0f),
+                new Scale(1.0f, 0.06f, 1.0f, 7.0f),
+                new Scale(0.0f, 0.0075f, 0.0f, 1.0f),
+                new Scale(0.0f, 0.02f, 0.0f, 2.0f))
             };
         }
 

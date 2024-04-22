@@ -19,16 +19,16 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 3;
-            Descriptions = new List<string>() { "Nicely fashioned gentlemen", "A touch of class descends upon this planet", "Pop!", "Knives" };
+            Descriptions = new List<string>() { "Nicely fashioned gentlemen", "Pop!", "Knives" };
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.EnemyName.Butler,
-                new Scale(25.0f, 0.417f, 25.0f, 50.0f),
-                new Scale(5.0f, 0.17f, 5.0f, 15.0f),
-                new Scale(1.0f, 0.017f, 1.0f, 3.0f),
-                new Scale(2.0f, 0.034f, 2.0f, 6.0f),
+                new Scale(10.0f, 0.4f, 10.0f, 50.0f),
+                new Scale(5.0f, 0.2f, 5.0f, 25.0f),
+                new Scale(1.0f, 0.05f, 1.0f, 6.0f),
+                new Scale(1.0f, 0.07f, 1.0f, 8.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f),
                 new Scale(0.0f, 0.0f, 0.0f, 0.0f))
             };

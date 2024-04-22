@@ -19,11 +19,12 @@ namespace BrutalCompanyMinus.Minus.Events
             Instance = this;
 
             Weight = 2;
-            Descriptions = new List<string>() { "All the scrap has transmuted into something small...", "This is going to be a one-handed job", "It's all the light stuff" };
+            Descriptions = new List<string>() { "Most scrap has transmuted into something small...", "This is going to be a one-handed job", "It's all the light stuff" };
             ColorHex = "#008000";
             Type = EventType.Good;
 
-            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
+            ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.5f));
+            ScaleList.Add(ScaleType.Percentage, new Scale(0.5f, 0.008f, 0.5f, 0.9f));
 
             EventsToRemove = new List<string>() { nameof(RealityShift) };
         }
@@ -52,7 +53,7 @@ namespace BrutalCompanyMinus.Minus.Events
             SpawnableItemWithRarity chosenScrap = SmallScrapList[UnityEngine.Random.Range(0, SmallScrapList.Count)];
             chosenScrap.spawnableItem = Assets.GetItem(chosenScrap.spawnableItem.name);
 
-            Manager.TransmuteScrap(new SpawnableItemWithRarity() { spawnableItem = chosenScrap.spawnableItem, rarity = 100 });
+            Manager.TransmuteScrap(Getf(ScaleType.Percentage), new SpawnableItemWithRarity() { spawnableItem = chosenScrap.spawnableItem, rarity = 100 });
 
             // Scale scrap amount abit more
             float scrapValue = (chosenScrap.spawnableItem.minValue + chosenScrap.spawnableItem.maxValue) * 0.25f; // Intentionally

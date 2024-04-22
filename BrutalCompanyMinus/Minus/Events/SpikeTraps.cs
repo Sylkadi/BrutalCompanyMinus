@@ -23,8 +23,8 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#FF0000";
             Type = EventType.Bad;
 
-            ScaleList.Add(ScaleType.MinAmount, new Scale(5.0f, 0.167f, 5.0f, 15.0f));
-            ScaleList.Add(ScaleType.MaxAmount, new Scale(7.0f, 0.234f, 7.0f, 21.0f));
+            ScaleList.Add(ScaleType.MinAmount, new Scale(3.0f, 0.09f, 3.0f, 12.0f));
+            ScaleList.Add(ScaleType.MaxAmount, new Scale(4.0f, 0.12f, 4.0f, 16.0f));
         }
 
         public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.SpikeRoofTrap]);

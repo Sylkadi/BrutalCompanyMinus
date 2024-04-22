@@ -19,7 +19,7 @@ namespace BrutalCompanyMinus.Minus
         public bool Executed = false;
 
         public List<MonsterEvent> monsterEvents = new List<MonsterEvent>();
-        public ScrapTransmutationEvent scrapTransmutationEvent = new ScrapTransmutationEvent();
+        public ScrapTransmutationEvent scrapTransmutationEvent = new ScrapTransmutationEvent(new Scale(0.0f, 0.0f, 0.0f, 0.0f));
 
         public enum EventType
         {
@@ -30,10 +30,10 @@ namespace BrutalCompanyMinus.Minus
         {
             InsideEnemyRarity, OutsideEnemyRarity, DaytimeEnemyRarity, MinOutsideEnemy, MinInsideEnemy, MaxOutsideEnemy, MaxInsideEnemy,
             ScrapValue, ScrapAmount, FactorySize, MinDensity, MaxDensity, MinCash, MaxCash, MinItemAmount, MaxItemAmount, MinValue, MaxValue, Rarity, MinRarity, MaxRarity,
-            MinCut, MaxCut, MinHp, MaxHp, SpawnMultiplier, MaxInsideEnemyCount, MaxOutsideEnemyCount, SpawnCapMultiplier, MinPercentageCut, MaxPercentageCut, MinAmount, MaxAmount
+            MinCut, MaxCut, MinHp, MaxHp, SpawnMultiplier, MaxInsideEnemyCount, MaxOutsideEnemyCount, SpawnCapMultiplier, MinPercentageCut, MaxPercentageCut, MinAmount, MaxAmount, Percentage
         }
 
-        public static Dictionary<ScaleType, string> ScaleInfoList = new Dictionary<ScaleType, string>() { // I need to change this later on
+        public static Dictionary<ScaleType, string> ScaleInfoList = new Dictionary<ScaleType, string>() {
             { ScaleType.InsideEnemyRarity, "Enemy is added to Inside enemy list with rarity." }, { ScaleType.OutsideEnemyRarity, "Enemy is added to Outside enemy list with rarity." }, { ScaleType.DaytimeEnemyRarity, "Enemy is added to Daytime enemy list with rarity." },
             { ScaleType.MinOutsideEnemy, "Minimum amount of enemies garunteed to spawn outside." }, { ScaleType.MaxOutsideEnemy, "Maximum amount of enemies garunteed to spawn outside." }, { ScaleType.MinInsideEnemy, "Minimum amount of enemies garunteed to spawn inside." }, { ScaleType.MaxInsideEnemy, "Maximum amount of enemies garunteed to spawn inside." },
             { ScaleType.ScrapValue, "The amount that scrap value is multiplied by." }, { ScaleType.ScrapAmount, "The amount that scrap amount is multiplied by." }, { ScaleType.FactorySize, "The amount that factory size is multiplied by." },
@@ -42,7 +42,7 @@ namespace BrutalCompanyMinus.Minus
             { ScaleType.Rarity, "The general chance of something." }, { ScaleType.MinRarity, "Minimum chance of something." }, { ScaleType.MaxRarity, "Maximum chance of something." }, { ScaleType.MinCut, "Minimum cut taken." }, { ScaleType.MaxCut, "Maximum cut taken." },
             { ScaleType.MinHp, "Minimum possible to be chosen." }, { ScaleType.MaxHp, "Maxmimum possible hp to be chosen." }, { ScaleType.SpawnMultiplier, "Will multiply the spawn chance." }, { ScaleType.SpawnCapMultiplier, "Will multiply the spawn cap." },
             { ScaleType.MaxInsideEnemyCount, "Changes max amount of inside enemies spawnable. " }, { ScaleType.MaxOutsideEnemyCount, "Changes max amount of outside enemies spawnable. " }, { ScaleType.MinPercentageCut, "Minimum possible percentage cut." }, { ScaleType.MaxPercentageCut, "Maximum possible percentage cut." },
-            { ScaleType.MinAmount, "Minimum amount of something to be chosen." }, { ScaleType.MaxAmount, "Maximum amount of something to be chosen." }
+            { ScaleType.MinAmount, "Minimum amount of something to be chosen." }, { ScaleType.MaxAmount, "Maximum amount of something to be chosen." }, { ScaleType.Percentage, "This value goes between 0.0 to 1.0." }
         };
 
 
@@ -160,11 +160,17 @@ namespace BrutalCompanyMinus.Minus
 
         public class ScrapTransmutationEvent
         {
+            public Scale amount; // Between 0.0 to 1.0
+
             public SpawnableItemWithRarity[] items;
 
-            public ScrapTransmutationEvent(params SpawnableItemWithRarity[] items) => this.items = items;
+            public ScrapTransmutationEvent(Scale amount, params SpawnableItemWithRarity[] items)
+            {
+                this.items = items;
+                this.amount = amount;
+            }
 
-            public void Execute() => Manager.TransmuteScrap(items);
+            public void Execute() => Manager.TransmuteScrap(amount.Computef(EventType.Neutral), items);
         }
     }
 }

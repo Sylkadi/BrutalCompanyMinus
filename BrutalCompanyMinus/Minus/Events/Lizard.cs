@@ -26,12 +26,12 @@ namespace BrutalCompanyMinus.Minus.Events
 
             monsterEvents = new List<MonsterEvent>() { new MonsterEvent(
                 Assets.EnemyName.SporeLizard,
-                new Scale(25.0f, 0.84f, 25.0f, 75.0f),
-                new Scale(4.0f, 0.134f, 4.0f, 12.0f),
-                new Scale(1.0f, 0.05f, 1.0f, 4.0f),
-                new Scale(2.0f, 0.067f, 2.0f, 6.0f),
-                new Scale(0.0f, 0.0f, 0.0f, 0.0f),
-                new Scale(0.0f, 0.0f, 0.0f, 0.0f))
+                new Scale(10.0f, 0.4f, 10.0f, 50.0f),
+                new Scale(5.0f, 0.1f, 5.0f, 15.0f),
+                new Scale(1.0f, 0.02f, 1.0f, 3.0f),
+                new Scale(2.0f, 0.04f, 2.0f, 6.0f),
+                new Scale(0.0f, 0.02f, 0.0f, 1.0f),
+                new Scale(0.0f, 0.03f, 0.0f, 3.0f))
             };
         }
 

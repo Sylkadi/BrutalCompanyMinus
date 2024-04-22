@@ -25,8 +25,8 @@ namespace BrutalCompanyMinus.Minus.Events
 
             EventsToRemove = new List<string>() { nameof(StrongEnemies) };
 
-            ScaleList.Add(ScaleType.MinHp, new Scale(-2.0f, -0.034f, -4.0f, -1.0f));
-            ScaleList.Add(ScaleType.MaxHp, new Scale(-1.0f, -0.034f, -3.0f, -1.0f));
+            ScaleList.Add(ScaleType.MinHp, new Scale(-2.0f, -0.04f, -6.0f, -2.0f));
+            ScaleList.Add(ScaleType.MaxHp, new Scale(-1.0f, -0.03f, -4.0f, -1.0f));
         }
 
         public override void Execute() => Manager.AddEnemyHp(UnityEngine.Random.Range(Get(ScaleType.MinHp), Get(ScaleType.MaxHp) + 1));

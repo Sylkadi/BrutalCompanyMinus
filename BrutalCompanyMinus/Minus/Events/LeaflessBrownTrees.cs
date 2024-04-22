@@ -27,7 +27,7 @@ namespace BrutalCompanyMinus.Minus.Events
             EventsToRemove = new List<string>() { nameof(Trees), nameof(LeaflessTrees) };
 
             ScaleList.Add(ScaleType.MinDensity, new Scale(0.018f, 0.0f, 0.018f, 0.018f));
-            ScaleList.Add(ScaleType.MaxDensity, new Scale(0.03f, 0.0f, 0.03f, 0.03f));
+            ScaleList.Add(ScaleType.MaxDensity, new Scale(0.025f, 0.0f, 0.025f, 0.025f));
         }
 
         public override void Execute()

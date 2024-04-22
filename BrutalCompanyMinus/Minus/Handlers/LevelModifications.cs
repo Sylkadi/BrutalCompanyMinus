@@ -116,6 +116,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch(typeof(RoundManager), "waitForScrapToSpawnToSync")]
         public static void OnwaitForScrapToSpawnToSync(ref NetworkObjectReference[] spawnedScrap, ref int[] scrapValues) // Scrap transmutation + Scrap multipliers
         {
+            if (spawnedScrap.Length == 0) return;
+
             for(int i = 0; i < scrapValues.Length; i++)
             {
                 scrapValues[i] = (int)(scrapValues[i] * Manager.scrapValueMultiplier);
@@ -164,37 +166,50 @@ namespace BrutalCompanyMinus.Minus.Handlers
             spawnedScrap = newSpawnedScrapList.ToArray();
             scrapValues = newScrapValuesList.ToArray();
 
+
+
             if (!Manager.transmuteScrap) return;
             if(Manager.ScrapToTransmuteTo.Count == 0)
             {
                 Log.LogError("ScrapToTransmuteTo Count is 0, returning.");
                 return;
             }
-
-            int objectCount = spawnedScrap.Length;
-            List<Vector3> oldScrapPositions = new List<Vector3>();
-
-            foreach(NetworkObjectReference obj in spawnedScrap) // Despawn old objects
+            if(Manager.scrapTransmuteAmount.Count == 0)
             {
-                if(obj.TryGet(out NetworkObject netObj))
-                {
-                    oldScrapPositions.Add(netObj.transform.position);
-                    netObj.Despawn(destroy: true);
-                } else
-                {
-                    objectCount--;
-                    Log.LogError("Item has no networkObject, not destroying.");
-                }
+                Log.LogError("scrapTransmuteAmount Count is 0, returning.");
+                return;
+            }
+
+            float amount = 0.0f;
+            foreach(float scrapTransmuteAmount in Manager.scrapTransmuteAmount) amount += scrapTransmuteAmount;
+            amount /= Manager.scrapTransmuteAmount.Count;
+            Manager.scrapTransmuteAmount.Clear();
+            Log.LogFatal(amount);
+            int scrapToRemove = Mathf.Clamp((int)(spawnedScrap.Length * amount) + 1, 1, spawnedScrap.Length);
+
+            Log.LogInfo($"Transmuting {scrapToRemove} scrap.");
+
+            List<Vector3> oldScrapPositions = new List<Vector3>();
+            for (int i = 0; i < scrapToRemove; i++)
+            {
+                if (!spawnedScrap[i].TryGet(out NetworkObject netObj)) continue;
+                oldScrapPositions.Add(netObj.transform.position);
+                netObj.Despawn(destroy: true);
             }
 
             // Create new
             List<NetworkObjectReference> newNetObjects = new List<NetworkObjectReference>();
             List<int> newScrapValues = new List<int>();
+            for (int i = scrapToRemove; i < spawnedScrap.Length; i++)
+            {
+                newNetObjects.Add(spawnedScrap[i]);
+                newScrapValues.Add(scrapValues[i]);
+            }
 
             List<int> weights = new List<int>();
             foreach(SpawnableItemWithRarity item in Manager.ScrapToTransmuteTo) weights.Add(item.rarity);
 
-            for(int i = 0; i < objectCount; i++)
+            for(int i = 0; i < scrapToRemove; i++)
             {
                 SpawnableItemWithRarity chosenItem = Manager.ScrapToTransmuteTo[RoundManager.Instance.GetRandomWeightedIndexList(weights)];
 

@@ -76,7 +76,7 @@ namespace BrutalCompanyMinus
         {
             // Difficulty Settings
             useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
-            eventsToSpawn = getScale(difficultyConfig.Bind("_Event Settings", "Event scale amount", "2, 0.03, 2.0, 5.0", "The base amount of events   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            eventsToSpawn = getScale(difficultyConfig.Bind("_Event Settings", "Event scale amount", "2, 0.03, 2.0, 5.0", "The base amount of events   Format: BaseScale, IncrementScale, MinCap, MaxCap,   " + scaleDescription).Value);
             weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events", "50, 30, 15, 5", "Weights for extra events, can be expanded. (50, 30, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
             showEventsInChat = difficultyConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
 
@@ -213,8 +213,10 @@ namespace BrutalCompanyMinus
                         ));
                     }
                     monsterEvents.Add(newMonsterEvents);
-
+                    
                     // Scrap transmutation events
+                    Scale amount = new Scale(0.0f, 0.0f, 0.0f, 0.0f);
+                    if(e.scrapTransmutationEvent.items.Length > 0) amount = getScale(toConfig.Bind(e.Name(), "Percentage", GetStringFromScale(e.scrapTransmutationEvent.amount), $"{ScaleInfoList[ScaleType.Percentage]}   {scaleDescription}").Value);
                     SpawnableItemWithRarity[] newScrapTransmuations = new SpawnableItemWithRarity[e.scrapTransmutationEvent.items.Length];
                     for(int i = 0; i < e.scrapTransmutationEvent.items.Length; i++)
                     {
@@ -224,7 +226,7 @@ namespace BrutalCompanyMinus
                             rarity = toConfig.Bind(e.Name(), $"{e.scrapTransmutationEvent.items[i].spawnableItem.name} Rarity", e.scrapTransmutationEvent.items[i].rarity).Value
                         };
                     }
-                    transmutationEvents.Add(new ScrapTransmutationEvent(newScrapTransmuations));
+                    transmutationEvents.Add(new ScrapTransmutationEvent(amount, newScrapTransmuations));
                 }
             }
 
