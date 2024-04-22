@@ -1,5 +1,22 @@
 # ChangeLog
 <details>
+  <summary>0.12.1</summary>
+  
+  - AllWeather event will now only spawn possible weathers on said moon and can only appear on moons with 2 or more weathers.
+  - AllWeather can now come with foggy(Nerfed foggy compared to vanilla)
+  - Flooded on AllWeather show now be normal on all maps(Slighly nerfed flooded from vanilla)
+
+  - FacilityGhost can now disable turrets, landmines and rage turrets(This also works with toilheads mod)
+
+  - RealityShift now has a 50% chance to transmute.
+  - When RealityShift is active, hitting an enemy has a 10% chance to teleport them.
+
+  - MoreExits event will now work for all clients
+  - Improved MoreExits spawning of exits.
+  - Added MMOONS command.
+  - And other minor things i forgot about.
+</details>
+<details>
   <summary>0.12.0</summary>
   
   - Added 3 new vanilla events
