@@ -27,8 +27,8 @@ namespace BrutalCompanyMinus.Minus.Events
                 "ShyGuyDef",
                 new Scale(8.0f, 0.4f, 8.0f, 32.0f),
                 new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
-                new Scale(1.0f, 0.034f, 1.0f, 3.0f),
+                new Scale(2.0f, 0.034f, 2.0f, 4.0f),
+                new Scale(2.0f, 0.034f, 2.0f, 4.0f),
                 new Scale(0.0f, 0.022f, 0.0f, 1.0f),
                 new Scale(0.0f, 0.034f, 0.0f, 2.0f))
             };

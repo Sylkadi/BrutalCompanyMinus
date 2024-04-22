@@ -1,7 +1,12 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using com.github.zehsteam.ToilHead.MonoBehaviours;
+using BrutalCompanyMinus.Minus.Events;
+using BrutalCompanyMinus.Minus.MonoBehaviours;
+using static UnityEngine.GraphicsBuffer;
 
 namespace BrutalCompanyMinus.Minus.Handlers
 {
@@ -12,13 +17,15 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public static float ghostCrazyCurrentTime = 0.0f, ghostCrazyPeriod = 3.0f, ghostCrazyActionInterval = 0.1f, crazyGhostChance = 0.1f; // Crazy
 
-        public static int DoNothingWeight = 50, OpenCloseBigDoorsWeight = 20, MessWithLightsWeight = 16, MessWithBreakerWeight = 4, OpenCloseDoorsWeight = 9, lockUnlockDoorsWeight = 3;
+        public static int DoNothingWeight = 25, OpenCloseBigDoorsWeight = 20, MessWithLightsWeight = 16, MessWithBreakerWeight = 4, OpenCloseDoorsWeight = 9, lockUnlockDoorsWeight = 3, disableTurretsWeight = 5, disableLandminesWeight = 5, turretRageWeight = 15;
 
-        public static float chanceToOpenCloseDoor = 0.3f, chanceToLockUnlockDoor = 0.1f;
+        public static float chanceToOpenCloseDoor = 0.3f, chanceToLockUnlockDoor = 0.1f, rageTurretsChance = 0.33f;
+
+        private static System.Random rng = new System.Random();
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(RoundManager), "Update")]
-        static void OnUpdate()
+        private static void OnUpdate()
         {
             if (!Events.FacilityGhost.Active || !RoundManager.Instance.IsHost) return;
 
@@ -31,8 +38,10 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 actionCurrentTime -= Time.deltaTime;
             } else
             {
+                rng = new System.Random(Net.Instance._seed++);
+
                 // Decide if ghosts goes crazy
-                if(UnityEngine.Random.Range(0.0f, 1.0f) <= crazyGhostChance && ghostCrazyCurrentTime <= 0.0f)
+                if(rng.NextDouble() <= crazyGhostChance && ghostCrazyCurrentTime <= 0.0f)
                 {
                     Log.LogInfo("Ghost has went crazy");
                     ghostCrazyCurrentTime = ghostCrazyPeriod;
@@ -46,35 +55,37 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     actionCurrentTime = actionTimeCooldown;
                 }
 
-                int[] weights = new int[6] { DoNothingWeight, OpenCloseDoorsWeight, MessWithLightsWeight, MessWithBreakerWeight, OpenCloseDoorsWeight, lockUnlockDoorsWeight };
+                int[] weights = new int[9] { DoNothingWeight, OpenCloseDoorsWeight, MessWithLightsWeight, MessWithBreakerWeight, OpenCloseDoorsWeight, lockUnlockDoorsWeight, disableTurretsWeight, disableLandminesWeight, turretRageWeight };
                 if (ghostCrazyCurrentTime > 0.0f)
                 {
                     weights[0] = 0; // Wont attempt to do nothing when going crazy
                     weights[5] = 0; // Wont attempt to lock or unlock doors when going crazy
+                    weights[6] = 0; // Wont attempt to disable turrets whjen going crazy
+                    weights[7] = 0; // Wont attempt to disable landmines when going crazy
                 }
-                int ghostDecision = RoundManager.Instance.GetRandomWeightedIndex(weights, new System.Random());
+                int ghostDecision = RoundManager.Instance.GetRandomWeightedIndex(weights, rng);
 
                 switch(ghostDecision)
                 {
-                    case 0: // Do Nothing
+                    case 0:
                         Log.LogInfo("Facility ghost did nothing");
                         break;
-                    case 1: // Open or Close Big Doors
+                    case 1:
                         TerminalAccessibleObject[] doors = GameObject.FindObjectsOfType<TerminalAccessibleObject>();
                         if (doors.Length == 0) break;
-                        Log.LogInfo("Facility ghost did OpenClose doors.");
+                        Log.LogInfo("Facility ghost did OpenClose doors");
                         foreach (TerminalAccessibleObject door in doors)
                         {
-                            door.SetDoorOpenServerRpc(Convert.ToBoolean(UnityEngine.Random.Range(0, 2)));
+                            door.SetDoorOpenServerRpc(Convert.ToBoolean(rng.Next(2)));
                         }
                         break;
-                    case 2: // Mess with lights
+                    case 2:
                         Log.LogInfo("Facility ghost messed with the lights");
                         Net.Instance.MessWithLightsServerRpc();
                         break;
-                    case 3: // Mess with breaker
+                    case 3:
                         Log.LogInfo("Facility ghost messed with breaker");
-                        Net.Instance.MessWithBreakerServerRpc(Convert.ToBoolean(UnityEngine.Random.Range(0, 2)));
+                        Net.Instance.MessWithBreakerServerRpc(Convert.ToBoolean(rng.Next(2)));
                         break;
                     case 4:
                         Log.LogInfo("Facility ghost attempts to open and close doors");
@@ -84,8 +95,109 @@ namespace BrutalCompanyMinus.Minus.Handlers
                         Log.LogInfo("Facility ghost attempts to lock and unlock doors");
                         Net.Instance.MessWithDoorsServerRpc(chanceToOpenCloseDoor, true, chanceToLockUnlockDoor);
                         break;
+                    case 6:
+                        Log.LogInfo("Facility ghost attempts to disable turrets");
+
+                        Turret[] turrets = GameObject.FindObjectsOfType<Turret>();
+                        foreach(Turret turret in turrets)
+                        {
+                            if (Convert.ToBoolean(rng.Next(2))) RoundManager.Instance.StartCoroutine(DisableTurret(turret));
+                        }
+                        //AttemptToDisableToilHeadTurrets();
+                        break;
+                    case 7:
+                        Log.LogInfo("Facility ghost attempts to disable landmines");
+
+                        Landmine[] landmines = GameObject.FindObjectsOfType<Landmine>();
+                        foreach(Landmine landmine in landmines)
+                        {
+                            if (Convert.ToBoolean(rng.Next(2))) RoundManager.Instance.StartCoroutine(DisableLandmine(landmine));
+                        }
+
+                        GrabbableLandmine[] grabbableLandmines = GameObject.FindObjectsOfType<GrabbableLandmine>();
+                        foreach (GrabbableLandmine grabbableLandmine in grabbableLandmines)
+                        {
+                            if (Convert.ToBoolean(rng.Next(2))) RoundManager.Instance.StartCoroutine(DisableGrabbableLandmine(grabbableLandmine));
+                        }
+                        break;
+                    case 8:
+                        Log.LogInfo("Facility ghost attempts to rage turrets");
+                        Turret[] _turrets = GameObject.FindObjectsOfType<Turret>();
+                        foreach(Turret _turret in _turrets)
+                        {
+                            if(rng.NextDouble() <= rageTurretsChance) 
+                            {
+                                if (_turret.turretMode == TurretMode.Berserk || _turret.turretMode == TurretMode.Firing || !_turret.turretActive) continue;
+
+                                _turret.turretMode = TurretMode.Berserk;
+                                _turret.EnterBerserkModeServerRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
+                            }
+                        }
+                        //AttemptToRageToilHeadTurrets();
+                        break;
                 }
             }
+        }
+
+        private static void AttemptToDisableToilHeadTurrets()
+        {
+            if (!Compatibility.toilheadPresent) return;
+
+            ToilHeadTurretBehaviour[] turrets = GameObject.FindObjectsOfType<ToilHeadTurretBehaviour>();
+
+            foreach(ToilHeadTurretBehaviour turret in turrets)
+            {
+                if (Convert.ToBoolean(rng.Next(2))) RoundManager.Instance.StartCoroutine(DisableToilHeadTurret(turret));
+            }
+        }
+
+        private static void AttemptToRageToilHeadTurrets()
+        {
+            
+            if (!Compatibility.toilheadPresent) return;
+
+            ToilHeadTurretBehaviour[] turrets = GameObject.FindObjectsOfType<ToilHeadTurretBehaviour>();
+
+            foreach (ToilHeadTurretBehaviour turret in turrets)
+            {
+                if (rng.NextDouble() <= rageTurretsChance)
+                {
+                    if (turret.turretMode == TurretMode.Berserk || turret.turretMode == TurretMode.Firing || !turret.turretActive) continue;
+
+                    turret.turretMode = TurretMode.Berserk;
+                    turret.EnterBerserkModeServerRpc();
+                }
+            }
+        }
+
+        private static IEnumerator DisableTurret(Turret turret)
+        {
+            turret.ToggleTurretEnabled(false);
+            yield return new WaitForSeconds(7.0f);
+            turret.ToggleTurretEnabled(true);
+        }
+        
+        private static IEnumerator DisableToilHeadTurret(object toilheadTurretobj) // Harmony why do you make me do this crap???
+        {
+            ToilHeadTurretBehaviour toilheadTurret = (ToilHeadTurretBehaviour)toilheadTurretobj;
+            toilheadTurret.ToggleTurretEnabled(false);
+            yield return new WaitForSeconds(7.0f);
+            toilheadTurret.ToggleTurretEnabled(true);
+        }
+
+        
+        private static IEnumerator DisableLandmine(Landmine landmine)
+        {
+            landmine.ToggleMine(false);
+            yield return new WaitForSeconds(7.0f);
+            landmine.ToggleMine(true);
+        }
+
+        private static IEnumerator DisableGrabbableLandmine(GrabbableLandmine grabbableLandmine)
+        {
+            grabbableLandmine.ToggleMine(false);
+            yield return new WaitForSeconds(7.0f);
+            grabbableLandmine.ToggleMine(true);
         }
     }
 }

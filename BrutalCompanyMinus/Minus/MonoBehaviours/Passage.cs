@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using Unity.Netcode;
@@ -27,19 +28,13 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         internal static float checkForEnemyInterval = 0.0f;
 
+        internal static int audioReverbPresetValue = -1;
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
-            EntranceTeleport[] entrances = FindObjectsOfType<EntranceTeleport>();
-            foreach(EntranceTeleport entrance in entrances)
-            {
-                if(entrance != null && entrance.audioReverbPreset != -1)
-                {
-                    audioReverbPreset = entrance.audioReverbPreset;
-                    break;
-                }
-            }
+            audioReverbPreset = audioReverbPresetValue;
         }
 
         public virtual void TeleportPlayer()
@@ -113,32 +108,53 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             }
         }
 
-        private static int bunkerPassagesToSpawn = 0;
+        [ServerRpc(RequireOwnership = false)]
+        public void SyncBunkerPassagesServerRpc(NetworkObjectReference entrance, NetworkObjectReference exit) => SyncBunkerPassagesClientRpc(entrance, exit);
 
+        [ClientRpc]
+        public void SyncBunkerPassagesClientRpc(NetworkObjectReference entrance, NetworkObjectReference exit)
+        {
+            entrance.TryGet(out NetworkObject entranceNetObject);
+            exit.TryGet(out NetworkObject exitNetObject);
+
+            BunkerLidPassage entrancePassage = entranceNetObject.transform.Find("EntrancePassage").GetComponent<BunkerLidPassage>();
+            BunkerLadderPassage exitPassage = exitNetObject.transform.Find("EscapePassage").GetComponent<BunkerLadderPassage>();
+            BunkerLid lid = entranceNetObject.transform.Find("Lid").Find("Interactable").GetComponent<BunkerLid>();
+
+            entrancePassage.otherPassage = exitPassage;
+            exitPassage.otherPassage = entrancePassage;
+
+            entrancePassage.bunkerLid = lid;
+            exitPassage.bunkerLid = lid;
+        }
+
+        private static int bunkerPassagesToSpawn = 0;
         public static void SpawnBunkerPassage(int amount) => bunkerPassagesToSpawn += amount;
 
         [HarmonyPostfix]
-        [HarmonyPriority(Priority.Last)]
-        [HarmonyPatch(typeof(RoundManager), "FinishGeneratingLevel")]
+        [HarmonyPatch(typeof(RoundManager), "RefreshEnemiesList")]
         private static void DoSpawnBunkerPassage()
         {
+            if (bunkerPassagesToSpawn <= 0) return;
             int seed = Net.Instance._seed++ + Environment.TickCount;
 
             List<Vector3> bunkerEscapePositions = new List<Vector3>();
             List<Vector3> bunkerSpawnPositions = new List<Vector3>();
 
-            for(int i = 0; i < bunkerPassagesToSpawn; i++)
+            List<Vector3> outsideSpawnNodes = Helper.GetOutsideNodes();
+            List<Vector3> insideSpawnNodes = Helper.GetInsideAINodes();
+            List<Vector3> spawnDenialNodes = Helper.GetSpawnDenialNodes();
+            List<Vector3> spikeTraps = GameObject.FindObjectsOfType<SpikeRoofTrap>().Select(s => s.transform.position).ToList();
+            List<Vector3> landmines = GameObject.FindObjectsOfType<Landmine>().Select(l => l.transform.position).ToList();
+
+            for (int i = 0; i < bunkerPassagesToSpawn; i++)
             {
                 System.Random rng = new System.Random(seed++);
-
-                List<Vector3> outsideSpawnNodes = Helper.GetOutsideNodes();
-                List<Vector3> insideSpawnNodes = Helper.GetInsideAINodes();
-                List<Vector3> spawnDenialNodes = Helper.GetSpawnDenialNodes();
-
+                
                 Vector3 entranceSpawnPositon = Vector3.zero, escapeSpawnPosition = Vector3.zero;
 
                 // Entrance
-                for (int j = 0; j < 10; j++) // 10 Attempts
+                for (int j = 0; j < 20; j++) // 20 Attempts
                 {
                     rng = new System.Random(seed++);
                     Vector3 randomNode = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(outsideSpawnNodes[rng.Next(outsideSpawnNodes.Count)], 30.0f, RoundManager.Instance.navHit, rng);
@@ -160,9 +176,9 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                 for (int j = 0; j < 100; j++) // 100 Attempts
                 {
                     rng = new System.Random(seed++);
-                    Vector3 randomNode = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(insideSpawnNodes[rng.Next(outsideSpawnNodes.Count)], 50.0f, RoundManager.Instance.navHit, rng);
+                    Vector3 randomNode = insideSpawnNodes[rng.Next(outsideSpawnNodes.Count)];
 
-                    if (!Helper.IsSafe(randomNode, spawnDenialNodes, 30.0f) || !Helper.IsSafe(randomNode, bunkerEscapePositions, 20.0f)) continue;
+                    if (!Helper.IsSafe(randomNode, spawnDenialNodes, 30.0f) || !Helper.IsSafe(randomNode, bunkerEscapePositions, 15.0f) || !Helper.IsSafe(randomNode, spikeTraps, 3.0f) || !Helper.IsSafe(randomNode, landmines, 0.5f)) continue;
 
                     // Get highest point
                     RaycastHit[] hits = Physics.RaycastAll(new Ray(randomNode, Vector3.up), 8.0f);
@@ -170,7 +186,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
                     int furthestIndex = 0;
                     float furthestDistance = 0.0f;
-                    for(int k = 0; k < hits.Length; k++)
+                    for (int k = 0; k < hits.Length; k++)
                     {
                         float distanceCalculation = Vector3.Distance(hits[k].point, randomNode);
                         if (distanceCalculation > furthestDistance)
@@ -206,18 +222,26 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                 bunkerEscapeRotation.eulerAngles = new Vector3(bunkerEscapeRotation.eulerAngles.x, yRotation - 90.0f, bunkerEscapeRotation.eulerAngles.z);
                 GameObject bunkerEscape = GameObject.Instantiate(Assets.bunkerEscape, escapeSpawnPosition, bunkerEscapeRotation);
                 bunkerEscape.GetComponent<NetworkObject>().Spawn(destroyWithScene: true);
-                BunkerLadderPassage escapePassage = bunkerEscape.transform.Find("EscapePassage").GetComponent<BunkerLadderPassage>();
 
-                entrancePassage.otherPassage = escapePassage;
-                escapePassage.otherPassage = entrancePassage;
-
-                BunkerLid lid = bunkerEntrance.transform.Find("Lid").Find("Interactable").GetComponent<BunkerLid>();
-
-                entrancePassage.bunkerLid = lid;
-                escapePassage.bunkerLid = lid;
+                entrancePassage.SyncBunkerPassagesServerRpc(bunkerEntrance.GetComponent<NetworkObject>(), bunkerEscape.GetComponent<NetworkObject>());
             }
 
             bunkerPassagesToSpawn = 0;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(RoundManager), "FinishGeneratingLevel")]
+        private static void OnFinishGeneratingLevel()
+        {
+            EntranceTeleport[] entrances = FindObjectsOfType<EntranceTeleport>();
+            foreach (EntranceTeleport entrance in entrances)
+            {
+                if (entrance != null && entrance.audioReverbPreset != -1)
+                {
+                    audioReverbPresetValue = entrance.audioReverbPreset;
+                    break;
+                }
+            }
         }
     }
 }

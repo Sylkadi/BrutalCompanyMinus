@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using BrutalCompanyMinus.Minus.MonoBehaviours;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Mono.Cecil;
@@ -23,7 +24,9 @@ namespace BrutalCompanyMinus.Minus.Handlers
         public static List<GameObject> shiftList = new List<GameObject>();
         public static List<int> shiftListValues = new List<int>();
 
-        public static int normalScrapWeight = 85, grabbableLandmineWeight = 15, grabbableTurretWeight = 0;
+        public static int normalScrapWeight = 85, grabbableLandmineWeight = 15;
+
+        public static float transmuteChance = 0.5f, enemyTeleportChance = 0.1f;
 
         public static List<int> ShiftableObjects = new List<int>();
 
@@ -58,7 +61,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 foreach(int objectID in ShiftableObjects)
                 {
-                    if(objectID == grabbableObject.gameObject.GetInstanceID())
+                    if(objectID == grabbableObject.gameObject.GetInstanceID() && UnityEngine.Random.Range(0.0f, 1.0f) <= transmuteChance)
                     {
                         invalidateGrab = true;
                         Net.Instance.ShiftServerRpc(grabbableObject.NetworkObject);
@@ -67,6 +70,24 @@ namespace BrutalCompanyMinus.Minus.Handlers
                         __instance.StartCoroutine(GrabShiftedObject(__instance));
                         break;
                     }
+                }
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.HitEnemy))]
+        private static void OnHitEnemy(ref EnemyAI __instance)
+        {
+            if (!Events.RealityShift.Active || !NetworkManager.Singleton.IsServer || __instance == null || __instance.transform == null) return;
+            System.Random rng = new System.Random(Net.Instance._seed++);
+
+            if(rng.NextDouble() <= enemyTeleportChance)
+            {
+                Vector3 newPosition = Helper.GetRandomNavMeshPositionInBox(__instance.transform.position, 15.0f, 25.0f);
+
+                if(__instance.TryGetComponent<NetworkObject>(out NetworkObject netObject))
+                {
+                    Net.Instance.TeleportEnemyServerRpc(netObject, newPosition);
                 }
             }
         }
@@ -121,8 +142,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
         [HarmonyPatch(typeof(PlayerControllerB), "GrabObjectClientRpc")]
         public static void OnGrabObjectClientRpc()
         {
-
-            
             shiftedObjects.Clear();
         }
 
@@ -157,15 +176,11 @@ namespace BrutalCompanyMinus.Minus.Handlers
                 System.Random rng = new System.Random(seed);
                 UnityEngine.Random.InitState(seed);
                 Item spawnableItem = RoundManager.Instance.currentLevel.spawnableScrap[RoundManager.Instance.GetRandomWeightedIndexList(weights, rng)].spawnableItem;
-                int index = RoundManager.Instance.GetRandomWeightedIndex(new int[3] { normalScrapWeight, grabbableLandmineWeight, grabbableTurretWeight }, rng);
+                int index = RoundManager.Instance.GetRandomWeightedIndex(new int[2] { normalScrapWeight, grabbableLandmineWeight }, rng);
                 if (spawnableItem.spawnPrefab == null || spawnableItem.spawnPrefab.GetComponent<GrabbableObject>() == null) index = 1;
                 if (index == 1) // Grabbable Landmine
                 {
                     spawnableItem = Assets.grabbableLandmine;
-                }
-                else if (index == 2) // Grabbable Turret
-                {
-                    spawnableItem = Assets.grabbableTurret;
                 }
 
                 shiftList.Add(spawnableItem.spawnPrefab);

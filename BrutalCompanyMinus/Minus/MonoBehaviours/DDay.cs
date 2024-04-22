@@ -51,7 +51,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             sirensFar.volume = volume;
         }
 
-        public void Update()
+        public void Update() // I honestly dont even know how it's possible for this to persist... It dosen't make any sense to me, how is this even possible.....
         {
             if (!Events.Warzone.Active || !RoundManager.Instance.IsHost) return;
             if (currentTime > 0)
@@ -156,16 +156,11 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         public static void DestroyInstance()
         {
             Events.Warzone.Active = false;
-            if (instance == null) return;
-
-            NetworkObject netObject = instance.transform.GetComponent<NetworkObject>();
-
-            if (netObject == null) return;
             try
             {
+                NetworkObject netObject = instance.transform.GetComponent<NetworkObject>();
                 netObject.Despawn(true);
-            }
-            catch
+            } catch
             {
 
             }
@@ -184,7 +179,6 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         public static void OnShipLanded()
         {
             if (!RoundManager.Instance.IsHost || !Events.Warzone.Active) return;
-
             SpawnInstance();
         }
     }

@@ -5,8 +5,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using BepInEx;
 using HarmonyLib;
+using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
+using static BrutalCompanyMinus.Assets;
 
 namespace BrutalCompanyMinus.Minus.Handlers
 {
@@ -237,6 +239,187 @@ namespace BrutalCompanyMinus.Minus.Handlers
                         }
                     }
                     Respond(text);
+                })
+            },
+            new MCommand()
+            {
+                command = "MMOONS",
+                shortinfo = "Displays all moons.",
+                info = "MMOONS\n   This will display the names of every moon\nMMOONS [name/id]\n   This will dump all information about said moon into the console.",
+                execute = new Action<string[]>((arguments) =>
+                {
+                    if(arguments.Length == 0)
+                    {
+                        string text = "To display extra information about a particular moon, use\nMOONS [name/id]\n   Use moon name or ID\n\n";
+
+                        foreach(SelectableLevel level in StartOfRound.Instance.levels)
+                        {
+                            text += $"{level.levelID}:{level.name}\n";
+                        }
+
+                        Respond(text);
+                    } else
+                    {
+                        int id = -42;
+                        try
+                        {
+                            int.TryParse(arguments[0], out id);
+                        } catch
+                        {
+                            id = -42;
+                        }
+                        foreach(SelectableLevel level in StartOfRound.Instance.levels)
+                        {
+                            if(level != null && level.name.ToUpper() != arguments[0].ToUpper() && level.levelID != id) continue;
+                            Respond($"All moon info about {level.name} has been dumped into the console.");
+
+                            string text = "\n\n--------------------------------------------------------------------------------------";
+
+                            text += $"\nName: {level.name}";
+                            text += $"\nScene Name: {level.sceneName}";
+                            text += $"\nLevel ID: {level.levelID}";
+                            text += $"\nLocked For Demo: {level.lockedForDemo}";
+                            text += $"\nSpawn Enemies And Scrap: {level.spawnEnemiesAndScrap}";
+                            text += $"\nPlanet Name: {level.PlanetName}";
+                            text += $"\nLevel Description: {level.LevelDescription}";
+                            text += $"\nRisk Level: {level.riskLevel}";
+                            text += $"\nTime To Arrive: {level.timeToArrive}";
+                            text += $"\nOffset From Global Time: {level.OffsetFromGlobalTime}";
+                            text += $"\nDay Speed Multiplier: {level.DaySpeedMultiplier}";
+                            text += $"\nPlanet Has Time: {level.planetHasTime}";
+                            if(level.randomWeathers != null)
+                            {
+                                text += "\nRandom Weather With Variables:";
+                                foreach(RandomWeatherWithVariables randomWeather in level.randomWeathers)
+                                {
+                                    text += $"\n   WeatherType:{randomWeather.weatherType}:\n      WeatherVariable: {randomWeather.weatherVariable}\n      WeatherVariable2: {randomWeather.weatherVariable2}";
+                                }
+                            }
+                            text += $"\nOverride Weather: {level.overrideWeather}";
+                            text += $"\nOverride Weather Type: {level.overrideWeatherType}";
+                            text += $"\nCurrent Weather: {level.currentWeather}";
+                            text += $"\nFactory Size Multiplier: {level.factorySizeMultiplier}";
+                            if(level.dungeonFlowTypes != null)
+                            {
+                                text += "\nDungeon Flow Types:";
+                                foreach(IntWithRarity intWithRarity in level.dungeonFlowTypes)
+                                {
+                                    text += $"\n   ID:{intWithRarity.id}, Rarity:{intWithRarity.rarity}";
+                                }
+                            }
+                            if(level.spawnableMapObjects != null)
+                            {
+                                text += "\nSpawnable Map Objects:";
+                                foreach(SpawnableMapObject spawnableMapObject in level.spawnableMapObjects)
+                                {
+                                    text += $"\n   Prefab Name: {spawnableMapObject.prefabToSpawn.name}\n      Spawn Facing Away From Wall: {spawnableMapObject.spawnFacingAwayFromWall}, \n      Spawn Facing Wall: {spawnableMapObject.spawnFacingWall}\n      Spawn With Back To Wall: {spawnableMapObject.spawnWithBackToWall}\n      Spawn With Back Flush Against Wall: {spawnableMapObject.spawnWithBackFlushAgainstWall}\n      Require Distance Between Spawns: {spawnableMapObject.requireDistanceBetweenSpawns}\n      Disallow Spawning Near Entrances: {spawnableMapObject.disallowSpawningNearEntrances}";
+                                    if(spawnableMapObject.numberToSpawn != null)
+                                    {
+                                        text += "\n      Number To Spawn:";
+                                        foreach(Keyframe keyframe in spawnableMapObject.numberToSpawn.keys)
+                                        {
+                                            text += $"\n      Time: {keyframe.time}, Value: {keyframe.value}";
+                                        }
+                                    }
+                                }
+                            }
+                            if(level.spawnableOutsideObjects != null)
+                            {
+                                text += "\nSpawnable Outside Objects:";
+                                foreach(SpawnableOutsideObjectWithRarity spawnableOutsideObject in level.spawnableOutsideObjects)
+                                {
+                                    SpawnableOutsideObject obj = spawnableOutsideObject.spawnableObject;
+                                    text += $"\n   Prefab Name: {obj.prefabToSpawn.name}\n      Spawn Facing Away from Wall: {obj.spawnFacingAwayFromWall}\n      Object Width: {obj.objectWidth}";
+                                    if(obj.spawnableFloorTags != null)
+                                    {
+                                        text += $"\n      Spawnable Floor Tags: {Helper.StringsToList(obj.spawnableFloorTags.ToList(), ",")}";
+                                    }
+                                    if(spawnableOutsideObject.randomAmount != null)
+                                    {
+                                        text += "\n      Random Amount:";
+                                        foreach(Keyframe keyframe in spawnableOutsideObject.randomAmount.keys)
+                                        {
+                                            text += $"\n      Time: {keyframe.time}, Value: {keyframe.value}";
+                                        }
+                                    }
+                                }
+                            }
+                            if(level.spawnableScrap != null)
+                            {
+                                text += "\nSpawnable Scrap:";
+                                foreach(SpawnableItemWithRarity item in level.spawnableScrap)
+                                {
+                                    if(item == null || item.spawnableItem == null) continue;
+                                    text += $"\n   Name: {item.spawnableItem.name}, Rarity: {item.rarity}";
+                                }
+                            }
+                            text += $"\nMin Scrap: {level.minScrap}";
+                            text += $"\nMax Scrap: {level.maxScrap}";
+                            text += $"\nMin Total Scrap Value: {level.minTotalScrapValue}";
+                            text += $"\nMax Total Scrap Value: {level.maxTotalScrapValue}";
+                            text += $"\nMax Enemy Power Count: {level.maxEnemyPowerCount}";
+                            text += $"\nMax Outside Enemy Power Count: {level.maxOutsideEnemyPowerCount}";
+                            text += $"\nMax Daytime Enemy Power Count: {level.maxDaytimeEnemyPowerCount}";
+                            if(level.Enemies != null)
+                            {
+                                text += "\nEnemies:";
+                                foreach(SpawnableEnemyWithRarity enemy in level.Enemies)
+                                {
+                                    if(enemy == null || enemy.enemyType == null) continue;
+                                    text += $"\n   Enemy: {enemy.enemyType.name}, Rarity: {enemy.rarity}";
+                                }
+                            }
+                            if(level.OutsideEnemies != null)
+                            {
+                                text += "\nOutside Enemies:";
+                                foreach(SpawnableEnemyWithRarity enemy in level.OutsideEnemies)
+                                {
+                                    if(enemy == null || enemy.enemyType == null) continue;
+                                    text += $"\n   Enemy: {enemy.enemyType.name}, Rarity: {enemy.rarity}";
+                                }
+                            }
+                            if(level.DaytimeEnemies != null)
+                            {
+                                text += "\nDaytime Enemies:";
+                                foreach(SpawnableEnemyWithRarity enemy in level.DaytimeEnemies)
+                                {
+                                    if(enemy == null || enemy.enemyType == null) continue;
+                                    text += $"\n   Enemy: {enemy.enemyType.name}, Rarity: {enemy.rarity}";
+                                }
+                            }
+                            text += "\nEnemy Spawn Chance Throughout Day:";
+                            if(level.enemySpawnChanceThroughoutDay != null)
+                            {
+                                foreach(Keyframe key in level.enemySpawnChanceThroughoutDay.keys)
+                                {
+                                    text += $"\n   Time: {key.time}, Value: {key.value}";
+                                } 
+                            }
+                            text += "\nOutside Enemy Spawn Chance Throughout Day:";
+                            if(level.outsideEnemySpawnChanceThroughDay != null)
+                            {
+                                foreach(Keyframe key in level.outsideEnemySpawnChanceThroughDay.keys)
+                                {
+                                    text += $"\n   Time: {key.time}, Value: {key.value}";
+                                }
+                            }
+                            text += "\nDaytime Enemy Spawn Chance Throughout Day:";
+                            if(level.daytimeEnemySpawnChanceThroughDay != null)
+                            {
+                                foreach(Keyframe key in level.daytimeEnemySpawnChanceThroughDay.keys)
+                                {
+                                    text += $"\n   Time: {key.time}, Value: {key.value}";
+                                }
+                            }
+                            text += $"\nSpawn Probability Range: {level.spawnProbabilityRange}";
+                            text += $"\nDaytime Enemies Probability Range: {level.daytimeEnemiesProbabilityRange}";
+                            text += $"\nLevel Includes Snow Footprints: {level.levelIncludesSnowFootprints}";
+                            text += $"\nLevel Icon String: {level.levelIconString}";
+                            text += "\n--------------------------------------------------------------------------------------\n";
+                            Console.WriteLine(text);
+                            break;
+                        }
+                    }
                 })
             }
         };

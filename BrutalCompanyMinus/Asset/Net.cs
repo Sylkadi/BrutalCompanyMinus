@@ -8,15 +8,9 @@ using BrutalCompanyMinus.Minus;
 using Unity.Collections;
 using GameNetcodeStuff;
 using BrutalCompanyMinus.Minus.Handlers;
-using static UnityEngine.GraphicsBuffer;
-using System.Net.Http.Headers;
-using JetBrains.Annotations;
-using System.Collections;
-using UnityEngine.Animations.Rigging;
-using UnityEngine.InputSystem.HID;
 using UnityEngine.AI;
-using System.Runtime.InteropServices;
 using BrutalCompanyMinus.Minus.MonoBehaviours;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace BrutalCompanyMinus
 {
@@ -121,11 +115,23 @@ namespace BrutalCompanyMinus
 
                     if (netObject != null) // If net object
                     {
-                        netObject.Despawn(true);
+                        try
+                        {
+                            netObject.Despawn(true);
+                        } catch
+                        {
+
+                        }
                     }
                     else // If not net object
                     {
-                        Destroy(Manager.objectsToClear[i]);
+                        try
+                        {
+                            Destroy(Manager.objectsToClear[i]);
+                        } catch
+                        {
+
+                        }
                     }
                 }
             }
@@ -332,31 +338,73 @@ namespace BrutalCompanyMinus
         public void SpawnMudPilesOutsideClientRpc(Vector3 position, int seed) => GameObject.Instantiate(RoundManager.Instance.quicksandPrefab, position, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
 
         [ServerRpc(RequireOwnership = false)]
-        public void SpawnAllWeatherServerRpc() => SpawnAllWeatherClientRpc();
+        public void TeleportEnemyServerRpc(NetworkObjectReference enemy, Vector3 position) => TeleportEnemyClientRpc(enemy, position);
 
         [ClientRpc]
-        public void SpawnAllWeatherClientRpc()
+        private void TeleportEnemyClientRpc(NetworkObjectReference enemy, Vector3 position)
         {
-            if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Stormy && Assets.stormy != null)
-            {
-                StormyWeather stormy = GameObject.Instantiate(Assets.stormy);
-                stormy.gameObject.SetActive(true);
-                Manager.objectsToClear.Add(stormy.gameObject);
-            }
+            if (!enemy.TryGet(out NetworkObject enemyAI)) return;
 
-            if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Eclipsed && Assets.eclipsed != null)
-            {
-                EclipseWeather eclipsed = GameObject.Instantiate(Assets.eclipsed);
-                eclipsed.gameObject.SetActive(true);
-                Manager.objectsToClear.Add(eclipsed.gameObject);
-            }
+            GameObject.Instantiate(Assets.teleportAudio, enemyAI.transform.position, Quaternion.identity);
+            GameObject.Instantiate(Assets.teleportAudio, position, Quaternion.identity);
 
-            if (RoundManager.Instance.currentLevel.currentWeather != LevelWeatherType.Flooded && Assets.flooded != null)
+            enemyAI.transform.position = position;
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SpawnAllWeatherServerRpc(int seed) => SpawnAllWeatherClientRpc(seed);
+
+        [ClientRpc]
+        public void SpawnAllWeatherClientRpc(int seed) // Messy as fuck
+        {
+            if (RoundManager.Instance.currentLevel.randomWeathers == null) return;
+
+            System.Random rng = new System.Random();
+
+            AllWeather.raining = false;
+            foreach(RandomWeatherWithVariables randomWeather in RoundManager.Instance.currentLevel.randomWeathers)
             {
-                FloodWeather flooded = GameObject.Instantiate(Assets.flooded);
-                AllWeather.spawnedFloodedWeather = flooded;
-                flooded.gameObject.SetActive(true);
-                Manager.objectsToClear.Add(flooded.gameObject);
+                if (randomWeather.weatherType == RoundManager.Instance.currentLevel.currentWeather) continue;
+                switch(randomWeather.weatherType)
+                {
+                    case LevelWeatherType.Rainy:
+                        AllWeather.raining = true;
+                        break;
+                    case LevelWeatherType.Foggy:
+                        if (TimeOfDay.Instance.foggyWeather == null) break;
+                        LocalVolumetricFog fog = GameObject.Instantiate(TimeOfDay.Instance.foggyWeather);
+                        Manager.objectsToClear.Add(fog.gameObject);
+
+                        fog.parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
+                        fog.parameters.meanFreePath = rng.Next((int)MathF.Max(4.0f, randomWeather.weatherVariable), randomWeather.weatherVariable2) * 5;
+                        fog.parameters.size.y = 255f;
+
+                        fog.gameObject.SetActive(true);
+                        break;
+                    case LevelWeatherType.Flooded:
+                        FloodWeather flooded = GameObject.Instantiate(Assets.flooded);
+                        Manager.objectsToClear.Add(flooded.gameObject);
+
+                        AllWeather.floodVariable1 = randomWeather.weatherVariable;
+                        AllWeather.floodVariable2 = randomWeather.weatherVariable2;
+
+                        AllWeather.spawnedFloodedWeather = flooded;
+                        flooded.gameObject.SetActive(true);
+                        break;
+                    case LevelWeatherType.Stormy:
+                        StormyWeather stormy = GameObject.Instantiate(Assets.stormy);
+                        Manager.objectsToClear.Add(stormy.gameObject);
+
+                        AllWeather.lightningVariable1 = randomWeather.weatherVariable;
+                        AllWeather.LightningVariable2 = randomWeather.weatherVariable2;
+
+                        stormy.gameObject.SetActive(true);
+                        break;
+                    case LevelWeatherType.Eclipsed:
+                        Manager.minEnemiesToSpawnInside += randomWeather.weatherVariable;
+                        Manager.minEnemiestoSpawnOutside += randomWeather.weatherVariable2;
+                        break;
+                }
             }
         }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BrutalCompanyMinus.Minus.MonoBehaviours
 {
-    internal class BunkerLid : MonoBehaviour
+    internal class BunkerLid : NetworkBehaviour
     {
         public Animator animator;
 

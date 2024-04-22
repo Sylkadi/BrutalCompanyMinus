@@ -76,8 +76,8 @@ namespace BrutalCompanyMinus
         {
             // Difficulty Settings
             useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
-            eventsToSpawn = getScale(difficultyConfig.Bind("_Event Settings", "Event amount scale", "2, 0.0417, 2.0, 4.0", "The base amount of events   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
-            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events.", "40, 40, 15, 5", "Weights for extra events, can be expanded. (40, 40, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
+            eventsToSpawn = getScale(difficultyConfig.Bind("_Event Settings", "Event scale amount", "2, 0.03, 2.0, 5.0", "The base amount of events   Format: BaseScale, IncrementScale, MinCap, MaxCap,   Forumla: BaseScale + (IncrementScale * DaysPassed)").Value);
+            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events", "50, 30, 15, 5", "Weights for extra events, can be expanded. (50, 30, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
             showEventsInChat = difficultyConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
 
             eventTypeScales = new Scale[6]
@@ -86,7 +86,7 @@ namespace BrutalCompanyMinus
                 getScale(difficultyConfig.Bind("_EventType Weights", "Bad event rarity scale", "50, -0.4, 10, 53", scaleDescription).Value),
                 getScale(difficultyConfig.Bind("_EventType Weights", "Neutral event rarity scale", "15, -0.167, 10, 15", scaleDescription).Value),
                 getScale(difficultyConfig.Bind("_EventType Weights", "Good event rarity scale", "23, -0.267, 15, 23", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event rarity scale", "2, 0.1, 5, 12", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event rarity scale", "2, 0.1, 2, 12", scaleDescription).Value),
                 getScale(difficultyConfig.Bind("_EventType Weights", "Remove event rarity scale", "15, -0.167, 10, 15", "These events remove something   " + scaleDescription).Value)
             };
 
@@ -97,7 +97,7 @@ namespace BrutalCompanyMinus
             daysPassedDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Days passed difficulty cap", 60.0f, "Days passed difficulty scaling wont add beyond this.");
             scaleByScrapInShip = difficultyConfig.Bind("Difficuly Scaling", "Scale by scrap in ship?", true, "Will add to difficulty depending on how much scrap is inside the ship.");
             scrapInShipDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per scrap value in ship?", 0.0025f, "By default if scrap in ship is 4,000 => Difficulty +10.0, if 12,0000 => +30.0, or +1.0 per 400 scrap in ship");
-            scrapInShipDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Days passed difficulty cap", 30.0f, "Scrap in ship difficulty scaling wont add beyond this.");
+            scrapInShipDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Scrap in ship difficulty cap", 30.0f, "Scrap in ship difficulty scaling wont add beyond this.");
             scaleByMoonGrade = difficultyConfig.Bind("Difficuly Scaling", "Scale by moon grade?", true, "Will add to difficulty depending on grade of moon you land on.");
             gradeAdditives = new Dictionary<string, float>()
             {
@@ -251,18 +251,22 @@ namespace BrutalCompanyMinus
             Minus.Handlers.FacilityGhost.ghostCrazyActionInterval = eventConfig.Bind(nameof(FacilityGhost), "Crazy Action Time Interval", 0.1f, "How often does it take for the ghost to make a decision while going crazy?").Value;
             Minus.Handlers.FacilityGhost.ghostCrazyPeriod = eventConfig.Bind(nameof(FacilityGhost), "Crazy Period", 5.0f, "How long will the ghost go crazy for?").Value;
             Minus.Handlers.FacilityGhost.crazyGhostChance = eventConfig.Bind(nameof(FacilityGhost), "Crazy Chance", 0.1f, "Whenever the ghost makes a decision, what is the chance that it will go crazy?").Value;
-            Minus.Handlers.FacilityGhost.DoNothingWeight = eventConfig.Bind(nameof(FacilityGhost), "Do Nothing Weight", 50, "Whenever the ghost makes a decision, what is the weight to do nothing?").Value;
+            Minus.Handlers.FacilityGhost.DoNothingWeight = eventConfig.Bind(nameof(FacilityGhost), "Do Nothing Weight?", 25, "Whenever the ghost makes a decision, what is the weight to do nothing?").Value;
             Minus.Handlers.FacilityGhost.OpenCloseBigDoorsWeight = eventConfig.Bind(nameof(FacilityGhost), "Open and close big doors weight", 20, "Whenever the ghost makes a decision, what is the weight for ghost to open and close big doors?").Value;
             Minus.Handlers.FacilityGhost.MessWithLightsWeight = eventConfig.Bind(nameof(FacilityGhost), "Mess with lights weight", 16, "Whenever the ghost makes a decision, what is the weight to mess with lights?").Value;
             Minus.Handlers.FacilityGhost.MessWithBreakerWeight = eventConfig.Bind(nameof(FacilityGhost), "Mess with breaker weight", 4, "Whenever the ghost makes a decision, what is the weight to mess with the breaker?").Value;
+            Minus.Handlers.FacilityGhost.disableTurretsWeight = eventConfig.Bind(nameof(FacilityGhost), "Disable turrets weight?", 5, "Whenever the ghost makes a decision, what is the weight to attempt to disable the turrets?").Value;
+            Minus.Handlers.FacilityGhost.disableLandminesWeight = eventConfig.Bind(nameof(FacilityGhost), "Disable landmines weight?", 5, "Whenever the ghost makes a decision, what is the weight to attempt to disable the landmines?").Value;
+            Minus.Handlers.FacilityGhost.turretRageWeight = eventConfig.Bind(nameof(FacilityGhost), "Turret rage weight?", 5, "Whenever the ghost makes a decision, what is the weight to attempt to make turrets rage?").Value;
             Minus.Handlers.FacilityGhost.OpenCloseDoorsWeight = eventConfig.Bind(nameof(FacilityGhost), "Open and close normal doors weight", 9, "Whenever the ghost makes a decision, what is the weight to attempt to open and close normal doors.").Value;
             Minus.Handlers.FacilityGhost.lockUnlockDoorsWeight = eventConfig.Bind(nameof(FacilityGhost), "Lock and unlock normal doors weight", 3, "Whenever the ghost makes a decision, what is the weight to attempt to lock and unlock normal doors.").Value;
             Minus.Handlers.FacilityGhost.chanceToOpenCloseDoor = eventConfig.Bind(nameof(FacilityGhost), "Chance to open and close normal doors", 0.3f, "Whenever the ghosts decides to open and close doors, what is the chance for each individual door that it will do that.").Value;
-            Minus.Handlers.FacilityGhost.chanceToLockUnlockDoor = eventConfig.Bind(nameof(FacilityGhost), "Chance to lock and unlock normal doors", 0.1f, "Whenever the ghosts decides to lock and unlock doors, what is the chance for each individual door that it will do that.").Value;
+            Minus.Handlers.FacilityGhost.rageTurretsChance = eventConfig.Bind(nameof(FacilityGhost), "Chance to rage a turret", 0.3f, "Whenever the ghosts decides to rage a turret, what is the chance for each individual turret that it will do that.").Value;
 
             Minus.Handlers.RealityShift.normalScrapWeight = eventConfig.Bind(nameof(RealityShift), "Normal shift weight", 85, "Weight for transforming scrap into some other scrap?").Value;
             Minus.Handlers.RealityShift.grabbableLandmineWeight = eventConfig.Bind(nameof(RealityShift), "Grabbable landmine shift weight", 15, "Weight for transforming scrap into a grabbable landmine?").Value;
-            Minus.Handlers.RealityShift.grabbableTurretWeight = eventConfig.Bind(nameof(RealityShift), "Grabbable turret shift weight", 0, "Weight for transforming scrap into a grabbable turret?").Value;
+            Minus.Handlers.RealityShift.transmuteChance = eventConfig.Bind(nameof(RealityShift), "Chance to transmute", 0.5f, "Chance for transmutation to occur.").Value;
+            Minus.Handlers.RealityShift.enemyTeleportChance = eventConfig.Bind(nameof(RealityShift), "Enemy teleport chance", 0.1f, "Chance enemy teleportation to occur when hit.").Value;
 
             DDay.bombardmentInterval = eventConfig.Bind(nameof(Warzone), "Bombardment interval", 100, "The time it takes before each bombardment event.").Value;
             DDay.bombardmentTime = eventConfig.Bind(nameof(Warzone), "Bombardment time", 15, "When a bombardment event occurs, how long will it last?").Value;

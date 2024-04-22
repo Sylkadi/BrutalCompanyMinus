@@ -7,6 +7,7 @@ using BepInEx;
 using static BrutalCompanyMinus.Minus.MEvent;
 using System.Globalization;
 using BrutalCompanyMinus.Minus;
+using UnityEngine.AI;
 
 namespace BrutalCompanyMinus
 {
@@ -44,6 +45,29 @@ namespace BrutalCompanyMinus
             }
             newMapObjects[toObjects.Length] = newObject;
             return newMapObjects;
+        }
+
+        public static Vector3 GetRandomNavMeshPositionInBox(Vector3 pos, float minRadius, float maxRadius)
+        {
+            float halfPointRadius = (maxRadius + minRadius) * 0.5f;
+            float betweenRadius = (maxRadius - minRadius) * 0.5f;
+
+            for(int i = 0; i < 15; i++) // 15 Attempts 
+            {
+                UnityEngine.Random.InitState(Net.Instance._seed++ + Environment.TickCount);
+                Vector3 newPos = new Vector3((Mathf.Cos(UnityEngine.Random.Range(0, Mathf.PI * 2)) * halfPointRadius) + pos.x, pos.y, (Mathf.Sin(UnityEngine.Random.Range(0, Mathf.PI * 2)) * halfPointRadius) + pos.z);
+                if (NavMesh.SamplePosition(newPos, out NavMeshHit navHit, betweenRadius, -1) && Vector3.Distance(pos, newPos) >= minRadius)
+                {
+                    return navHit.position;
+                }
+            }
+            return pos;
+        }
+
+        private static Vector3 RandomPositionInRadius(Vector3 position, float minRadius, float maxRadius)
+        {
+            float randomDistance = UnityEngine.Random.Range(minRadius, maxRadius);
+            return position + (UnityEngine.Random.insideUnitSphere * randomDistance);
         }
 
         public static string GetDifficultyColorHex(float difficulty, float cap) // (0, 255, 0) => (0, 127, 0) => (255, 0, 0) => (127, 0, 0) => (40, 0, 0) => (15, 0, 0)

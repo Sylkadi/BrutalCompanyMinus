@@ -1,5 +1,4 @@
 ﻿using BrutalCompanyMinus.Minus.Handlers;
-using com.github.zehsteam.ToilHead.MonoBehaviours;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -136,11 +135,12 @@ namespace BrutalCompanyMinus.Minus
         internal static float eventTypeSum = 0;
         internal static float[] eventTypeCount = new float[] { };
 
-
         public static void AddEvents(params MEvent[] _event) => events.AddRange(_event);
 
         internal static MEvent RandomWeightedEvent(List<MEvent> _events, System.Random rng)
         {
+            if (_events.Count == 0) return new Events.Nothing();
+
             int WeightedSum = 0;
             foreach (MEvent e in _events) WeightedSum += e.Weight;
 

@@ -726,6 +726,17 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(RoundManager), "AdvanceHourAndSpawnNewBatchOfEnemies")]
+        private static void OnAdvanceHourAndSpawnNewBatchOfEnemies(ref RoundManager __instance)
+        {
+            __instance.minEnemiesToSpawn += minEnemiesToSpawnInside;
+            __instance.minOutsideEnemiesToSpawn += minEnemiestoSpawnOutside;
+
+            minEnemiesToSpawnInside = 0;
+            minEnemiestoSpawnOutside = 0;
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(RoundManager), "RefreshEnemyVents")]
         private static void OnRefreshEnemyVents()
@@ -742,18 +753,23 @@ namespace BrutalCompanyMinus.Minus
                 foreach(EnemyAI ai in spawnedAI) 
                 {
                     if (ai == null || ai.enemyType.enemyName != "Spring") continue;
-                    try
-                    {
-                        com.github.zehsteam.ToilHead.Api.SetToilHeadOnServer(ai);
-                    } catch
-                    {
-                        Log.LogError("Failed to set toilhead from API");
-                    }
+                    SetToilHead(ai);
                 }
                 ToilHead.spawnToilHeads = false;
             }
         }
-
+        
+        private static void SetToilHead(EnemyAI ai) // Have to put this here otherwise this mod wont load if it dosent have toilhead downloaded... I blame harmony
+        {
+            try
+            {
+                com.github.zehsteam.ToilHead.Api.SetToilHeadOnServer(ai);
+            } catch
+            {
+                Log.LogError("Failed to set toilhead from API");
+            }
+        }
+        
         internal struct ObjectInfo
         {
             public int count;

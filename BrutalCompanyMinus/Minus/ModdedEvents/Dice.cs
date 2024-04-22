@@ -26,10 +26,12 @@ namespace BrutalCompanyMinus.Minus.Events
             scrapTransmutationEvent = new ScrapTransmutationEvent(
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("Saint"), rarity = 4 },
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("Chronos"), rarity = 10 },
-                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("Rusty"), rarity = 26 },
-                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("MysteryDiceItem"), rarity = 40 },
-                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("Sacrificer"), rarity = 20 }
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("Rusty"), rarity = 45 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("MysteryDiceItem"), rarity = 25 },
+                new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("Sacrificer"), rarity = 16 }
             );
+
+            EventsToRemove = new List<string>() { nameof(RealityShift) };
 
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
         }

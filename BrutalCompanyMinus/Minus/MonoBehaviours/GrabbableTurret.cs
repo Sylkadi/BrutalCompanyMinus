@@ -46,7 +46,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + seed);
             if (rng.NextDouble() <= rarity)
             {
-                GameObject grabbableTurret = Instantiate(Assets.grabbableTurret.spawnPrefab, __instance.transform.position, __instance.transform.rotation);
+                GameObject grabbableTurret = Instantiate(Assets.grabbableTurret.spawnPrefab, RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(__instance.transform.position, 30.0f, RoundManager.Instance.navHit, rng), __instance.transform.rotation);
                 NetworkObject netObject = grabbableTurret.GetComponent<NetworkObject>();
                 netObject.Spawn();
 
@@ -70,8 +70,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         public override void Start()
         {
             base.Start();
-
-            StartCoroutine(UpdateTransform(12.0f, new Vector3(0, UnityEngine.Random.Range(0, 360), 0)));
+            StartCoroutine(UpdateTransform(11.0f, new Vector3(0, UnityEngine.Random.Range(0, 360), 0)));
         }
 
         public IEnumerator UpdateTransform(float time, Vector3 rotation)
@@ -81,15 +80,9 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void syncRotationServerRpc(Vector3 eulerAngle)
-        {
-            syncRotationClientRpc(eulerAngle);
-        }
+        private void syncRotationServerRpc(Vector3 eulerAngle) => syncRotationClientRpc(eulerAngle);
 
         [ClientRpc]
-        private void syncRotationClientRpc(Vector3 eulerAngle)
-        {
-            turretTransform.eulerAngles += eulerAngle;
-        }
+        private void syncRotationClientRpc(Vector3 eulerAngle) => turretTransform.eulerAngles += eulerAngle;
     }
 }

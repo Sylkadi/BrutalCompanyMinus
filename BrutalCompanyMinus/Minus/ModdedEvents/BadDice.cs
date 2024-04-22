@@ -28,6 +28,8 @@ namespace BrutalCompanyMinus.Minus.Events
                 new SpawnableItemWithRarity() { spawnableItem = Assets.GetItem("Sacrificer"), rarity = 25 }
             );
 
+            EventsToRemove = new List<string>() { nameof(RealityShift) };
+
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.0f, 0.005f, 1.0f, 1.3f));
         }
 

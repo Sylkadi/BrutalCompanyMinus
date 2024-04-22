@@ -32,19 +32,41 @@ namespace BrutalCompanyMinus.Minus.Events
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.30f, 0.0f, 1.30f, 1.30f));
         }
 
+        public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.randomWeathers != null && RoundManager.Instance.currentLevel.randomWeathers.Length >= 2;
+
         public override void Execute()
         {
             Net.Instance.SetAllWeatherActiveServerRpc(true);
 
-            Net.Instance.SpawnAllWeatherServerRpc();
+            Net.Instance.SpawnAllWeatherServerRpc(Net.Instance._seed++);
 
             Manager.scrapAmountMultiplier *= Getf(ScaleType.ScrapAmount);
             Manager.scrapValueMultiplier *= Getf(ScaleType.ScrapValue);
 
-            Manager.SetAtmosphere(Assets.AtmosphereName.Exclipsed, true);
-            Manager.SetAtmosphere(Assets.AtmosphereName.Flooded, true);
-            Manager.SetAtmosphere(Assets.AtmosphereName.Rainy, true);
-            Manager.SetAtmosphere(Assets.AtmosphereName.Stormy, true);
+            if (RoundManager.Instance.currentLevel.randomWeathers == null) return;
+
+            foreach(RandomWeatherWithVariables randomWeather in RoundManager.Instance.currentLevel.randomWeathers)
+            {
+                if (randomWeather.weatherType == RoundManager.Instance.currentLevel.currentWeather) continue;
+                switch(randomWeather.weatherType)
+                {
+                    case LevelWeatherType.Rainy:
+                        Manager.SetAtmosphere(Assets.AtmosphereName.Rainy, true);
+                        break;
+                    case LevelWeatherType.Foggy:
+                        Manager.SetAtmosphere(Assets.AtmosphereName.Foggy, true);
+                        break;
+                    case LevelWeatherType.Stormy:
+                        Manager.SetAtmosphere(Assets.AtmosphereName.Stormy, true);
+                        break;
+                    case LevelWeatherType.Flooded:
+                        Manager.SetAtmosphere(Assets.AtmosphereName.Flooded, true);
+                        break;
+                    case LevelWeatherType.Eclipsed:
+                        Manager.SetAtmosphere(Assets.AtmosphereName.Exclipsed, true);
+                        break;
+                }
+            }
         }
 
         public override void OnShipLeave() => Net.Instance.SetAllWeatherActiveServerRpc(false);
