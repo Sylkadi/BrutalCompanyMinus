@@ -64,11 +64,7 @@ namespace BrutalCompanyMinus
             return pos;
         }
 
-        private static Vector3 RandomPositionInRadius(Vector3 position, float minRadius, float maxRadius)
-        {
-            float randomDistance = UnityEngine.Random.Range(minRadius, maxRadius);
-            return position + (UnityEngine.Random.insideUnitSphere * randomDistance);
-        }
+        public static string GetPercentage(float value) => (value * 100.0f).ToString("F1") + "%";
 
         public static string GetDifficultyColorHex(float difficulty, float cap) // (0, 255, 0) => (0, 127, 0) => (255, 0, 0) => (127, 0, 0) => (40, 0, 0) => (15, 0, 0)
         {

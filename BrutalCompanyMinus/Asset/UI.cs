@@ -9,8 +9,9 @@ using HarmonyLib;
 using GameNetcodeStuff;
 using System.Globalization;
 using UnityEngine.InputSystem.Controls;
-using Discord;
 using Unity.Netcode;
+using static System.Net.Mime.MediaTypeNames;
+using System.Collections;
 
 namespace BrutalCompanyMinus
 {
@@ -36,6 +37,8 @@ namespace BrutalCompanyMinus
         public bool keyPressEnabledTyping = true, keyPressEnabledTerminal = true, keyPressEnabledSettings = true;
 
         public Keyboard keyboard;
+
+        public static bool canClearText = true;
 
         public void Start()
         {
@@ -100,6 +103,8 @@ namespace BrutalCompanyMinus
 
                 keyboard.onTextInput += OnKeyboardInput;
             }
+
+            panelText.text = Net.Instance.GetSyncedTextServerRpc().ToString();
         }
 
         void Update()
@@ -166,13 +171,7 @@ namespace BrutalCompanyMinus
                 float ScrapValueMultiplier = RoundManager.Instance.scrapValueMultiplier * Manager.scrapValueMultiplier;
                 if (Configuration.NormaliseScrapValueDisplay.Value) ScrapValueMultiplier *= 2.5f;
 
-                text +=
-                    $"<br>Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Helper.GetDifficultyText(Manager.difficulty)}</color>" +
-                    $"<br> -Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Manager.difficulty:F1}</color>";
-
-                if (Configuration.scaleByDaysPassed.Value) text += $"<br> -Day: <color=#{Helper.GetDifficultyColorHex(Manager.daysDifficulty, Configuration.daysPassedDifficultyCap.Value)}>{plusMinusExclusive(Manager.daysDifficulty)}{Manager.daysDifficulty:F1}</color>";
-                if (Configuration.scaleByScrapInShip.Value) text += $"<br> -Ship Scrap: <color=#{Helper.GetDifficultyColorHex(Manager.scrapInShipDifficulty, Configuration.scrapInShipDifficultyCap.Value)}>{plusMinusExclusive(Manager.scrapInShipDifficulty)}{Manager.scrapInShipDifficulty:F1}</color>";
-                if (Configuration.scaleByMoonGrade.Value) text += $"<br> -Moon risk: <color=#{Helper.GetDifficultyColorHex(Manager.moonGradeDifficulty, Configuration.gradeAdditives["S+++"])}>{plusMinusExclusive(Manager.moonGradeDifficulty)}{Manager.moonGradeDifficulty:F1}</color>";
+                text += GetDifficultyText();
 
                 text += "<br><br>Other:";
                 
@@ -198,7 +197,59 @@ namespace BrutalCompanyMinus
 
         private static string plusMinusExclusive(float value) => (value < 0) ? "" : "+";
 
-        public static void ClearText() => Net.Instance.textUI.Value = new FixedString4096Bytes(" ");
+        [ServerRpc(RequireOwnership = false)]
+        private static void ClearTextServerRpc()
+        {
+            try
+            {
+                ClearText();
+            } catch
+            {
+
+            }
+        }
+
+        public static void ClearText()
+        {
+            if(Configuration.DisplayExtraPropertiesAfterShipLeaves.Value)
+            {
+                string text = "";
+
+                Manager.ComputeDifficultyValues();
+                if (!Configuration.useCustomWeights.Value)
+                {
+                    EventManager.UpdateAllEventWeights();
+                    text += 
+                        $"<br>EventType Chances:" +
+                        $"<br> -<color=#800000>VeryBad</color>:  {Helper.GetPercentage(EventManager.eventTypeRarities[0])}" +
+                        $"<br> -<color=#FF0000>Bad</color>:      {Helper.GetPercentage(EventManager.eventTypeRarities[1])}" +
+                        $"<br> -<color=#FFFFFF>Neutral</color>:  {Helper.GetPercentage(EventManager.eventTypeRarities[2])}" +
+                        $"<br> -<color=#008000>Good</color>:     {Helper.GetPercentage(EventManager.eventTypeRarities[3])}" +
+                        $"<br> -<color=#00FF00>VeryGood</color>: {Helper.GetPercentage(EventManager.eventTypeRarities[4])}" +
+                        $"<br> -<color=#008000>Remove</color>:   {Helper.GetPercentage(EventManager.eventTypeRarities[5])}<br>";
+                }
+
+                text += GetDifficultyText();
+
+                Net.Instance.textUI.Value = new FixedString4096Bytes(text);
+            } else
+            {
+                Net.Instance.textUI.Value = new FixedString4096Bytes(" ");
+            }
+        }
+
+        private static string GetDifficultyText()
+        {
+            string text =
+                $"<br>Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Helper.GetDifficultyText(Manager.difficulty)}</color>" +
+                $"<br> -Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Manager.difficulty:F1}</color>";
+
+            if (Configuration.scaleByDaysPassed.Value) text += $"<br> -Day: <color=#{Helper.GetDifficultyColorHex(Manager.daysDifficulty, Configuration.daysPassedDifficultyCap.Value)}>{plusMinusExclusive(Manager.daysDifficulty)}{Manager.daysDifficulty:F1}</color>";
+            if (Configuration.scaleByScrapInShip.Value) text += $"<br> -Ship Scrap: <color=#{Helper.GetDifficultyColorHex(Manager.scrapInShipDifficulty, Configuration.scrapInShipDifficultyCap.Value)}>{plusMinusExclusive(Manager.scrapInShipDifficulty)}{Manager.scrapInShipDifficulty:F1}</color>";
+            if (Configuration.scaleByMoonGrade.Value) text += $"<br> -Moon risk: <color=#{Helper.GetDifficultyColorHex(Manager.moonGradeDifficulty, Configuration.gradeAdditives["S+++"])}>{plusMinusExclusive(Manager.moonGradeDifficulty)}{Manager.moonGradeDifficulty:F1}</color>";
+
+            return text;
+        }
 
         public void OnKeyboardInput(char input)
         {
@@ -231,10 +282,38 @@ namespace BrutalCompanyMinus
 
         public void TogglePanel(bool state)
         {
+            if(Configuration.DisplayExtraPropertiesAfterShipLeaves.Value && Net.Instance.textUI.Value.IsEmpty) ClearTextServerRpc();
+
             panelBackground.SetActive(state);
             upArrowPanel.SetActive(state);
             downArrowPanel.SetActive(state);
             letter.color = new Color(0, state ? 1.0f : 0.6f, 0);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.SetDiscordStatusDetails))]
+        private static void OnChangeLevel(ref StartOfRound __instance)
+        {
+            if (!NetworkManager.Singleton.IsServer || !canClearText) return;
+            try
+            {
+                ClearText();
+            } catch
+            {
+                __instance.StartCoroutine(ClearAfterDelay());
+            }
+        }
+
+        private static IEnumerator ClearAfterDelay()
+        {
+            yield return new WaitForSeconds(0.2f);
+            try
+            {
+                ClearText();
+            } catch
+            {
+
+            }
         }
 
         [HarmonyPrefix]
@@ -242,6 +321,7 @@ namespace BrutalCompanyMinus
         [HarmonyPatch(typeof(StartOfRound), "ShipLeave")]
         private static void OnShipLeave()
         {
+            canClearText = true;
             if (!RoundManager.Instance.IsHost) return;
 
             if (!Configuration.DisplayUIAfterShipLeaves.Value)

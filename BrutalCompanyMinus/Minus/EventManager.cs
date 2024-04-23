@@ -3,8 +3,10 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
 
 namespace BrutalCompanyMinus.Minus
 {
@@ -134,6 +136,8 @@ namespace BrutalCompanyMinus.Minus
 
         internal static float eventTypeSum = 0;
         internal static float[] eventTypeCount = new float[] { };
+
+        internal static float[] eventTypeRarities = new float[] { };
 
         public static void AddEvents(params MEvent[] _event) => events.AddRange(_event);
 
@@ -273,6 +277,7 @@ namespace BrutalCompanyMinus.Minus
 
             float[] eventTypeProbabilities = new float[eventTypeAmount];
             for(int i = 0; i < eventTypeAmount; i++) eventTypeProbabilities[i] = computedScales[i] / eventTypeWeightSum;
+            eventTypeRarities = eventTypeProbabilities;
 
             int[] newEventWeights = new int[eventTypeAmount];
             for (int i = 0; i < eventTypeAmount; i++)
@@ -280,6 +285,7 @@ namespace BrutalCompanyMinus.Minus
                 newEventWeights[i] = (int)((eventTypeSum / fix(eventTypeCount[i])) * eventTypeProbabilities[i] * 1000.0f);
                 Log.LogInfo($"Set eventType weight for {((MEvent.EventType)Enum.ToObject(typeof(MEvent.EventType), i)).ToString()} to {newEventWeights[i]}");
             }
+
 
             foreach(MEvent e in events) e.Weight = newEventWeights[(int)e.Type];
         }
@@ -309,7 +315,7 @@ namespace BrutalCompanyMinus.Minus
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
         private static void ModifyLevel(ref SelectableLevel newLevel)
         {
-            Manager.daysPassed = StartOfRound.Instance.gameStats.daysSpent;
+            UI.canClearText = false;
             Manager.ComputeDifficultyValues();
 
             Manager.currentLevel = newLevel;

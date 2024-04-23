@@ -103,6 +103,9 @@ namespace BrutalCompanyMinus
             base.OnNetworkDespawn();
         }
 
+        [ServerRpc]
+        public FixedString4096Bytes GetSyncedTextServerRpc() => textUI.Value;
+
         [ServerRpc(RequireOwnership = false)]
         public int GiveSeed() => _seed++;
 

@@ -29,7 +29,14 @@ namespace BrutalCompanyMinus.Minus
     public class Manager
     {
 
-        internal static int daysPassed = -1;
+        internal static int daysPassed
+        {
+            get
+            {
+                if(StartOfRound.Instance != null) return StartOfRound.Instance.gameStats.daysSpent;
+                return 0;
+            }
+        }
         internal static float difficulty = 0.0f;
         internal static float daysDifficulty = 0.0f;
         internal static float scrapInShipDifficulty = 0.0f;
@@ -453,7 +460,6 @@ namespace BrutalCompanyMinus.Minus
 
             if (Configuration.scaleByDaysPassed.Value)
             {
-
                 daysDifficulty = Mathf.Clamp(daysPassed * Configuration.daysPassedDifficultyMultiplier.Value, 0.0f, Configuration.daysPassedDifficultyCap.Value);
                 difficulty += daysDifficulty;
             }

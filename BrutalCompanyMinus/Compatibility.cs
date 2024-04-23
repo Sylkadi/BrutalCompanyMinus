@@ -37,10 +37,14 @@ namespace BrutalCompanyMinus
             footballPresent = false,
             emergencyDicePresent = false,
             toilheadPresent = false,
-            goldScrapPresent = false;
+            goldScrapPresent = false,
+            cullFactoryPresent = false;
 
         internal static FieldInfo peeperSpawnChance = null;
         internal static NetworkVariable<int>[] mimicNetworkSpawnChances = null;
+
+        internal static MethodInfo cullOnTeleportLocalPlayer = null;
+        internal static MethodInfo cullOnTeleportOtherPlayer = null;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PreInitSceneScript), "Awake")]
@@ -122,6 +126,25 @@ namespace BrutalCompanyMinus
                         mimicsPresent = true;
                         moddedEvents.Add(new Mimics());
                         moddedEvents.Add(new NoMimics());
+                    }
+                }
+            }
+
+            Assembly cullFactoryAssembly = GetAssembly("com.fumiko.CullFactory");
+            if(cullFactoryAssembly != null )
+            {
+                Log.LogInfo("Found CullFactory mod, Will attempt to grab OnTeleportOtherPlayerThroughEntrance() and OnTeleportLocalPlayerThroughEntrance() methodInfos");
+
+                Type teleporterExtender = cullFactoryAssembly.GetType("CullFactory.Extenders.TeleportExtender");
+                if(teleporterExtender != null)
+                {
+                    cullOnTeleportLocalPlayer = teleporterExtender.GetMethod("OnTeleportLocalPlayerThroughEntrance", BindingFlags.Static | BindingFlags.NonPublic);
+                    cullOnTeleportOtherPlayer = teleporterExtender.GetMethod("OnTeleportOtherPlayerThroughEntrance", BindingFlags.Static | BindingFlags.NonPublic);
+
+                    if(cullOnTeleportLocalPlayer != null && cullOnTeleportOtherPlayer != null)
+                    {
+                        Log.LogInfo("Found OnTeleportOtherPlayerThroughEntrance() and OnTeleportLocalPlayerThroughEntrance() methodInfos, passages are now compatible with cullfactory");
+                        cullFactoryPresent = true;
                     }
                 }
             }

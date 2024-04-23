@@ -29,6 +29,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             if (!Configuration.Initalized) return;
             EventManager.forcedEvents.Clear();
             Log.LogInfo("Executing OnGameStart() for all events");
+            UI.canClearText = true;
             foreach(MEvent e in EventManager.events)
             {
                 e.OnGameStart();

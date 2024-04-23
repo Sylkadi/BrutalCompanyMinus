@@ -56,7 +56,7 @@ namespace BrutalCompanyMinus
 
         // UI settings
         public static ConfigEntry<string> UIKey;
-        public static ConfigEntry<bool> NormaliseScrapValueDisplay, EnableUI, ShowUILetterBox, ShowExtraProperties, PopUpUI, DisplayUIAfterShipLeaves;
+        public static ConfigEntry<bool> NormaliseScrapValueDisplay, EnableUI, ShowUILetterBox, ShowExtraProperties, PopUpUI, DisplayUIAfterShipLeaves, DisplayExtraPropertiesAfterShipLeaves;
         public static ConfigEntry<float> UITime, scrollSpeed;
 
         // Custom assets settings
@@ -173,6 +173,7 @@ namespace BrutalCompanyMinus
             UITime = uiConfig.Bind("UI Options", "PopUp UI time.", 45.0f, "UI popup time");
             scrollSpeed = uiConfig.Bind("UI Options", "Scroll speed", 1.0f, "Multiplier speed on scrolling with arrows.");
             DisplayUIAfterShipLeaves = uiConfig.Bind("UI Options", "Display UI after ship leaves?", false, "Will only display event's after ship has left.");
+            DisplayExtraPropertiesAfterShipLeaves = uiConfig.Bind("UI Options", "Display extra properties on UI after ship Leaves?", true, "This will show Event Type raritys for next day and difficulty info.");
 
             // Event settings
             void RegisterEvents(ConfigFile toConfig, List<MEvent> events)

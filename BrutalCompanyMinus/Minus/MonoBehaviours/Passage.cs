@@ -28,13 +28,11 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         internal static float checkForEnemyInterval = 0.0f;
 
-        internal static int audioReverbPresetValue = -1;
-
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
-            audioReverbPreset = audioReverbPresetValue;
+            audioReverbPreset = isInsideBuilding ? 2 : 1;
         }
 
         public virtual void TeleportPlayer()
@@ -54,6 +52,11 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             }
             TeleportPlayerServerRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
             GameNetworkManager.Instance.localPlayerController.isInsideFactory = isInsideBuilding;
+
+            if(Compatibility.cullFactoryPresent)
+            {
+                Compatibility.cullOnTeleportLocalPlayer.Invoke(null, null);
+            }
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -82,6 +85,11 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             if (GameNetworkManager.Instance.localPlayerController.isPlayerDead && instance.allPlayerScripts[playerID] == GameNetworkManager.Instance.localPlayerController.spectatedPlayerScript)
             {
                 SetAudioPreset(playerID);
+            }
+
+            if (Compatibility.cullFactoryPresent)
+            {
+                Compatibility.cullOnTeleportOtherPlayer.Invoke(null, new object[] { playerID });
             }
         }
 
@@ -227,21 +235,6 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             }
 
             bunkerPassagesToSpawn = 0;
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(RoundManager), "FinishGeneratingLevel")]
-        private static void OnFinishGeneratingLevel()
-        {
-            EntranceTeleport[] entrances = FindObjectsOfType<EntranceTeleport>();
-            foreach (EntranceTeleport entrance in entrances)
-            {
-                if (entrance != null && entrance.audioReverbPreset != -1)
-                {
-                    audioReverbPresetValue = entrance.audioReverbPreset;
-                    break;
-                }
-            }
         }
     }
 }
