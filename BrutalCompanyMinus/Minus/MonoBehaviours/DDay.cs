@@ -39,6 +39,8 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         private List<Vector3> spawnDenialNodes = new List<Vector3>();
 
+        private LayerMask triggerLayerMask = 1 << 13;
+
         public void Start()
         {
             if (instance != null) DestroyInstance();
@@ -49,6 +51,8 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
             sirensClose.volume = volume;
             sirensFar.volume = volume;
+
+            triggerLayerMask = LayerMask.GetMask("Triggers");
         }
 
         public void Update() // I honestly dont even know how it's possible for this to persist... It dosen't make any sense to me, how is this even possible.....
@@ -91,7 +95,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                 // Fire
                 for (int i = 0; i < fireAmount * fireAmountMultiplier; i++)
                 {
-                    for (int j = 0; j < 3; j++) // 3 Attempts at safe position
+                    for (int j = 0; j < 4; j++) // 4 Attempts at safe position
                     {
                         rng = new System.Random(seed++);
 
@@ -101,19 +105,9 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                         Vector3 from = at + new Vector3(rng.Next(-100, 100), rng.Next(500, 800), rng.Next(-100, 100));
 
                         RaycastHit hit = new RaycastHit();
-                        if (Physics.Raycast(new Ray(from, (at - from).normalized), out hit)) at = hit.point;
+                        if (Physics.Raycast(new Ray(from, (at - from).normalized), out hit, 1000.0f, ~triggerLayerMask)) at = hit.point;
 
-                        bool isSafe = true;
-                        foreach (Vector3 denialNode in spawnDenialNodes)
-                        {
-                            if (Vector3.Distance(denialNode, at) < 15.0f)
-                            {
-                                isSafe = false;
-                                break;
-                            }
-                        }
-
-                        if (isSafe) ArtilleryShell.FireAt(at, from);
+                        if (Helper.IsSafe(at, spawnDenialNodes, 15.0f)) ArtilleryShell.FireAt(at, from);
                         break;
                     }
                 }
