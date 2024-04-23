@@ -36,6 +36,16 @@ namespace BrutalCompanyMinus.Minus.Events
             };
         }
 
+        public override bool AddEventIfOnly()
+        {
+            if (!Manager.transmuteScrap)
+            {
+                Manager.transmuteScrap = true;
+                return true;
+            }
+            return false;
+        }
+
         public override void Execute() => ExecuteAllMonsterEvents();
     }
 }

@@ -41,6 +41,8 @@ namespace BrutalCompanyMinus.Minus
         internal static float daysDifficulty = 0.0f;
         internal static float scrapInShipDifficulty = 0.0f;
         internal static float moonGradeDifficulty = 0.0f;
+        internal static float weatherDifficulty = 0.0f;
+        internal static float quotaDifficulty = 0.0f;
 
         public static SelectableLevel currentLevel;
         public static Terminal currentTerminal;
@@ -442,12 +444,6 @@ namespace BrutalCompanyMinus.Minus
             return 0;
         }
 
-        public static void AddTime(float seconds)
-        {
-            moveTime = true;
-            moveTimeAmount += seconds;
-        }
-
         public static void AddEnemyHp(int amount) => bonusEnemyHp += amount;
         public static void AddInsidePower(int amount) => bonusMaxInsidePowerCount += amount;
         public static void AddOutsidePower(int amount) => bonusMaxOutsidePowerCount += amount;
@@ -480,6 +476,16 @@ namespace BrutalCompanyMinus.Minus
                     moonGradeDifficulty = Configuration.gradeAdditives["Other"];
                     difficulty += moonGradeDifficulty;
                 }
+            }
+            if(Configuration.scaleByQuota.Value)
+            {
+                quotaDifficulty = Mathf.Clamp(TimeOfDay.Instance.profitQuota * Configuration.quotaDifficultyMultiplier.Value, 0.0f, Configuration.quotaDifficultyCap.Value);
+                difficulty += quotaDifficulty;
+            }
+            if(Configuration.scaleByWeather.Value)
+            {
+                weatherDifficulty = Configuration.weatherAdditives.GetValueOrDefault(StartOfRound.Instance.currentLevel.currentWeather, 0.0f);
+                difficulty += weatherDifficulty;
             }
 
             difficulty = Mathf.Clamp(difficulty, 0.0f, Configuration.difficultyMaxCap.Value);

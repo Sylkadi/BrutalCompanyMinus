@@ -217,7 +217,6 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                 }
                 bunkerEscapePositions.Add(escapeSpawnPosition);
 
-
                 float yRotation = RoundManager.Instance.YRotationThatFacesTheFarthestFromPosition(escapeSpawnPosition + Vector3.up * 0.2f) - 180.0f;
 
                 Quaternion bunkerEntranceRotation = Assets.bunkerEntrance.transform.rotation;
@@ -232,6 +231,9 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                 bunkerEscape.GetComponent<NetworkObject>().Spawn(destroyWithScene: true);
 
                 entrancePassage.SyncBunkerPassagesServerRpc(bunkerEntrance.GetComponent<NetworkObject>(), bunkerEscape.GetComponent<NetworkObject>());
+
+                Manager.objectsToClear.Add(bunkerEntrance);
+                Manager.objectsToClear.Add(bunkerEscape);
             }
 
             bunkerPassagesToSpawn = 0;

@@ -73,6 +73,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.SpikeTraps(),
             new Events.FlowerSnake(),
             new Events.LateShip(),
+            new Events.HolidaySeason(),
             // Very Bad
             new Events.Nutcracker(),
             new Events.Arachnophobia(),

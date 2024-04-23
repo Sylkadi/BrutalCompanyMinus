@@ -45,9 +45,10 @@ namespace BrutalCompanyMinus
             scrapAmountMultiplier = new Scale(), scrapValueMultiplier = new Scale(), insideSpawnChanceAdditive = new Scale(), outsideSpawnChanceAdditive = new Scale();
         public static ConfigEntry<bool> ignoreMaxCap;
         public static ConfigEntry<float> difficultyMaxCap;
-        public static ConfigEntry<bool> scaleByDaysPassed, scaleByScrapInShip, scaleByMoonGrade;
-        public static ConfigEntry<float> daysPassedDifficultyMultiplier, daysPassedDifficultyCap, scrapInShipDifficultyMultiplier, scrapInShipDifficultyCap;
+        public static ConfigEntry<bool> scaleByDaysPassed, scaleByScrapInShip, scaleByMoonGrade, scaleByWeather, scaleByQuota;
+        public static ConfigEntry<float> daysPassedDifficultyMultiplier, daysPassedDifficultyCap, scrapInShipDifficultyMultiplier, scrapInShipDifficultyCap, quotaDifficultyMultiplier, quotaDifficultyCap;
         public static Dictionary<string, float> gradeAdditives = new Dictionary<string, float>();
+        public static Dictionary<LevelWeatherType, float> weatherAdditives = new Dictionary<LevelWeatherType, float>();
 
         // Weather settings
         public static ConfigEntry<bool> useWeatherMultipliers, randomizeWeatherMultipliers, enableTerminalText;
@@ -77,27 +78,30 @@ namespace BrutalCompanyMinus
             // Difficulty Settings
             useCustomWeights = difficultyConfig.Bind("_Event Settings", "Use custom weights?", false, "'false'= Use eventType weights to set all the weights     'true'= Use custom set weights");
             eventsToSpawn = getScale(difficultyConfig.Bind("_Event Settings", "Event scale amount", "2, 0.03, 2.0, 5.0", "The base amount of events   Format: BaseScale, IncrementScale, MinCap, MaxCap,   " + scaleDescription).Value);
-            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for extra events", "50, 30, 15, 5", "Weights for extra events, can be expanded. (50, 30, 15, 5) is equivalent to (+0, +1, +2, +3) events").Value);
+            weightsForExtraEvents = ParseValuesFromString(difficultyConfig.Bind("_Event Settings", "Weights for bonus events", "40, 39, 15, 5, 1", "Weights for bonus events, can be expanded. (40, 39, 15, 5, 1) is equivalent to (+0, +1, +2, +3, +4) events").Value);
             showEventsInChat = difficultyConfig.Bind("_Event Settings", "Will Minus display events in chat?", false);
 
             eventTypeScales = new Scale[6]
             {
-                getScale(difficultyConfig.Bind("_EventType Weights", "VeryBad event rarity scale", "0, 0.4, 0, 40", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "Bad event rarity scale", "50, -0.4, 10, 53", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "Neutral event rarity scale", "15, -0.167, 10, 15", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "Good event rarity scale", "23, -0.267, 15, 23", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event rarity scale", "2, 0.1, 2, 12", scaleDescription).Value),
-                getScale(difficultyConfig.Bind("_EventType Weights", "Remove event rarity scale", "15, -0.167, 10, 15", "These events remove something   " + scaleDescription).Value)
+                getScale(difficultyConfig.Bind("_EventType Weights", "VeryBad event scale", "5, 0.25, 5, 30", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Bad event scale", "40, -0.15, 25, 40", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Neutral event scale", "10, -0.05, 5, 10", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Good event scale", "23, -0.1, 13, 23", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "VeryGood event scale", "3, 0.14, 3, 17", scaleDescription).Value),
+                getScale(difficultyConfig.Bind("_EventType Weights", "Remove event scale", "15, -0.05, 10, 15", "These events remove something   " + scaleDescription).Value)
             };
 
-            ignoreMaxCap = difficultyConfig.Bind("Difficuly Scaling", "Ignore max cap from all scales?", true, "Will ignore max cap if true, upperlimit is dictated by difficulty max cap setting as well.");
+            ignoreMaxCap = difficultyConfig.Bind("Difficuly Scaling", "Ignore max cap?", false, "Will ignore max cap if true, upperlimit is dictated by difficulty max cap setting as well.");
             difficultyMaxCap = difficultyConfig.Bind("Difficuly Scaling", "Difficulty max cap", 100.0f, "The difficulty value wont go beyond this.");
             scaleByDaysPassed = difficultyConfig.Bind("Difficuly Scaling", "Scale by days passed?", true, "Will add to difficulty depending on how many days have passed.");
             daysPassedDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per days passed?", 1.0f, "");
             daysPassedDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Days passed difficulty cap", 60.0f, "Days passed difficulty scaling wont add beyond this.");
             scaleByScrapInShip = difficultyConfig.Bind("Difficuly Scaling", "Scale by scrap in ship?", true, "Will add to difficulty depending on how much scrap is inside the ship.");
-            scrapInShipDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per scrap value in ship?", 0.0025f, "By default if scrap in ship is 4,000 => Difficulty +10.0, if 12,0000 => +30.0, or +1.0 per 400 scrap in ship");
+            scrapInShipDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per scrap value in ship?", 0.0025f, "By default +1.0 per 400 scrap in ship");
             scrapInShipDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Scrap in ship difficulty cap", 30.0f, "Scrap in ship difficulty scaling wont add beyond this.");
+            scaleByQuota = difficultyConfig.Bind("Difficuly Scaling", "Scale by quota?", true, "Will add to difficulty depending on how high the quota is.");
+            quotaDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per quota value?", 0.005f, "By default +1.0 per 200 quota");
+            quotaDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Quota difficulty cap", 100.0f, "Quota scaling wont add difficulty beyond this");
             scaleByMoonGrade = difficultyConfig.Bind("Difficuly Scaling", "Scale by moon grade?", true, "Will add to difficulty depending on grade of moon you land on.");
             gradeAdditives = new Dictionary<string, float>()
             {
@@ -111,6 +115,17 @@ namespace BrutalCompanyMinus
                 { "S+++", difficultyConfig.Bind("Difficuly Scaling", "S+++ grade difficulty", 30.0f, "Difficulty added for moons grade of S+++").Value },
                 { "Other", difficultyConfig.Bind("Difficuly Scaling", "Other grade difficulty", 10.0f, "For every other grade, use this value.").Value },
             };
+            scaleByWeather = difficultyConfig.Bind("Difficuly Scaling", "Scale by weather type?", true, "Will add to difficulty depending on weather of moon you land on.");
+            weatherAdditives = new Dictionary<LevelWeatherType, float>()
+            {
+                { LevelWeatherType.None, difficultyConfig.Bind("Difficuly Scaling", "None weather difficulty", 0.0f, "Difficulty added for playing on None weather").Value },
+                { LevelWeatherType.Rainy, difficultyConfig.Bind("Difficuly Scaling", "Rainy weather difficulty", 2.0f, "Difficulty added for playing on Rainy weather").Value },
+                { LevelWeatherType.DustClouds, difficultyConfig.Bind("Difficuly Scaling", "DustClouds weather difficulty", 2.0f, "Difficulty added for playing on DustClouds weather").Value },
+                { LevelWeatherType.Flooded, difficultyConfig.Bind("Difficuly Scaling", "Flooded weather difficulty", 4.0f, "Difficulty added for playing on Flooded weather").Value },
+                { LevelWeatherType.Foggy, difficultyConfig.Bind("Difficuly Scaling", "Foggy weather difficulty", 4.0f, "Difficulty added for playing on Foggy weather").Value },
+                { LevelWeatherType.Stormy, difficultyConfig.Bind("Difficuly Scaling", "Stormy weather difficulty", 7.0f, "Difficulty added for playing on Stormy weather").Value },
+                { LevelWeatherType.Eclipsed, difficultyConfig.Bind("Difficuly Scaling", "Eclipsed weather difficulty", 7.0f, "Difficulty added for playing on Eclipsed weather").Value },
+            };
 
             spawnChanceMultiplierScaling = getScale(difficultyConfig.Bind("Difficulty", "Spawn chance multiplier scale", "1.0, 0.017, 1.0, 2.0", "This will multiply the spawn chance by this,   " + scaleDescription).Value);
             insideSpawnChanceAdditive = getScale(difficultyConfig.Bind("Difficulty", "Inside spawn chance additive", "0.0, 0.0, 0.0, 0.0", "This will add to all keyframes for insideSpawns on the animationCurve,   " + scaleDescription).Value);
@@ -118,12 +133,11 @@ namespace BrutalCompanyMinus
             spawnCapMultiplier = getScale(difficultyConfig.Bind("Difficulty", "Spawn cap multipler scale", "1.0, 0.017, 1.0, 2.0", "This will multiply outside and inside power counts by this,   " + scaleDescription).Value);
             insideEnemyMaxPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty", "Additional Inside Max Enemy Power Count", "0, 0, 0, 0", "Added max enemy power count for inside enemies.,   " + scaleDescription).Value);
             outsideEnemyPowerCountScaling = getScale(difficultyConfig.Bind("Difficulty", "Additional Outside Max Enemy Power Count", "0, 0, 0, 0", "Added max enemy power count for outside enemies.,   " + scaleDescription).Value);
-            enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty", "Additional hp", "0, 0.084, 0, 5", "Added hp to all enemies,   " + scaleDescription).Value);
+            enemyBonusHpScaling = getScale(difficultyConfig.Bind("Difficulty", "Additional hp?", "0, 0.05, 0, 5", "Added hp to all enemies,   " + scaleDescription).Value);
             scrapValueMultiplier = getScale(difficultyConfig.Bind("Difficulty", "Global scrap value multiplier scale", "1.0, 0.0, 1.0, 1.0", "Mutliplies scrap value,   " + scaleDescription).Value);
             scrapAmountMultiplier = getScale(difficultyConfig.Bind("Difficulty", "Global scrap amount multiplier scale", "1.0, 0.0, 1.0, 1.0", "Mutliplies scrap value,   " + scaleDescription).Value);
             goodEventIncrementMultiplier = difficultyConfig.Bind("Difficulty", "Global multiplier for increment value on good and veryGood eventTypes.", 1.0f);
             badEventIncrementMultiplier = difficultyConfig.Bind("Difficulty", "Global multiplier for increment value on bad and veryBad eventTypes.", 1.0f);
-
 
             // Custom scrap settings
             nutSlayerLives = customAssetsConfig.Bind("NutSlayer", "Lives", 5, "If hp reaches zero or below, decrement lives and reset hp until 0 lives.");
@@ -504,10 +518,10 @@ namespace BrutalCompanyMinus
         private static EnemySpawnInfo CreateEnemyEntry(EnemyName name, float defaultWeight, int spawnCap, SpawnLocation spawnLocation) => CreateEnemyEntry(EnemyNameList[name], defaultWeight, spawnCap, spawnLocation);
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(TimeOfDay), "Awake")]
+        [HarmonyPatch(typeof(TimeOfDay), "Awake")] 
         private static void OnTimeDayStart(ref TimeOfDay __instance)
         {
-            enableQuotaChanges = difficultyConfig.Bind("Quota Settings", "_Enable Quota Changes", false);
+            enableQuotaChanges = difficultyConfig.Bind("Quota Settings", "_Enable Quota Changes", false, "Once set to true, load up a save to generate the rest of this config, this will take values from the game as default.");
             if(enableQuotaChanges.Value)
             {
                 __instance.quotaVariables.deadlineDaysAmount = difficultyConfig.Bind("Quota Settings", "Deadline Days Amount", __instance.quotaVariables.deadlineDaysAmount).Value;

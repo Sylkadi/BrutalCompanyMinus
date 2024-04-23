@@ -188,6 +188,16 @@ namespace BrutalCompanyMinus
             terminalAccessibleObject.SetCodeTo(code);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void MoveTimeServerRpc(float amount) => MoveTimeClientRpc(amount);
+
+        [ClientRpc]
+        public void MoveTimeClientRpc(float amount)
+        {
+            Manager.moveTime = true;
+            Manager.moveTimeAmount += amount;
+        }
+
         private void UpdateAtmosphere(FixedString128Bytes name, bool state)
         {
             for (int i = 0; i < TimeOfDay.Instance.effects.Length; i++)

@@ -244,10 +244,11 @@ namespace BrutalCompanyMinus
                 $"<br>Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Helper.GetDifficultyText(Manager.difficulty)}</color>" +
                 $"<br> -Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Manager.difficulty:F1}</color>";
 
-            if (Configuration.scaleByDaysPassed.Value) text += $"<br> -Day: <color=#{Helper.GetDifficultyColorHex(Manager.daysDifficulty, Configuration.daysPassedDifficultyCap.Value)}>{plusMinusExclusive(Manager.daysDifficulty)}{Manager.daysDifficulty:F1}</color>";
+            if (Configuration.scaleByDaysPassed.Value)  text += $"<br> -Day:        <color=#{Helper.GetDifficultyColorHex(Manager.daysDifficulty, Configuration.daysPassedDifficultyCap.Value)}>{plusMinusExclusive(Manager.daysDifficulty)}{Manager.daysDifficulty:F1}</color>";
+            if (Configuration.scaleByQuota.Value)       text += $"<br> -Quota:      <color=#{Helper.GetDifficultyColorHex(Manager.quotaDifficulty, Configuration.quotaDifficultyCap.Value)}>{plusMinusExclusive(Manager.quotaDifficulty)}{Manager.quotaDifficulty:F1}</color>";
             if (Configuration.scaleByScrapInShip.Value) text += $"<br> -Ship Scrap: <color=#{Helper.GetDifficultyColorHex(Manager.scrapInShipDifficulty, Configuration.scrapInShipDifficultyCap.Value)}>{plusMinusExclusive(Manager.scrapInShipDifficulty)}{Manager.scrapInShipDifficulty:F1}</color>";
-            if (Configuration.scaleByMoonGrade.Value) text += $"<br> -Moon risk: <color=#{Helper.GetDifficultyColorHex(Manager.moonGradeDifficulty, Configuration.gradeAdditives["S+++"])}>{plusMinusExclusive(Manager.moonGradeDifficulty)}{Manager.moonGradeDifficulty:F1}</color>";
-
+            if (Configuration.scaleByMoonGrade.Value)   text += $"<br> -Moon risk:  <color=#{Helper.GetDifficultyColorHex(Manager.moonGradeDifficulty, Configuration.gradeAdditives["S+++"])}>{plusMinusExclusive(Manager.moonGradeDifficulty)}{Manager.moonGradeDifficulty:F1}</color>";
+            if (Configuration.scaleByWeather.Value)     text += $"<br> -Weather:    <color=#{Helper.GetDifficultyColorHex(Manager.weatherDifficulty, 7.0f)}>{plusMinusExclusive(Manager.weatherDifficulty)}{Manager.weatherDifficulty:F1}</color>";
             return text;
         }
 
