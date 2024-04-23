@@ -17,7 +17,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         public static float ghostCrazyCurrentTime = 0.0f, ghostCrazyPeriod = 3.0f, ghostCrazyActionInterval = 0.1f, crazyGhostChance = 0.1f; // Crazy
 
-        public static int DoNothingWeight = 25, OpenCloseBigDoorsWeight = 20, MessWithLightsWeight = 16, MessWithBreakerWeight = 4, OpenCloseDoorsWeight = 9, lockUnlockDoorsWeight = 3, disableTurretsWeight = 5, disableLandminesWeight = 5, turretRageWeight = 15;
+        public static int DoNothingWeight = 20, OpenCloseBigDoorsWeight = 20, MessWithLightsWeight = 16, MessWithBreakerWeight = 4, OpenCloseDoorsWeight = 9, lockUnlockDoorsWeight = 3, disableTurretsWeight = 5, disableLandminesWeight = 5, disableSpikeTrapsWeight = 5, turretRageWeight = 15;
 
         public static float chanceToOpenCloseDoor = 0.3f, chanceToLockUnlockDoor = 0.1f, rageTurretsChance = 0.33f;
 
@@ -55,13 +55,14 @@ namespace BrutalCompanyMinus.Minus.Handlers
                     actionCurrentTime = actionTimeCooldown;
                 }
 
-                int[] weights = new int[9] { DoNothingWeight, OpenCloseDoorsWeight, MessWithLightsWeight, MessWithBreakerWeight, OpenCloseDoorsWeight, lockUnlockDoorsWeight, disableTurretsWeight, disableLandminesWeight, turretRageWeight };
+                int[] weights = new int[10] { DoNothingWeight, OpenCloseDoorsWeight, MessWithLightsWeight, MessWithBreakerWeight, OpenCloseDoorsWeight, lockUnlockDoorsWeight, disableTurretsWeight, disableLandminesWeight, disableSpikeTrapsWeight, turretRageWeight };
                 if (ghostCrazyCurrentTime > 0.0f)
                 {
                     weights[0] = 0; // Wont attempt to do nothing when going crazy
                     weights[5] = 0; // Wont attempt to lock or unlock doors when going crazy
                     weights[6] = 0; // Wont attempt to disable turrets whjen going crazy
                     weights[7] = 0; // Wont attempt to disable landmines when going crazy
+                    weights[8] = 0; // Wont attempt to disable spiektraps when going crazy
                 }
                 int ghostDecision = RoundManager.Instance.GetRandomWeightedIndex(weights, rng);
 
@@ -103,7 +104,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                         {
                             if (Convert.ToBoolean(rng.Next(2))) RoundManager.Instance.StartCoroutine(DisableTurret(turret));
                         }
-                        //AttemptToDisableToilHeadTurrets();
+                        AttemptToDisableToilHeadTurrets();
                         break;
                     case 7:
                         Log.LogInfo("Facility ghost attempts to disable landmines");
@@ -121,6 +122,15 @@ namespace BrutalCompanyMinus.Minus.Handlers
                         }
                         break;
                     case 8:
+                        Log.LogInfo("Facility ghost attempts to disable spiketraps");
+
+                        SpikeRoofTrap[] spikeTraps = GameObject.FindObjectsOfType<SpikeRoofTrap>();
+                        foreach (SpikeRoofTrap spikeTrap in spikeTraps)
+                        {
+                            if (Convert.ToBoolean(rng.Next(2))) RoundManager.Instance.StartCoroutine(DisableSpikeTrap(spikeTrap));
+                        }
+                        break;
+                    case 9:
                         Log.LogInfo("Facility ghost attempts to rage turrets");
                         Turret[] _turrets = GameObject.FindObjectsOfType<Turret>();
                         foreach(Turret _turret in _turrets)
@@ -133,7 +143,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                                 _turret.EnterBerserkModeServerRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
                             }
                         }
-                        //AttemptToRageToilHeadTurrets();
+                        AttemptToRageToilHeadTurrets();
                         break;
                 }
             }
@@ -153,7 +163,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private static void AttemptToRageToilHeadTurrets()
         {
-            
             if (!Compatibility.toilheadPresent) return;
 
             ToilHeadTurretBehaviour[] turrets = GameObject.FindObjectsOfType<ToilHeadTurretBehaviour>();
@@ -185,7 +194,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
             toilheadTurret.ToggleTurretEnabled(true);
         }
 
-        
         private static IEnumerator DisableLandmine(Landmine landmine)
         {
             landmine.ToggleMine(false);
@@ -198,6 +206,13 @@ namespace BrutalCompanyMinus.Minus.Handlers
             grabbableLandmine.ToggleMine(false);
             yield return new WaitForSeconds(7.0f);
             grabbableLandmine.ToggleMine(true);
+        }
+
+        private static IEnumerator DisableSpikeTrap(SpikeRoofTrap trap)
+        {
+            trap.ToggleSpikesEnabled(false);
+            yield return new WaitForSeconds(7.0f);
+            trap.ToggleSpikesEnabled(true);
         }
     }
 }

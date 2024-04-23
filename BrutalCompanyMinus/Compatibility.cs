@@ -38,7 +38,10 @@ namespace BrutalCompanyMinus
             emergencyDicePresent = false,
             toilheadPresent = false,
             goldScrapPresent = false,
-            cullFactoryPresent = false;
+            cullFactoryPresent = false,
+            moonsweptPresent = false,
+            shockwaveDronesPresent = false,
+            facelessStalekerPresent = false;
 
         internal static FieldInfo peeperSpawnChance = null;
         internal static NetworkVariable<int>[] mimicNetworkSpawnChances = null;
@@ -164,10 +167,13 @@ namespace BrutalCompanyMinus
             theGiantSpecimensPresent = IsModPresent("TheGiantSpecimens", "GiantShowdown event will now occur.", new GiantShowdown());
             footballPresent = IsModPresent("Kittenji.FootballEntity", "Football event will now occur.", new Football());
             toilheadPresent = IsModPresent("com.github.zehsteam.ToilHead", "Toilhead event will now occur", new ToilHead());
-            emergencyDicePresent = IsModPresent("Theronguard.EmergencyDice", "BadDice and Dice event will now occur.", new BadDice(), new Dice());
+            emergencyDicePresent = IsModPresent("Theronguard.EmergencyDice", "BadDice and Dice events will now occur.", new BadDice(), new Dice());
             goldScrapPresent = IsModPresent("LCGoldScrapMod", "CityOfGold event will now occur", new CityOfGold());
+            moonsweptPresent = IsModPresent("MoonsweptTeam.Moonswept", "Cleaner and MobileTurrets events will now occur", new Cleaners(), new MobileTurrets());
+            shockwaveDronesPresent = IsModPresent("droneenemy", "Shockwave Drones event will now occur", new ShockwaveDrones());
+            facelessStalekerPresent = IsModPresent("sparble.slendermanmod", "SlenderMan event will now occur", new SlenderMan());
         }
-        
+
         private static Assembly GetAssembly(string name)
         {
             if(Chainloader.PluginInfos.ContainsKey(name))

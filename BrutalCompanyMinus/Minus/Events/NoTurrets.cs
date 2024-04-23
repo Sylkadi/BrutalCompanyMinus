@@ -23,13 +23,15 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#008000";
             Type = EventType.Remove;
 
-            EventsToRemove = new List<string>() { nameof(Turrets), nameof(OutsideTurrets), nameof(Warzone), nameof(GrabbableTurrets), nameof(Hell) };
+            EventsToRemove = new List<string>() { nameof(Turrets), nameof(OutsideTurrets), nameof(Warzone), nameof(GrabbableTurrets), nameof(Hell), nameof(MobileTurrets) };
         }
 
         public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.spawnableMapObjects.ToList().Exists(x => x.prefabToSpawn.name == Assets.ObjectNameList[Assets.ObjectName.Turret]);
 
         public override void Execute()
         {
+            Manager.RemoveSpawn("WalkerTurret");
+
             AnimationCurve curve = new AnimationCurve(new Keyframe(0f, 0f));
 
             foreach (SpawnableMapObject obj in RoundManager.Instance.currentLevel.spawnableMapObjects)

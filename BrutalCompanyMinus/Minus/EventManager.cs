@@ -370,7 +370,6 @@ namespace BrutalCompanyMinus.Minus
                 }
             }
 
-
             currentEvents.AddRange(forcedEvents);
             forcedEvents.Clear();
 
