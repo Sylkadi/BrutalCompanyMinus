@@ -23,8 +23,11 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         public static SpawnCycle allAllEnemiesCycle = new SpawnCycle();
 
+        public static System.Random rng;
+
         private void Awake()
         {
+            rng = new System.Random(Environment.TickCount);
             Instance = this;
             spawnCycles = new List<SpawnCycle>();
         }
@@ -70,6 +73,13 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             allAllEnemiesCycle.Reset();
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
+        private static void OnLoadNewLevel()
+        {
+            Active = true;
+        }
+
         public enum SpawnLocation
         {
             Inside, Outside
@@ -89,11 +99,13 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         {
             // Enemy
 
-            public EnemySpawnInfo[] enemies;
+            public List<EnemySpawnInfo> enemies;
 
             public float spawnCycleDuration, spawnAttemptInterval;
 
             public float nothingWeight;
+
+            public bool multiplyBySpawnCurve = true;
 
             private float currentSpawnAttemptIntervalTime;
 
@@ -134,7 +146,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
             public void AttemptSpawnAll()
             {
-                float spawnChanceMultiplier = Instance.GetChanceMultiplier();
+                float spawnChanceMultiplier = multiplyBySpawnCurve ? Instance.GetChanceMultiplier() : 1.0f;
                 Log.LogInfo($"--- Attempting to spawn with a nothingWeight of {nothingWeight} and chanceMultiplier of {spawnChanceMultiplier}");
                 foreach (EnemySpawnInfo spawnInfo in enemies)
                 {
@@ -153,10 +165,11 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
             public SpawnLocation spawnLocation;
 
-            private int currentSpawned;
+            private int currentSpawned; 
 
             public void AttemptSpawn(float nothingWeight, float chanceMultiplier)
             {
+                rng = new System.Random(Net.Instance._seed++);
                 switch (spawnLocation)
                 {
                     case SpawnLocation.Inside:
@@ -171,8 +184,9 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             private void AttemptSpawnInside(float nothingWeight, float chanceMultiplier)
             {
                 float weight = enemyWeight * chanceMultiplier;
+                
                 Log.LogInfo($"### Attempting to spawn {enemy.name} at {weight:F2} weight;");
-                if (UnityEngine.Random.Range(0, weight + nothingWeight) > nothingWeight)
+                if ((float)(rng.NextDouble() * nothingWeight) <= weight)
                 {
                     if (currentSpawned >= spawnCap) return;
                     currentSpawned++;
@@ -189,7 +203,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             {
                 float weight = enemyWeight * chanceMultiplier;
                 Log.LogInfo($"### Attempting to spawn {enemy.name} at {weight:F2} weight;");
-                if (UnityEngine.Random.Range(0, weight + nothingWeight) > nothingWeight)
+                if ((float)(rng.NextDouble() * nothingWeight) <= weight)
                 {
                     if (currentSpawned >= spawnCap) return;
                     currentSpawned++;

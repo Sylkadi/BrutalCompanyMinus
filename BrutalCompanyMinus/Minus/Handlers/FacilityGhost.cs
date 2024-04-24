@@ -104,7 +104,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                         {
                             if (Convert.ToBoolean(rng.Next(2))) RoundManager.Instance.StartCoroutine(DisableTurret(turret));
                         }
-                        AttemptToDisableToilHeadTurrets();
+                        if (Compatibility.toilheadPresent) AttemptToDisableToilHeadTurrets();
                         break;
                     case 7:
                         Log.LogInfo("Facility ghost attempts to disable landmines");
@@ -143,7 +143,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
                                 _turret.EnterBerserkModeServerRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
                             }
                         }
-                        AttemptToRageToilHeadTurrets();
+                        if (Compatibility.toilheadPresent) AttemptToRageToilHeadTurrets();
                         break;
                 }
             }
@@ -151,8 +151,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private static void AttemptToDisableToilHeadTurrets()
         {
-            if (!Compatibility.toilheadPresent) return;
-
             ToilHeadTurretBehaviour[] turrets = GameObject.FindObjectsOfType<ToilHeadTurretBehaviour>();
 
             foreach(ToilHeadTurretBehaviour turret in turrets)
@@ -163,8 +161,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
 
         private static void AttemptToRageToilHeadTurrets()
         {
-            if (!Compatibility.toilheadPresent) return;
-
             ToilHeadTurretBehaviour[] turrets = GameObject.FindObjectsOfType<ToilHeadTurretBehaviour>();
 
             foreach (ToilHeadTurretBehaviour turret in turrets)

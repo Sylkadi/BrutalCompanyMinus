@@ -88,6 +88,8 @@ namespace BrutalCompanyMinus.Minus
 
         internal static bool moveTime = false;
         internal static float moveTimeAmount = 0.0f;
+        internal static float timeSpeedMultiplier = 1.0f;
+        internal static float inverseTimeSpeedMultiplier = 1.0f;
 
         public static class Spawn
         {
@@ -727,18 +729,30 @@ namespace BrutalCompanyMinus.Minus
             HUDManager.Instance.AddTextToChatOnServer(string.Format("<color={0}>{1}{2}■</color>", isPositive ? "#008000" : "#FF0000", isPositive ? "+" : "", amount));
         }
 
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(TimeOfDay), nameof(TimeOfDay.MoveGlobalTime))]
-        private static void OnMoveGlobaTime(ref float ___timeUntilDeadline, ref float ___globalTime)
+        private static void OnMoveGlobaTime(ref TimeOfDay __instance, ref float ___timeUntilDeadline, ref float ___globalTime)
         {
             if(moveTime)
             {
                 ___timeUntilDeadline -= moveTimeAmount;
                 ___globalTime += moveTimeAmount;
+                __instance.globalTimeSpeedMultiplier *= timeSpeedMultiplier;
 
                 moveTimeAmount = 0.0f;
+                inverseTimeSpeedMultiplier = 1.0f / timeSpeedMultiplier;
+                timeSpeedMultiplier = 1.0f;
                 moveTime = false;
             }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StartOfRound), "ShipLeave")]
+        private static void OnShipLeave()
+        {
+            TimeOfDay.Instance.globalTimeSpeedMultiplier *= inverseTimeSpeedMultiplier;
+            inverseTimeSpeedMultiplier = 1.0f;
         }
 
         [HarmonyPostfix]

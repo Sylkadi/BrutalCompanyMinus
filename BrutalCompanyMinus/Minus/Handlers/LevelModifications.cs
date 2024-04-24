@@ -185,7 +185,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
             foreach(float scrapTransmuteAmount in Manager.scrapTransmuteAmount) amount += scrapTransmuteAmount;
             amount /= Manager.scrapTransmuteAmount.Count;
             Manager.scrapTransmuteAmount.Clear();
-            Log.LogFatal(amount);
             int scrapToRemove = Mathf.Clamp((int)(spawnedScrap.Length * amount) + 1, 1, spawnedScrap.Length);
 
             Log.LogInfo($"Transmuting {scrapToRemove} scrap.");

@@ -189,13 +189,14 @@ namespace BrutalCompanyMinus
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void MoveTimeServerRpc(float amount) => MoveTimeClientRpc(amount);
+        public void MoveTimeServerRpc(float amount, float speedMultiplier = 1.0f) => MoveTimeClientRpc(amount, speedMultiplier);
 
         [ClientRpc]
-        public void MoveTimeClientRpc(float amount)
+        public void MoveTimeClientRpc(float amount, float speedMultiplier)
         {
             Manager.moveTime = true;
             Manager.moveTimeAmount += amount;
+            Manager.timeSpeedMultiplier *= speedMultiplier;
         }
 
         private void UpdateAtmosphere(FixedString128Bytes name, bool state)

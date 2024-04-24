@@ -99,7 +99,7 @@ namespace BrutalCompanyMinus
             scaleByScrapInShip = difficultyConfig.Bind("Difficuly Scaling", "Scale by scrap in ship?", true, "Will add to difficulty depending on how much scrap is inside the ship.");
             scrapInShipDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per scrap value in ship?", 0.0025f, "By default +1.0 per 400 scrap in ship");
             scrapInShipDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Scrap in ship difficulty cap", 30.0f, "Scrap in ship difficulty scaling wont add beyond this.");
-            scaleByQuota = difficultyConfig.Bind("Difficuly Scaling", "Scale by quota?", true, "Will add to difficulty depending on how high the quota is.");
+            scaleByQuota = difficultyConfig.Bind("Difficuly Scaling", "Scale by quota?", false, "Will add to difficulty depending on how high the quota is.");
             quotaDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per quota value?", 0.005f, "By default +1.0 per 200 quota");
             quotaDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Quota difficulty cap", 100.0f, "Quota scaling wont add difficulty beyond this");
             scaleByMoonGrade = difficultyConfig.Bind("Difficuly Scaling", "Scale by moon grade?", true, "Will add to difficulty depending on grade of moon you land on.");
@@ -115,7 +115,7 @@ namespace BrutalCompanyMinus
                 { "S+++", difficultyConfig.Bind("Difficuly Scaling", "S+++ grade difficulty", 30.0f, "Difficulty added for moons grade of S+++").Value },
                 { "Other", difficultyConfig.Bind("Difficuly Scaling", "Other grade difficulty", 10.0f, "For every other grade, use this value.").Value },
             };
-            scaleByWeather = difficultyConfig.Bind("Difficuly Scaling", "Scale by weather type?", true, "Will add to difficulty depending on weather of moon you land on.");
+            scaleByWeather = difficultyConfig.Bind("Difficuly Scaling", "Scale by weather type?", false, "Will add to difficulty depending on weather of moon you land on.");
             weatherAdditives = new Dictionary<LevelWeatherType, float>()
             {
                 { LevelWeatherType.None, difficultyConfig.Bind("Difficuly Scaling", "None weather difficulty", 0.0f, "Difficulty added for playing on None weather").Value },
@@ -429,7 +429,7 @@ namespace BrutalCompanyMinus
 
             allEnemiesCycle = new SpawnCycle()
             {
-                enemies = allSpawnInfos.ToArray(),
+                enemies = allSpawnInfos,
                 nothingWeight = allEnemiesConfig.Bind("_All Enemies", "All enemies nothing weight", 400.0f, "This is the weight chance for a spawn to not occur.").Value,
                 spawnAttemptInterval = allEnemiesConfig.Bind("_All Enemies", "Spawn interval", 86.0f, "How often will this cycle attempt to spawn an enemy? in seconds").Value,
                 spawnCycleDuration = 0.0f
@@ -496,7 +496,7 @@ namespace BrutalCompanyMinus
 
             allAllEnemiesCycle = new SpawnCycle()
             {
-                enemies = allAllSpawnInfos.ToArray(),
+                enemies = allAllSpawnInfos,
                 nothingWeight = allEnemiesConfig.Bind("_All All Enemies", "All enemies nothing weight", 400.0f, "This is the weight chance for a spawn to not occur.").Value,
                 spawnAttemptInterval = allEnemiesConfig.Bind("_All All Enemies", "Spawn interval", 86.0f, "How often will this cycle attempt to spawn enemies? in seconds").Value,
                 spawnCycleDuration = 0.0f

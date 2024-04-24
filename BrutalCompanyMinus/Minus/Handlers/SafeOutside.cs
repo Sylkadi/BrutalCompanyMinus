@@ -11,12 +11,12 @@ namespace BrutalCompanyMinus.Minus.Handlers
     [HarmonyPatch]
     internal class SafeOutside
     {
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(RoundManager), "RefreshEnemiesList")]
-        private static void OnRefreshEnemiesList(ref RoundManager __instance)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(RoundManager), "AssignRandomEnemyToVent")]
+        private static void OnAssignRandomEnemyToVent(ref RoundManager __instance)
         {
             if (!Events.SafeOutside.Active) return;
-            __instance.currentOutsideEnemyPower = __instance.currentMaxOutsidePower;
+            __instance.currentMaxOutsidePower = 0;
         }
 
         [HarmonyPostfix]

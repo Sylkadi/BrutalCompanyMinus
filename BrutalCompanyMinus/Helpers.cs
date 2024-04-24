@@ -47,6 +47,17 @@ namespace BrutalCompanyMinus
             return newMapObjects;
         }
 
+        public static WeatherEffect[] Add(this WeatherEffect[] toObjects, WeatherEffect newObject)
+        {
+            WeatherEffect[] newMapObjects = new WeatherEffect[toObjects.Length + 1];
+            for (int i = 0; i < toObjects.Length; i++)
+            {
+                newMapObjects[i] = toObjects[i];
+            }
+            newMapObjects[toObjects.Length] = newObject;
+            return newMapObjects;
+        }
+
         public static Vector3 GetRandomNavMeshPositionInBox(Vector3 pos, float minRadius, float maxRadius)
         {
             float halfPointRadius = (maxRadius + minRadius) * 0.5f;
@@ -277,6 +288,11 @@ namespace BrutalCompanyMinus
         private static float Cross(this Vector2 a, Vector2 b)
         {
             return a.x * b.y - a.y * b.x;
+        }
+
+        public class Generics<T>
+        {
+
         }
 
         private class CircularList<T> : List<T>

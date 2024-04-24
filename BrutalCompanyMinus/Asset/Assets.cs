@@ -12,6 +12,7 @@ using BrutalCompanyMinus.Minus.Events;
 using System.Reflection.Emit;
 using JetBrains.Annotations;
 using BrutalCompanyMinus.Minus.MonoBehaviours;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace BrutalCompanyMinus
 {
@@ -95,7 +96,7 @@ namespace BrutalCompanyMinus
         // Custom Assets
         internal static EnemyType antiCoilHead, nutSlayer, kamikazieBug;
         internal static Item slayerShotgun, grabbableTurret, grabbableLandmine;
-        internal static GameObject artilleryShell, artillerySirens, bunkerEntrance, bunkerEscape, teleportAudio;
+        internal static GameObject artilleryShell, artillerySirens, bunkerEntrance, bunkerEscape, teleportAudio, bloodRain;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
@@ -114,6 +115,7 @@ namespace BrutalCompanyMinus
             bunkerEntrance = (GameObject)customAssetBundle.LoadAsset("BunkerEntrance");
             bunkerEscape = (GameObject)customAssetBundle.LoadAsset("BunkerEscape");
             teleportAudio = (GameObject)customAssetBundle.LoadAsset("TeleportAudioSource");
+            bloodRain = (GameObject)customAssetBundle.LoadAsset("BloodRainParticleContainer");
 
             RegisterNetworkPrefabs(antiCoilHead.enemyPrefab, nutSlayer.enemyPrefab, kamikazieBug.enemyPrefab, slayerShotgun.spawnPrefab, grabbableTurret.spawnPrefab, grabbableLandmine.spawnPrefab, artillerySirens, bunkerEntrance, bunkerEscape);
         }
@@ -126,6 +128,18 @@ namespace BrutalCompanyMinus
             }
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(TimeOfDay), "Start")]
+        private static void OnTimeOfODayStart(ref TimeOfDay __instance)
+        {
+            GameObject bloodyRain = GameObject.Instantiate(bloodRain);
+            LocalVolumetricFog fog = bloodyRain.transform.Find("Foggy").GetComponent<LocalVolumetricFog>();
+            fog.parameters.albedo = new Color(0.25f, 0.35f, 0.55f, 1f);
+            fog.parameters.meanFreePath = 80.0f;
+            fog.parameters.size.y = 255f;
+
+            __instance.effects = __instance.effects.Add(new WeatherEffect() { name = "bloodyrain", effectObject = bloodyRain, effectPermanentObject = null, lerpPosition = false, effectEnabled = false });
+        }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StartOfRound), "Start")]
