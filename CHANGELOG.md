@@ -1,5 +1,33 @@
 # ChangeLog
 <details>
+  <summary>0.13.0</summary>
+
+  - Resacled every event to fit the 0 => 100 where as old was 0 => 60, and some other rescaling.
+  - Messed with the config alot(Sorry but I had to)
+  
+  - Added 1 new vanilla events
+  - (Bad) HolidaySeason: Transmutes scrap to eggs and gift boxes and spawns nutcrackers and hoarding bugs.
+
+  - Added 4 new modded events, Moonswept, ShockwaveDrones and FacelessStalker mod
+  - (Bad) Cleaners: Spawns cleaners inside.
+  - (Bad) MobileTurrets: Spawns walking turrets inside.
+  - (Bad) ShockwaveDrones: Spawns shockwave drones inside.
+  - (VeryBad) SlenderMan: Spawns slenderman.
+
+  - SafeOutside should now properly prevent outside spawns.
+  - Fixed FullAccess event not working when loading in for too long.
+  - Transmutation events now only transmute a percent(Most events will scale 50% at difficulty 0 to 90% at difficulty 50)
+  - Fixed an issue with cullfactory and passages(MoreExits event).
+  - Added eventType pecrentages when UI text is cleared.
+  - Warzone artillery will now ignore the TriggerLayer, Sometimes it used to blow up midair for no reason.
+  - GrabbableLandmines should now be synced properly.(Not buggy I hope)
+  - LateShip And EarlyShip time values is now synced between all clients.
+  - Added quota and weather scaling(Disabled by default)
+  - Reworked hell event(Same idea but a little different)
+  - And other things I forgot about.
+
+</details>
+<details>
   <summary>0.12.1</summary>
   
   - AllWeather event will now only spawn possible weathers on said moon and can only appear on moons with 2 or more weathers.
