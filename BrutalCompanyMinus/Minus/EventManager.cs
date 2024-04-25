@@ -312,10 +312,35 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
+        public struct DifficultyTransition : IComparable<DifficultyTransition>
+        {
+            public string name;
+            public string description;
+            public float above;
+
+            public DifficultyTransition(string name, string description, float above)
+            {
+                this.name = name;
+                this.description = description;
+                this.above = above;
+            }
+
+            public int CompareTo(DifficultyTransition other)
+            {
+                return above.CompareTo(other.above);
+            }
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
         private static void ModifyLevel(ref SelectableLevel newLevel)
         {
+            Log.LogInfo("Executing OnShipLeave() for current events.");
+            foreach (MEvent e in EventManager.currentEvents)
+            {
+                e.OnShipLeave();
+            }
+
             UI.canClearText = false;
             Manager.ComputeDifficultyValues();
 

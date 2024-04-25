@@ -106,6 +106,8 @@ namespace BrutalCompanyMinus
             return ((int)Mathf.Clamp(r * 255, 15.0f, 255.0f)).ToString("X2") + ((int)Mathf.Clamp(g * 255, 0.0f, 255.0f)).ToString("X2") + "00";
         }
 
+        private static float InBetween(float min, float max, float at) => (at * (max - min)) + min;
+
         public static string GetDifficultyText(float difficulty)
         {
             string difficultyText = "Easy";

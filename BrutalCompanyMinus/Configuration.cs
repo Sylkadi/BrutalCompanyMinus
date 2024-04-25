@@ -43,6 +43,7 @@ namespace BrutalCompanyMinus
         public static Scale
             spawnChanceMultiplierScaling = new Scale(), insideEnemyMaxPowerCountScaling = new Scale(), outsideEnemyPowerCountScaling = new Scale(), enemyBonusHpScaling = new Scale(), spawnCapMultiplier = new Scale(),
             scrapAmountMultiplier = new Scale(), scrapValueMultiplier = new Scale(), insideSpawnChanceAdditive = new Scale(), outsideSpawnChanceAdditive = new Scale();
+        public static float[] difficultyNameBreakPoints;
         public static ConfigEntry<bool> ignoreMaxCap;
         public static ConfigEntry<float> difficultyMaxCap;
         public static ConfigEntry<bool> scaleByDaysPassed, scaleByScrapInShip, scaleByMoonGrade, scaleByWeather, scaleByQuota;

@@ -247,8 +247,10 @@ namespace BrutalCompanyMinus
 
             foreach (SelectableLevel level in StartOfRound.Instance.levels)
             {
+                if (level == null || level.spawnableMapObjects == null) continue;
                 foreach (SpawnableMapObject obj in level.spawnableMapObjects)
                 {
+                    if(obj == null || obj.prefabToSpawn == null) continue;
                     if (insideObjectList.FindIndex(o => o.prefabToSpawn.name == obj.prefabToSpawn.name) < 0) // If dosent exist in list then add
                     {
                         insideObjectList.Add(obj);
@@ -257,6 +259,7 @@ namespace BrutalCompanyMinus
 
                 foreach (SpawnableOutsideObjectWithRarity obj in level.spawnableOutsideObjects)
                 {
+                    if(obj == null || obj.spawnableObject == null || obj.spawnableObject.prefabToSpawn == null) continue;
                     if (outsideObjectList.FindIndex(o => o.spawnableObject.prefabToSpawn.name == obj.spawnableObject.prefabToSpawn.name) < 0) // If dosent exist in list then add
                     {
                         outsideObjectList.Add(obj);
