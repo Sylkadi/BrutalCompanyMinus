@@ -18,12 +18,12 @@
 
 | Event Type | Base Weight | Increment | MinCap | MaxCap |
 |-|-|-|-|-|
-| Very Good | 2 | 0.1 | 5 | 12 |
-| Good | 23 | -0.267 | 15 | 23 |
-| Neutral | 15 | -0.167 | 10 | 15 |
-| Bad | 50 | -0.4 | 10 | 50 |
-| Very Bad | 0 | 0.4 | 0 | 40 |
-| Remove Enemy | 15 | -0.167 | 10 | 15 |
+| Very Good | 3 | 0.14 | 3 | 17 |
+| Good | 23 | -0.1 | 13 | 23 |
+| Neutral | 10 | -0.05 | 5 | 10 |
+| Bad | 40 | -0.15 | 25 | 40 |
+| Very Bad | 5 | 0.25 | 5 | 30 |
+| Remove Enemy | 15 | -0.05 | 10 | 15 |
 
 </details>
 <details>
@@ -190,6 +190,7 @@
 | Spike Traps | Will spawn spike traps inside |
 | Flower Snake | Will spawn flower snakes inside and outside |
 | Late Ship | Time will start a little later |
+| Holiday Season | Turns scrap into mystery boxes and eggs and spawns nutcrackers and hoarding bugs inside |
   </details>
 
   <details>
@@ -226,7 +227,7 @@
   <summary><b>Modded Event List</b></summary>
   
   - These events will only appear with said mods installed
-  - Currently supported mods are Lethalthings, Diversity, Scopophobia, HerobrineMod, SirenHead, RollingGiant, TheFiend, Lockers, TheGiantSpecimens, Football, Mimics, LCGoldScrapMod, Toilhead, EmergencyDice and Peepers
+  - Currently supported mods are Lethalthings, Diversity, Scopophobia, HerobrineMod, SirenHead, RollingGiant, TheFiend, Lockers, TheGiantSpecimens, Football, Mimics, LCGoldScrapMod, Toilhead, Moonswept, ShockwaveDrones, FacelessStalker, EmergencyDice and Peepers
   
   <details>
     <summary><b>Very Good</b></summary>
@@ -281,6 +282,9 @@
 | ImmortalSnail | Spawns the immortal snail inside |
 | Lockers | Spawns the lockers inside |
 | Football | Spawns football inside |
+| Cleaners | Spawns cleaners inside |
+| Mobile Turrets | Spawns Walking turrets Inside |
+| Shockwave Drones | Spawns ShockwaveDrones inside |
   </details>
 
   <details>
@@ -295,6 +299,7 @@
 | ShyGuy | Will spawn the shyguy | 
 | GiantShowdown | Will spawn the redwood giant and giants outside |
 | Bad Dice | Only spawns bad dice |
+| SlenderMan | Spawns slender man |
     
   </details>
   
