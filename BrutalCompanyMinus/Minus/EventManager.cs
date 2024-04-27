@@ -259,8 +259,58 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
+        internal static void ExecuteOnShipLeave()
+        {
+            Log.LogInfo("Executing OnShipLeave for all events()");
+            foreach(MEvent e in events)
+            {
+                e.OnShipLeave();
+            }
+
+            foreach(MEvent e in vanillaEvents)
+            {
+                e.OnShipLeave();
+            }
+
+            foreach(MEvent e in moddedEvents)
+            {
+                e.OnShipLeave();
+            }
+
+            foreach(MEvent e in customEvents)
+            {
+                e.OnShipLeave();
+            }
+        }
+
+        internal static void ExecuteOnGameStart()
+        {
+            Log.LogInfo("Executing OnGameStart for all events()");
+            foreach (MEvent e in events)
+            {
+                e.OnGameStart();
+            }
+
+            foreach (MEvent e in vanillaEvents)
+            {
+                e.OnGameStart();
+            }
+
+            foreach (MEvent e in moddedEvents)
+            {
+                e.OnGameStart();
+            }
+
+            foreach (MEvent e in customEvents)
+            {
+                e.OnGameStart();
+            }
+        }
+
         internal static void UpdateAllEventWeights()
         {
+            if (Configuration.useCustomWeights.Value) return;
+
             float fix(float value) // This is to avoid division by zero
             {
                 if (value < 1) return 1;
@@ -287,7 +337,6 @@ namespace BrutalCompanyMinus.Minus
                 Log.LogInfo($"Set eventType weight for {((MEvent.EventType)Enum.ToObject(typeof(MEvent.EventType), i)).ToString()} to {newEventWeights[i]}");
             }
 
-
             foreach(MEvent e in events) e.Weight = newEventWeights[(int)e.Type];
         }
 
@@ -305,6 +354,7 @@ namespace BrutalCompanyMinus.Minus
 
         internal static void UpdateEventDescriptions(List<MEvent> events)
         {
+            if (!Configuration.displayEvents.Value) return;
             currentEventDescriptions.Clear();
             foreach(MEvent e in events)
             {
@@ -335,12 +385,7 @@ namespace BrutalCompanyMinus.Minus
         [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.LoadNewLevel))]
         private static void ModifyLevel(ref SelectableLevel newLevel)
         {
-            Log.LogInfo("Executing OnShipLeave() for current events.");
-            foreach (MEvent e in EventManager.currentEvents)
-            {
-                e.OnShipLeave();
-            }
-
+            ExecuteOnShipLeave();
             UI.canClearText = false;
             Manager.ComputeDifficultyValues();
 

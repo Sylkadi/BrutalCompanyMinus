@@ -28,23 +28,15 @@ namespace BrutalCompanyMinus.Minus.Handlers
         {
             if (!Configuration.Initalized) return;
             EventManager.forcedEvents.Clear();
-            Log.LogInfo("Executing OnGameStart() for all events");
             UI.canClearText = true;
-            foreach(MEvent e in EventManager.events)
-            {
-                e.OnGameStart();
-            }
+            EventManager.ExecuteOnGameStart();
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(StartOfRound), "ShipLeave")]
         public static void OnShipLeave()
         {
-            Log.LogInfo("Executing OnShipLeave() for current events.");
-            foreach (MEvent e in EventManager.currentEvents)
-            {
-                e.OnShipLeave();
-            }
+            EventManager.ExecuteOnShipLeave();
             EventManager.currentEvents.Clear();
 
             Net.Instance.ClearGameObjectsClientRpc(); // Clear all previously placed objects on all clients

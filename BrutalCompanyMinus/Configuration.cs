@@ -58,7 +58,7 @@ namespace BrutalCompanyMinus
 
         // UI settings
         public static ConfigEntry<string> UIKey;
-        public static ConfigEntry<bool> NormaliseScrapValueDisplay, EnableUI, ShowUILetterBox, ShowExtraProperties, PopUpUI, DisplayUIAfterShipLeaves, DisplayExtraPropertiesAfterShipLeaves;
+        public static ConfigEntry<bool> NormaliseScrapValueDisplay, EnableUI, ShowUILetterBox, ShowExtraProperties, PopUpUI, DisplayUIAfterShipLeaves, DisplayExtraPropertiesAfterShipLeaves, displayEvents;
         public static ConfigEntry<float> UITime, scrollSpeed;
 
         // Custom assets settings
@@ -189,6 +189,7 @@ namespace BrutalCompanyMinus
             scrollSpeed = uiConfig.Bind("UI Options", "Scroll speed", 1.0f, "Multiplier speed on scrolling with arrows.");
             DisplayUIAfterShipLeaves = uiConfig.Bind("UI Options", "Display UI after ship leaves?", false, "Will only display event's after ship has left.");
             DisplayExtraPropertiesAfterShipLeaves = uiConfig.Bind("UI Options", "Display extra properties on UI after ship Leaves?", true, "This will show Event Type raritys for next day and difficulty info.");
+            displayEvents = uiConfig.Bind("UI Options", "Display events?", true, "Having this set to false wont show events in the UI.");
 
             // Event settings
             void RegisterEvents(ConfigFile toConfig, List<MEvent> events)
@@ -366,7 +367,7 @@ namespace BrutalCompanyMinus
             EventManager.events = newEvents;
 
             EventManager.UpdateEventTypeCounts();
-            if (!useCustomWeights.Value) EventManager.UpdateAllEventWeights();
+            EventManager.UpdateAllEventWeights();
 
             Log.LogInfo(
                 $"\n\nTotal Events:{EventManager.events.Count},   Disabled Events:{EventManager.disabledEvents.Count},   Total Events - Remove Count:{EventManager.events.Count - EventManager.eventTypeCount[5]}\n" +

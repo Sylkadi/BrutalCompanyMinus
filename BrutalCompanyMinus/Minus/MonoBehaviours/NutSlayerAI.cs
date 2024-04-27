@@ -141,6 +141,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             setHp = Configuration.nutSlayerHp.Value;
             Lives = Configuration.nutSlayerLives.Value;
             Immortal = Configuration.nutSlayerImmortal.Value;
+            enemyType.canDie = Immortal;
 
             enemyHP = setHp;
         }
@@ -953,9 +954,24 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             }
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        private void SetLivesServerRpc(int value) => SetLivesClientRpc(value);
+
+        [ClientRpc]
+        private void SetLivesClientRpc(int value) => Lives = value;
+
         public override void KillEnemy(bool destroy = false)
         {
             if (Immortal) return;
+
+            Lives--;
+            if(NetworkManager.Singleton.IsServer) SetLivesServerRpc(Lives);
+
+            if (Lives > 0)
+            {
+                return;
+            }
+
             base.KillEnemy(destroy);
             targetTorsoDegrees = 0;
             StopInspection();
@@ -975,7 +991,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             SpawnShotgunShells();
         }
 
-        // Copy from zeeker's for both v49 and v50 compat
+        // Copy from zeeker's
         public bool HasLineOfSightToPositionCopy(Vector3 pos, float width = 45f, int range = 60, float proximityAwareness = -1f)
         {
             if (eye == null)
