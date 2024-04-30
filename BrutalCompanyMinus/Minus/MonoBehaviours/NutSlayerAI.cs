@@ -141,7 +141,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             setHp = Configuration.nutSlayerHp.Value;
             Lives = Configuration.nutSlayerLives.Value;
             Immortal = Configuration.nutSlayerImmortal.Value;
-            enemyType.canDie = Immortal;
+            enemyType.canDie = !Immortal;
 
             enemyHP = setHp;
         }
@@ -946,10 +946,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                 }
                 if (enemyHP <= 0 && IsOwner)
                 {
-                    enemyHP = setHp;
-                    Lives--;
-                    Log.LogInfo(string.Format("Nutslayer new lives:{0}", Lives));
-                    if (Lives <= 0) KillEnemyOnOwnerClient();
+                    KillEnemyOnOwnerClient();
                 }
             }
         }
@@ -958,13 +955,18 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         private void SetLivesServerRpc(int value) => SetLivesClientRpc(value);
 
         [ClientRpc]
-        private void SetLivesClientRpc(int value) => Lives = value;
+        private void SetLivesClientRpc(int value)
+        {
+            Lives = value;
+            enemyHP = setHp;
+        }
 
         public override void KillEnemy(bool destroy = false)
         {
             if (Immortal) return;
 
             Lives--;
+            enemyHP = setHp;
             if(NetworkManager.Singleton.IsServer) SetLivesServerRpc(Lives);
 
             if (Lives > 0)

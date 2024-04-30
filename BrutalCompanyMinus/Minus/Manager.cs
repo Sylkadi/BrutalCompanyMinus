@@ -489,7 +489,6 @@ namespace BrutalCompanyMinus.Minus
                 weatherDifficulty = Configuration.weatherAdditives.GetValueOrDefault(StartOfRound.Instance.currentLevel.currentWeather, 0.0f);
                 difficulty += weatherDifficulty;
             }
-
             difficulty = Mathf.Clamp(difficulty, 0.0f, Configuration.difficultyMaxCap.Value);
         }
 

@@ -11,7 +11,6 @@ using static BrutalCompanyMinus.Minus.MonoBehaviours.EnemySpawnCycle;
 using static BrutalCompanyMinus.Assets;
 using static BrutalCompanyMinus.Helper;
 using BrutalCompanyMinus.Minus.MonoBehaviours;
-using UnityEngine.Experimental.AI;
 
 namespace BrutalCompanyMinus
 {
@@ -38,6 +37,7 @@ namespace BrutalCompanyMinus
         public static ConfigEntry<float> goodEventIncrementMultiplier, badEventIncrementMultiplier;
         public static float[] weightsForExtraEvents;
         public static Scale[] eventTypeScales = new Scale[6];
+        public static EventManager.DifficultyTransition[] difficultyTransitions;
         public static ConfigEntry<bool> enableQuotaChanges;
         public static ConfigEntry<int> deadLineDaysAmount, startingCredits, startingQuota, baseIncrease, increaseSteepness;
         public static Scale
@@ -92,6 +92,8 @@ namespace BrutalCompanyMinus
                 getScale(difficultyConfig.Bind("_EventType Weights", "Remove event scale", "15, -0.05, 10, 15", "These events remove something   " + scaleDescription).Value)
             };
 
+            difficultyTransitions = GetDifficultyTransitionsFromString(difficultyConfig.Bind("Difficulty Scaling", "Difficulty Transitions", "Easy,00FF00,0|Medium,008000,15|Hard,FF0000,30|Very Hard,800000,50|Insane,140000,75", "Format: NAME,HEX,ABOVE, above is the value the name will be shown at.").Value);
+
             ignoreMaxCap = difficultyConfig.Bind("Difficuly Scaling", "Ignore max cap?", false, "Will ignore max cap if true, upperlimit is dictated by difficulty max cap setting as well.");
             difficultyMaxCap = difficultyConfig.Bind("Difficuly Scaling", "Difficulty max cap", 100.0f, "The difficulty value wont go beyond this.");
             scaleByDaysPassed = difficultyConfig.Bind("Difficuly Scaling", "Scale by days passed?", true, "Will add to difficulty depending on how many days have passed.");
@@ -104,18 +106,7 @@ namespace BrutalCompanyMinus
             quotaDifficultyMultiplier = difficultyConfig.Bind("Difficuly Scaling", "Difficulty per quota value?", 0.005f, "By default +1.0 per 200 quota");
             quotaDifficultyCap = difficultyConfig.Bind("Difficuly Scaling", "Quota difficulty cap", 100.0f, "Quota scaling wont add difficulty beyond this");
             scaleByMoonGrade = difficultyConfig.Bind("Difficuly Scaling", "Scale by moon grade?", true, "Will add to difficulty depending on grade of moon you land on.");
-            gradeAdditives = new Dictionary<string, float>()
-            {
-                { "D", difficultyConfig.Bind("Difficuly Scaling", "D grade difficulty", -8.0f, "Difficulty added for moons grade of D").Value },
-                { "C", difficultyConfig.Bind("Difficuly Scaling", "C grade difficulty", -8.0f, "Difficulty added for moons grade of C").Value },
-                { "B", difficultyConfig.Bind("Difficuly Scaling", "B grade difficulty", -4.0f, "Difficulty added for moons grade of B").Value },
-                { "A", difficultyConfig.Bind("Difficuly Scaling", "A grade difficulty", 5.0f, "Difficulty added for moons grade of A").Value },
-                { "S", difficultyConfig.Bind("Difficuly Scaling", "S grade difficulty", 10.0f, "Difficulty added for moons grade of S").Value },
-                { "S+", difficultyConfig.Bind("Difficuly Scaling", "S+ grade difficulty", 15.0f, "Difficulty added for moons grade of S+").Value },
-                { "S++", difficultyConfig.Bind("Difficuly Scaling", "S++ grade difficulty", 20.0f, "Difficulty added for moons grade of S++").Value },
-                { "S+++", difficultyConfig.Bind("Difficuly Scaling", "S+++ grade difficulty", 30.0f, "Difficulty added for moons grade of S+++").Value },
-                { "Other", difficultyConfig.Bind("Difficuly Scaling", "Other grade difficulty", 10.0f, "For every other grade, use this value.").Value },
-            };
+            gradeAdditives = GetMoonRiskFromString(difficultyConfig.Bind("Difficuly Scaling", "Grade difficulty scaling", "D,-8|C,-8|B,-4|A,5|S,10|S+,15|S++,20|S+++,30|Other,10", "Format: GRADE,DIFFICULTY, Do not remove 'Other'").Value);
             scaleByWeather = difficultyConfig.Bind("Difficuly Scaling", "Scale by weather type?", false, "Will add to difficulty depending on weather of moon you land on.");
             weatherAdditives = new Dictionary<LevelWeatherType, float>()
             {

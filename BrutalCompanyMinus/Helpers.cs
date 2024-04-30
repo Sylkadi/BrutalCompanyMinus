@@ -8,6 +8,7 @@ using static BrutalCompanyMinus.Minus.MEvent;
 using System.Globalization;
 using BrutalCompanyMinus.Minus;
 using UnityEngine.AI;
+using static BrutalCompanyMinus.Minus.EventManager;
 
 namespace BrutalCompanyMinus
 {
@@ -77,57 +78,46 @@ namespace BrutalCompanyMinus
 
         public static string GetPercentage(float value) => (value * 100.0f).ToString("F1") + "%";
 
-        public static string GetDifficultyColorHex(float difficulty, float cap) // (0, 255, 0) => (0, 127, 0) => (255, 0, 0) => (127, 0, 0) => (40, 0, 0) => (15, 0, 0)
+        public static string GetDifficultyColorHex(float difficulty, float cap)
         {
-            if (cap < 1) cap = 1.0f;
+            if (cap == 0) cap = 1.0f;
             difficulty *= Configuration.difficultyMaxCap.Value / cap;
 
-            if (difficulty < 0.0f) difficulty = 0.0f;
+            DifficultyTransition[] chosenAndNextTransitions = GetChosenAndNextTransition(difficulty);
 
-            float r = 0.0f, g = 0.0f;
-            if(difficulty >= 0.0f && difficulty < 10.0f)
-            {
-                g = 1.0f;
-            } else if (difficulty >= 10.0f && difficulty < 20.0f)
-            {
-                g = 1.5f - (difficulty * 0.05f);
-            } else if(difficulty >= 20.0f && difficulty < 35.0f)
-            {
-                r = (difficulty * 0.067f) - 1.3334f;
-                g = 1.16667f - (difficulty * 0.034f);
-            } else if (difficulty >= 35.0f && difficulty < 60.0f)
-            {
-                r = 1.7f - (difficulty * 0.02f);
-            } else if (difficulty >= 60.0f)
-            {
-                r = 1 - (difficulty * 0.0084f);
-            }
-
-            return ((int)Mathf.Clamp(r * 255, 15.0f, 255.0f)).ToString("X2") + ((int)Mathf.Clamp(g * 255, 0.0f, 255.0f)).ToString("X2") + "00";
+            return chosenAndNextTransitions[0].GetTransitionHex(chosenAndNextTransitions[1]);
         }
 
-        private static float InBetween(float min, float max, float at) => (at * (max - min)) + min;
-
-        public static string GetDifficultyText(float difficulty)
+        public static string GetDifficultyText()
         {
-            string difficultyText = "Easy";
-            if (difficulty >= 15.0f && difficulty < 30.0f)
+            DifficultyTransition[] chosenAndNextTransitions = GetChosenAndNextTransition(Manager.difficulty);
+            return $"<color=#{chosenAndNextTransitions[0].GetTransitionHex(chosenAndNextTransitions[1])}>{chosenAndNextTransitions[0].name}</color>";
+        }
+        public static DifficultyTransition[] GetChosenAndNextTransition(float difficulty)
+        {
+            DifficultyTransition chosenTransition = Configuration.difficultyTransitions[0],
+                                 nextTransition = Configuration.difficultyTransitions[0];
+
+            int index = 0;
+            for (int i = 0; i < Configuration.difficultyTransitions.Length; i++)
             {
-                difficultyText = "Medium";
+                if (Configuration.difficultyTransitions[i].above <= difficulty)
+                {
+                    chosenTransition = Configuration.difficultyTransitions[i];
+                    index = i;
+                }
             }
-            else if (difficulty >= 30.0f && difficulty < 50.0f)
+
+            if (index == Configuration.difficultyTransitions.Length - 1)
             {
-                difficultyText = "Hard";
+                nextTransition = chosenTransition;
             }
-            else if(difficulty >= 50.0f && difficulty < 75.0f)
+            else
             {
-                difficultyText = "Very hard";
-            } 
-            else if(difficulty >= 75.0f)
-            {
-                difficultyText = "Insane";
+                nextTransition = Configuration.difficultyTransitions[index + 1];
             }
-            return difficultyText;
+
+            return new DifficultyTransition[] { chosenTransition, nextTransition };
         }
 
         public static Vector3 GetSafePosition(List<Vector3> nodes, List<Vector3> denialNodes, float radius, int seed)
@@ -244,6 +234,66 @@ namespace BrutalCompanyMinus
         {
             if (text.IsNullOrWhiteSpace()) return new List<string>() { "" };
             return text.Split("|").ToList();
+        }
+
+        public static DifficultyTransition[] GetDifficultyTransitionsFromString(string s)
+        {
+            string[] strings = s.Split("|");
+
+            DifficultyTransition[] transitions = new DifficultyTransition[strings.Length];
+
+            for(int i = 0; i < strings.Length; i++)
+            {
+                string[] properties = strings[i].Split(",");
+                if(properties.Length != 3)
+                {
+                    Log.LogError($"DifficultyTransition config entry is of length:{properties.Length}, must be of length 3, returning a working version of difficultyTransitions.");
+                    return new DifficultyTransition[2] { new DifficultyTransition("Easy", "FFFFFF", 10.0f), new DifficultyTransition("Medium", "000000", 20.0f) }; 
+                }
+
+                float value = i;
+                try
+                {
+                    value = float.Parse(properties[2]);
+                } catch
+                {
+                    Log.LogError($"Failed to parse number from difficulty transition, value is going to be {i}.");
+                }
+
+                transitions[i] = new DifficultyTransition(properties[0], properties[1], value);
+            }
+
+            Array.Sort(transitions);
+            return transitions;
+        }
+
+
+        public static Dictionary<string, float> GetMoonRiskFromString(string text)
+        {
+            Dictionary<string, float> moonRiskValues = new Dictionary<string, float>();
+
+            string[] strings = text.Split("|");
+
+            for(int i = 0; i < strings.Length; i++)
+            {
+                string[] properties = strings[i].Split(",");
+
+                float value = 0.0f;
+                try
+                {
+                    value = float.Parse(properties[1]);
+                } catch
+                {
+                    Log.LogError($"Moon Risk Difficulty Entry contains a value that isn't a number, value will be 0, attempted input {properties[1]}.");
+                }
+
+                if (!moonRiskValues.TryAdd(properties[0], value))
+                {
+                    Log.LogError($"Entry {properties[0]} already exists in the dicitionary.");
+                }
+            }
+
+            return moonRiskValues;
         }
 
         public static IList<Vector2> ComputeConvexHull(List<Vector2> points, bool sortInPlace = false) // Taken from https://gist.github.com/dLopreiato/7fd142d0b9728518552188794b8a750c

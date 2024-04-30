@@ -364,16 +364,49 @@ namespace BrutalCompanyMinus.Minus
 
         public struct DifficultyTransition : IComparable<DifficultyTransition>
         {
+            internal const uint byteMask = 0b_00000000_00000000_00000000_11111111;
+
             public string name;
-            public string description;
+            public string hex;
             public float above;
 
-            public DifficultyTransition(string name, string description, float above)
+            public uint[] rgb;
+
+            public DifficultyTransition(string name, string hex, float above)
             {
                 this.name = name;
-                this.description = description;
+                this.hex = hex;
                 this.above = above;
+
+                rgb = new uint[3];
+                uint parsedValue = 0;
+                try
+                {
+                    parsedValue = uint.Parse(hex, System.Globalization.NumberStyles.HexNumber);
+                } catch
+                {
+                    Log.LogError("Failed to parse hex.");
+                }
+
+                rgb[0] = (parsedValue >> 16) & byteMask; // r
+                rgb[1] = (parsedValue >> 8) & byteMask;  // g
+                rgb[2] = parsedValue & byteMask;         // b
+
+                Log.LogFatal($"r:{rgb[0]}, g:{rgb[1]}, b:{rgb[2]}");
             }
+
+            public string GetTransitionHex(DifficultyTransition next)
+            {
+                float at = Mathf.Clamp((next.above - Manager.difficulty) / (next.above - above), 0.0f, 1.0f);
+
+                uint newR = InBetween(rgb[0], next.rgb[0], at);
+                uint newG = InBetween(rgb[1], next.rgb[1], at);
+                uint newB = InBetween(rgb[2], next.rgb[2], at);
+
+                return newR.ToString("X2") + newG.ToString("X2") + newB.ToString("X2");
+            }
+
+            private uint InBetween(uint min, uint max, float at) => (uint)Mathf.Clamp((at * (max - min)) + min, 0.0f, 255.0f);
 
             public int CompareTo(DifficultyTransition other)
             {

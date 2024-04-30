@@ -241,7 +241,7 @@ namespace BrutalCompanyMinus
         private static string GetDifficultyText()
         {
             string text =
-                $"<br>Difficulty: <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Helper.GetDifficultyText(Manager.difficulty)}</color>" +
+                $"<br>Difficulty: {Helper.GetDifficultyText()}" +
                 $"<br> -Difficulty:  <color=#{Helper.GetDifficultyColorHex(Manager.difficulty, Configuration.difficultyMaxCap.Value)}>{Manager.difficulty:F1}</color>";
 
             if (Configuration.scaleByDaysPassed.Value)  text += $"<br> -Day:        <color=#{Helper.GetDifficultyColorHex(Manager.daysDifficulty, Configuration.daysPassedDifficultyCap.Value)}>{plusMinusExclusive(Manager.daysDifficulty)}{Manager.daysDifficulty:F1}</color>";
