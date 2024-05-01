@@ -5,12 +5,13 @@
 #### Config is fully generated when you load on a moon.
 #### Mod is highly configurable
 #### Comes with modded events that only appear with said mods installed
+#### Functions as API, no documentation yet.
 
 # Features
 <details>
   <summary><b>Event Mechanics</b></summary>
     
-  - Whenever you land on a moon, a couple of events will be chosen (Between 2 to 5 by default), these events will appear in the UI in the top right hand corner of your screen, this can be open and closed by pressing 'k' or a custom set value in the config.
+  - Whenever you land on a moon, a couple of events will be chosen (Between 2 to 5 by default), these events will appear in the UI in the top right hand corner of your screen, this can be open and closed by pressing 'k' and scrolled by pressing arrow buttons on the keyboard or a custom set value in the config.
 ![Screenshot](https://i.imgur.com/wjsVK7b.jpg)
 
   - Events will come in 6 main types and are categorized by color
@@ -31,7 +32,7 @@
 
   - Weathers will now come with scrapValue and scrapAmount multipliers.
   - These will also be displayed ingame on the terminal in this format <mark>(xScrapValue, xScrapAmount)</mark> as such
-![Screenshot](https://i.imgur.com/biZv8ck.jpg)
+![Screenshot](https://i.imgur.com/JefHaV3.png)
 
   - You can also enable randomize weather multipliers in the config, which will give abit of rng to the weathers after every day.
   - Default multiplier values goes as follows, these can be changed in the config.
@@ -47,6 +48,26 @@
 | Foggy      | 1.15        | 1.10         |
 | Flooded    | 1.25        | 1.15         |
 | Eclipsed   | 1.35        | 1.25         |
+</details>
+
+<details>
+  <summary><b>Difficulty Scaling</b></summary>
+
+  - This mod will scale from certain factors, it can scale from **Days Passed**, **Scrap In Ship**, **Moon Risk**, **Weather** and **Quota**, by default **Days Passed**, **Scrap In Ship** and **Moon Risk** are used, these can all be configured in the config.
+  - Everything scales off of a number called difficulty, by default difficulty caps at 100.
+
+| Source | Multiplier/Additonal | Cap | Enabled by default? |
+|-|-|-|-|
+| Days Passed | x1 | 60 | True |
+| Scrap In Ship | x0.0025 | 30 | True |
+| Moon Grade | D:-8, C:-8, B:-4, A:+5, S:+10, S+:+15, S++:+20, S+++:+30, Other:+10 | None | True |
+| Quota | x0.005 | 100 | False |
+| Weather | None:+0, Rainy:+2, Flooded:+4, Foggy:+4, Stormy:+7, Eclipsed:+7 | None | True |
+
+  - All events scale off of difficulty, event type chances scale off of difficulty and alot more.
+  - This is what can be shown in the UI
+
+![Screenshot](https://i.imgur.com/PnkpwSx.png)
 </details>
 
 <details>
@@ -320,7 +341,21 @@ The formula used to compute the **scale** is `Base + (DaysPassed * Increment)`.
 ## Difficulty Config 
 Location: `BrutalCompanyMinus\Difficulty_Settings.cfg`
 
-`Ingore scaling`: Setting this to true will stop the mod from sacling as the days pass.
+#### Difficulty
+
+`Use custom weights`: By default mod will use event type weights.
+
+`Event scale amount`: A **scale** that describes the base amount of events.
+
+`Weights for bonus events`: Extra chances for bonus events added on top of the base events.
+
+`Display events in chat`: Display events in chat?
+
+`Very Good Weight scale`: The weight **scale** for **VeryGood** event to be chosen
+
+**...**
+
+`Very Bad Weight scale`: The weight **scale** for **VeryBad** event to be chosen
 
 `Spawn Chance Multiplier`: A **scale** that multiplys the spawn rate.
 
@@ -344,31 +379,53 @@ Location: `BrutalCompanyMinus\Difficulty_Settings.cfg`
 
 `Bad event increment multiplier`: A global multiplier that will multiply all **Bad** and **Very Bad** increments.
 
-`Events to spawn`: The amount of events to spawn.
+#### Difficulty Scaling
 
-`Weights for extra events`: Weights for additionaly events, "40, 40, 15, 5" is equivalent to (+0, +1, +2, +3) events, this can be expanded.
+`Difficulty Transitions`: A visual indicator in the UI that can be configured.
 
-`Show events in chat`: Show events in chat?
+`Ignore max cap`: Ignore max cap from **scales**?
 
-`Use custom weights`: If enabled, Custom weights will be used otherwise EventType weights will be used.
+`Difficulty max cap`: Difficulty wont go beyond this number
 
-#### Event Type Weights
+`Scale by days passed`: Scale by days passed?
 
-`Very Good Weight scale`: The weight **scale** for **VeryGood** event to be chosen
+`Days passed difficulty multiplier`: Multiplier on days passed.
+
+`Days passed difficulty cap`: Days passed wont add difficulty beyond this number.
+
+`Scale by scrap in ship`: Scale by scrap in ship?
+
+`Difficulty per scrap in ship`: Multiplier on scrap in ship.
+
+`Scrap in ship difficulty cap`: Scrap in ship wont add difficulty beyond this number.
+
+`Scale by quota`: Scale by quota to hit?
+
+`Difficulty per quota value?`: Multiplier on quota.
+
+`Quota difficulty cap`: Quota wont add difficulty beyond this number.
+
+`Scale by moon grade?`: Scale by moon Grade?
+
+`Grade difficulty scaling`: Additive difficulties depending on moon risk/grade.
+
+`Scale by weather type?`: Scale by weather type?
+
+`None weather difficulty?`: Difficulty added if none weather.
 
 **...**
 
-`Very Bad Weight scale`: The weight **scale** for **VeryBad** event to be chosen
+`Eclipsed weather difficulty?`: Difficulty added if eclipsed weather.
 
 #### Quota Settings
 
-`Enable Quota Changes`: Enable quota changes?
+`Enable Quota Changes`: Enable quota changes? Once set to true open up a save to generate the rest of the config.
 
 `Deadline Days Amount`: Deadline
 
 `Starting credits`: Default is 60
 
-`Starting quota`: It's in the name
+`Starting quota`: Starting quota?
 
 `Base Increase`: Quota scaling
 
@@ -381,19 +438,17 @@ Location: `BrutalCompanyMinus\Weather_Settings.cfg`
 
 `Enable Terminal Text`: Enable terminal text?
 
-`Randomize Weather Multipliers`: This will randomize **ScrapValue**, **ScrapAmount** and **FactorySize** multipliers for every weather after every day.
+`Randomize Weather Multipliers`: This will randomize **ScrapValue** and **ScrapAmount** multipliers for every weather after every day.
 
-`Random Weather Multiplier Min Inclusive`: Lower bound of random value for **ScrapValue**, **ScrapAmount** and **FactorySize**.
+`Random Weather Multiplier Min Inclusive`: Lower bound of random value for **ScrapValue** and **ScrapAmount**.
 
-`Random Weather Multiplier Max Inclusive`: Upper bound of random value for **ScrapValue**, **ScrapAmount** and **FactorySize**.
+`Random Weather Multiplier Max Inclusive`: Upper bound of random value for **ScrapValue** and **ScrapAmount**.
 
 #### None
 
 `Value Multiplier`:  Multiply scrap value by.
 
 `Amount Multiplier`: Multiply scrap amount by.
-
-`Factory Size Multiplier`: Multiply factory size by.
 
 **...**
 
@@ -402,8 +457,6 @@ Location: `BrutalCompanyMinus\Weather_Settings.cfg`
 `Value Multiplier`:  Multiply scrap value by.
 
 `Amount Multiplier`: Multiply scrap amount by.
-
-`Factory Size Multiplier`: Multiply factory size by.
 
 ## UI config
 Location: `BrutalCompanyMinus\UI_Settings.cfg`
@@ -422,6 +475,14 @@ Location: `BrutalCompanyMinus\UI_Settings.cfg`
 
 `UI Time`: The time the UI will appear for when popped up.
 
+`Scroll speed`: Speed on scrolling on UI when scrolling using arrows on keyboard.
+
+`Display UI after ship leaves?`: Display events only after ship leaves?
+
+`Display extra properties on UI after ship leaves?`: Display extra properties such as eventType chances and difficulty after ship leaves?
+
+`Display events`: Display events? or keep them hidden...
+
 ## Events
 Location: `BrutalCompanyMinus\CustomEvents.cfg`
 
@@ -433,13 +494,15 @@ This will contain conifgurable options for every single event.
 
 `Custom Weight`: Requires **Use Custom Weights** enabled to be used.
 
-`Description`: What will be outputted into the UI.
+`Descriptions`: What will be outputted into the UI.
 
 `Color Hex`: The color that the description will be displayed in.
 
 `Event Type`: This can be eiter **VeryBad**, **Bad**, **Neutral**, **Good**, **Very Good**, **Remove**
 
 `Event Enabled`: Will the event be enabled?
+
+`Enemy 0 Name:` Enemy name to spawn, can be changed.
 
 `Inside Enemy Rarity`: A **scale** that describes the chance for the enemy to spawn inside
 
@@ -463,7 +526,7 @@ This will contain conifgurable options for every single event.
 
 `Custom Weight`: Requires **Use Custom Weights** enabled to be used.
 
-`Description`: What will be outputted into the UI.
+`Descriptions`: What will be outputted into the UI.
 
 `Color Hex`: The color that the description will be displayed in.
 
@@ -479,11 +542,41 @@ This will contain conifgurable options for every single event.
 
 **...**
 
+#### Honk
+
+`Custom Weight`: Requires **Use Custom Weights** enabled to be used.
+
+`Descriptions`: What will be outputted into the UI.
+
+`Color Hex`: The color that the description will be displayed in.
+
+`Event Type`: This can be eiter **VeryBad**, **Bad**, **Neutral**, **Good**, **Very Good**, **Remove**
+
+`Event Enabled`: Will the event be enabled?
+
+`Events To Remove`: Will prevent said event(s) from occuring.
+
+`Events To Spawn With`: Will spawn with said event(s).
+
+`Scrap Amount`: A **scale** that multiplies the scrap amount.
+
+`Percentage`: Percentage between 0.0 and 1.0 that describes the amount of scrap transmutated.
+
+`Scrap 0 name`: Name of scrap
+
+`Airhorn rarity`: Rarity of scrap
+
+`Scrap 1 name`: Name of scrap
+
+`Clownhorn rarity`: Rarity of scrap
+
+**...**
+
 #### WarZone
 
 `Custom Weight`: Requires **Use Custom Weights** enabled to be used.
 
-`Description`: What will be outputted into the UI.
+`Descriptions`: What will be outputted into the UI.
 
 `Color Hex`: The color that the description will be displayed in.
 
