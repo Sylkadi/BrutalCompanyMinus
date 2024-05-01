@@ -20,11 +20,12 @@ namespace BrutalCompanyMinus.Minus.CustomEvents
 
         public override void Initalize()
         {
-            name = string.Format("Z Temp Custom Monster Event {0}", CustomMonsterEventCount);
+            name = string.Format("CustomMonsterEvent{0}", CustomMonsterEventCount);
             CustomMonsterEventCount++;
 
-            enemyName = Configuration.eventConfig.Bind(Name(), "Enemy Name", "", "To find out what string to use, open save in game, and then in the console it will generate warnings from this mod with enemy names, to get vanilla strings go to line 24 on https://github.com/Sylkadi/BrutalCompanyMinus/blob/master/BrutalCompanyMinus/Asset/Assets.cs ");
+            enemyName = Configuration.customEventConfig.Bind(Name(), "Enemy Name", "", "To find out what string to use type menemies into the terminal.");
 
+            Enabled = false;
             Weight = 0;
             Descriptions = new List<string>() { "Descriptions..." };
             ColorHex = "#FF0000";

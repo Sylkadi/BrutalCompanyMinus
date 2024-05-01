@@ -28,7 +28,6 @@ namespace BrutalCompanyMinus.Minus
     [HarmonyPatch]
     public class Manager
     {
-
         internal static int daysPassed
         {
             get
@@ -91,14 +90,24 @@ namespace BrutalCompanyMinus.Minus
         internal static float timeSpeedMultiplier = 1.0f;
         internal static float inverseTimeSpeedMultiplier = 1.0f;
 
+        /// <summary>
+        /// This is used to spawn objects, enemies or scrap in certain locations.
+        /// </summary>
         public static class Spawn
         {
             internal static int randomSeedValue = 0;
 
             private static List<Vector3> spawnDenialPoints = new List<Vector3>();
-            internal static void OutsideObjects(GameObject obj, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000) => BatchOutsideObjects(obj, offset, density, radius, objectCap);
 
-            internal static void OutsideObjects(Assets.ObjectName objName, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000) => BatchOutsideObjects(Assets.GetObject(objName), offset, density, radius, objectCap);
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to list to spawn object(s) safely.
+            /// </summary>
+            public static void OutsideObjects(GameObject obj, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000) => BatchOutsideObjects(obj, offset, density, radius, objectCap);
+
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to list to spawn object(s) safely.
+            /// </summary>
+            public static void OutsideObjects(Assets.ObjectName objName, Vector3 offset, float density, float radius = -1.0f, int objectCap = 1000) => BatchOutsideObjects(Assets.GetObject(objName), offset, density, radius, objectCap);
 
             private static void BatchOutsideObjects(GameObject obj, Vector3 offset, float density, float radius, int objectCap)
             {
@@ -127,7 +136,10 @@ namespace BrutalCompanyMinus.Minus
                 Net.Instance.objectsToSpawnAmount.Add(remainder);
             }
 
-            internal static void DoSpawnOutsideObjects(int count, float radius, Vector3 offset, GameObject obj) 
+            /// <summary>
+            /// This is not safe to be used inside of Execute(), this will spawn client side objects.
+            /// </summary>
+            public static void DoSpawnOutsideObjects(int count, float radius, Vector3 offset, GameObject obj) 
             {
                 for (int i = 0; i < count; i++)
                 {
@@ -183,25 +195,52 @@ namespace BrutalCompanyMinus.Minus
                 }
             }
 
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to a list to spawn enemie(s) safely.
+            /// </summary>
             public static void OutsideEnemies(GameObject enemy, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(enemy, count));
+
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to a list to spawn enemie(s) safely.
+            /// </summary>
             public static void OutsideEnemies(EnemyType enemy, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(enemy.enemyPrefab, count));
+
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to a list to spawn enemie(s) safely.
+            /// </summary>
             public static void OutsideEnemies(Assets.EnemyName enemyName, int count) => enemiesToSpawnOutside.Add(new ObjectInfo(Assets.GetEnemy(enemyName).enemyPrefab, count));
 
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to a list to spawn enemie(s) safely.
+            /// </summary>
             public static void InsideEnemies(GameObject enemy, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(enemy, count, 0.0f, radius));
+
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to a list to spawn enemie(s) safely.
+            /// </summary>
             public static void InsideEnemies(EnemyType enemy, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(enemy.enemyPrefab, count, 0.0f, radius));
 
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to a list to spawn enemie(s) safely.
+            /// </summary>
             public static void InsideEnemies(Assets.EnemyName enemyName, int count, float radius = 0.0f) => enemiesToSpawnInside.Add(new ObjectInfo(Assets.GetEnemy(enemyName).enemyPrefab, count, 0.0f, radius));
 
+            /// <summary>
+            /// This is to be used inside of Execute(), will add to a list to spawn scrap outside safely.
+            /// </summary>
             public static void OutsideScrap(int Amount) => randomItemsToSpawnOutsideCount += Amount;
-
-            internal static List<EnemyAI> DoSpawnOutsideEnemies()
+            
+            /// <summary>
+            /// This is not safe to be used inside of Execute(), will spawn the enemie(s) using outsideAINodes.
+            /// </summary>
+            /// <returns>Returns EnemyAI scripts after spawned.</returns>
+            public static List<EnemyAI> DoSpawnOutsideEnemies()
             {
                 if(Events.SafeOutside.Active)
                 {
                     Log.LogInfo("Outside spawning prevented by OutsideSafe");
                     return new List<EnemyAI>();
                 }
-
                 List<EnemyAI> spawnedEnemies = new List<EnemyAI>();
 
                 List<Vector3> OutsideAiNodes = Helper.GetOutsideNodes();
@@ -232,7 +271,12 @@ namespace BrutalCompanyMinus.Minus
                 enemiesToSpawnOutside.Clear();
                 return spawnedEnemies;
             }
-            internal static List<EnemyAI> DoSpawnInsideEnemies()
+
+            /// <summary>
+            /// This is not safe to be used inside of Execute(), will spawn the enemie(s) using using vents.
+            /// </summary>
+            /// <returns>Returns EnemyAI scripts after spawned.</returns>
+            public static List<EnemyAI> DoSpawnInsideEnemies()
             {
                 List<EnemyAI> spawnedEnemies = new List<EnemyAI>();
 
@@ -265,7 +309,11 @@ namespace BrutalCompanyMinus.Minus
                 return spawnedEnemies;
             }
 
-            internal static ScrapSpawnInfo DoSpawnScrapOutside(int Amount)
+            /// <summary>
+            /// This is not safe to be used inside of Execute(), this will spawn scrap outside using outsideAINodes.
+            /// </summary>
+            /// <returns>Returns all NetworkObjectReferences and ScrapValues</returns>
+            public static ScrapSpawnInfo DoSpawnScrapOutside(int Amount)
             {
                 if (Amount <= 0) return new ScrapSpawnInfo(new NetworkObjectReference[] { }, new int[] { });
 
@@ -303,7 +351,11 @@ namespace BrutalCompanyMinus.Minus
                 return new ScrapSpawnInfo(ScrapSpawnsNet.ToArray(), ScrapValues.ToArray());
             }
 
-            internal static ScrapSpawnInfo DoSpawnScrapInside(int Amount) 
+            /// <summary>
+            /// This is not safe to be used inside of Execute(), this will spawn scrap inside using randomScrapSpawn.
+            /// </summary>
+            /// <returns>Returns all NetworkObjectReferences and ScrapValues</returns>
+            public static ScrapSpawnInfo DoSpawnScrapInside(int Amount) 
             {
                 if (Amount <= 0) return new ScrapSpawnInfo(new NetworkObjectReference[] { }, new int[] { });
 
@@ -410,6 +462,11 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
+        /// <summary>
+        /// This is to be used in Execute(), this will add to list to be transmute scrap safely.
+        /// </summary>
+        /// <param name="amount">This is a percentage value between 0.0 and 1.0</param>
+        /// <param name="Items">Items to spawn with rarities.</param>
         public static void TransmuteScrap(float amount, params SpawnableItemWithRarity[] Items)
         {
             transmuteScrap = true;
@@ -417,6 +474,12 @@ namespace BrutalCompanyMinus.Minus
             ScrapToTransmuteTo.AddRange(Items);
         }
 
+        /// <summary>
+        /// This will deliver items in said price range.
+        /// </summary>
+        /// <param name="Amount">Amount to deliver</param>
+        /// <param name="MinPrice">Wont deliver items below this price.</param>
+        /// <param name="MaxPrice">Wont deliver items above this price.</param>
         public static void DeliverRandomItems(int Amount, int MinPrice, int MaxPrice)
         {
             if (RoundManager.Instance.IsServer)
@@ -437,7 +500,7 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
-        public static int GetLevelIndex()
+        internal static int GetLevelIndex()
         {
             for(int i = 0; i < StartOfRound.Instance.levels.Length; i++)
             {
@@ -445,14 +508,19 @@ namespace BrutalCompanyMinus.Minus
             }
             return 0;
         }
-
+        
+        /// <summary>
+        /// Adds to enemy hp.
+        /// </summary>
         public static void AddEnemyHp(int amount) => bonusEnemyHp += amount;
+
         public static void AddInsidePower(int amount) => bonusMaxInsidePowerCount += amount;
+
         public static void AddOutsidePower(int amount) => bonusMaxOutsidePowerCount += amount;
 
         public static void MultiplySpawnCap(float multiplier) => spawncapMultipler *= multiplier;
 
-        public static void ComputeDifficultyValues()
+        internal static void ComputeDifficultyValues()
         {
             difficulty = 0.0f;
 
@@ -492,7 +560,7 @@ namespace BrutalCompanyMinus.Minus
             difficulty = Mathf.Clamp(difficulty, 0.0f, Configuration.difficultyMaxCap.Value);
         }
 
-        public static float GetScrapInShip()
+        internal static float GetScrapInShip()
         {
             GameObject hangarShip = Assets.hangarShip;
             if (hangarShip == null) return 0;
@@ -581,9 +649,23 @@ namespace BrutalCompanyMinus.Minus
             terrainObject = terrainMap;
         }
 
+        /// <summary>
+        /// This adds the enemy to given spawn list.
+        /// </summary>
+        /// <param name="list">List to add to.</param>
         public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, EnemyType enemy, int rarity) => DoAddEnemyToPoolWithRarity(ref list, enemy, rarity);
 
+        /// <summary>
+        /// This adds the enemy to given spawn list.
+        /// </summary>
+        /// <param name="list">List to add to.</param>
         public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, Assets.EnemyName enemy, int rarity) => DoAddEnemyToPoolWithRarity(ref list, Assets.GetEnemy(enemy), rarity);
+
+        /// <summary>
+        /// This adds the enemy to given spawn list.
+        /// </summary>
+        /// <param name="list">List to add to.</param>
+        public static void AddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, string enemy, int rarity) => DoAddEnemyToPoolWithRarity(ref list, Assets.GetEnemy(enemy), rarity);
 
         private static void DoAddEnemyToPoolWithRarity(ref List<SpawnableEnemyWithRarity> list, EnemyType enemy, int rarity)
         {
@@ -598,12 +680,25 @@ namespace BrutalCompanyMinus.Minus
             list.Add(spawnableEnemyWithRarity);
         }
 
+        /// <summary>
+        /// Sets weather effects.
+        /// </summary>
         public static void SetAtmosphere(string name, bool state) => Net.Instance.currentWeatherEffects.Add(new CurrentWeatherEffect(name, state));
 
+
+        /// <summary>
+        /// Sets weather effects.
+        /// </summary>
         public static void SetAtmosphere(Assets.AtmosphereName name, bool state) => Net.Instance.currentWeatherEffects.Add(new CurrentWeatherEffect(Assets.AtmosphereNameList[name], state));
 
+        /// <summary>
+        /// Removes enemy from all spawn lists of currentLevel.
+        /// </summary>
         public static void RemoveSpawn(string name) => DoRemoveSpawn(name);
 
+        /// <summary>
+        /// Removes enemy from all spawn lists.
+        /// </summary>
         public static void RemoveSpawn(Assets.EnemyName name) => DoRemoveSpawn(Assets.EnemyNameList[name]);
 
         private static void DoRemoveSpawn(string Name)
@@ -633,8 +728,14 @@ namespace BrutalCompanyMinus.Minus
             if (amountRemoved == 0) Log.LogInfo(string.Format("Failed to remove '{0}' from enemy pool, either it dosen't exist on the map or wrong string used.", Name));
         }
 
+        /// <summary>
+        /// Checks if spawn exists in any of the enemy lists of currentLevel.
+        /// </summary>
         public static bool SpawnExists(string name) => DoSpawnExists(name);
 
+        /// <summary>
+        /// Checks if spawn exists in any of the enemy lists of currentLevel.
+        /// </summary>
         public static bool SpawnExists(Assets.EnemyName name) => DoSpawnExists(Assets.EnemyNameList[name]);
 
         private static bool DoSpawnExists(string name)
@@ -663,6 +764,9 @@ namespace BrutalCompanyMinus.Minus
             return false;
         }
 
+        /// <summary>
+        /// This will multiply the insideSpawnCurve, outsieSpawnCurve and dayTimeSpawnCurve by said value, wont multiply negative spawn curve values.
+        /// </summary>
         public static void MultiplySpawnChance(SelectableLevel currentLevel, float by)
         {
             spawnChanceMultiplier *= by;
@@ -698,7 +802,7 @@ namespace BrutalCompanyMinus.Minus
             currentLevel.daytimeEnemySpawnChanceThroughDay = new AnimationCurve(daytimeKeyFrames);
         }
 
-        public static void AddInsideSpawnChance(SelectableLevel currentLevel, float value)
+        internal static void AddInsideSpawnChance(SelectableLevel currentLevel, float value)
         {
             Keyframe[] insideKeyFrames = new Keyframe[currentLevel.enemySpawnChanceThroughoutDay.keys.Length];
             for (int i = 0; i < currentLevel.enemySpawnChanceThroughoutDay.keys.Length; i++)
@@ -708,7 +812,7 @@ namespace BrutalCompanyMinus.Minus
             currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(insideKeyFrames);
         }
 
-        public static void AddOutsideSpawnChance(SelectableLevel currentLevel, float value)
+        internal static void AddOutsideSpawnChance(SelectableLevel currentLevel, float value)
         {
             Keyframe[] outsideKeyFrames = new Keyframe[currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length];
             for (int i = 0; i < currentLevel.outsideEnemySpawnChanceThroughDay.keys.Length; i++)
@@ -862,7 +966,7 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
-        internal struct ScrapSpawnInfo
+        public struct ScrapSpawnInfo
         {
             public NetworkObjectReference[] netObjects;
             public int[] scrapPrices;

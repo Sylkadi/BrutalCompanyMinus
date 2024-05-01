@@ -23,7 +23,7 @@ namespace BrutalCompanyMinus.Minus.Events
             ColorHex = "#00FF00";
             Type = EventType.VeryGood;
 
-            EventsToRemove = new List<string>() { nameof(SmallDeilvery) };
+            EventsToRemove = new List<string>() { nameof(SmallDelivery) };
 
             ScaleList.Add(ScaleType.MinItemAmount, new Scale(5.0f, 0.1f, 5.0f, 15.0f));
             ScaleList.Add(ScaleType.MaxItemAmount, new Scale(7.0f, 0.14f, 7.0f, 21.0f));

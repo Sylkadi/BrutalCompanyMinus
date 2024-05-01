@@ -32,7 +32,7 @@ namespace BrutalCompanyMinus.Minus.Events
             ScaleList.Add(ScaleType.ScrapAmount, new Scale(1.30f, 0.0f, 1.30f, 1.30f));
         }
 
-        public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.randomWeathers != null && RoundManager.Instance.currentLevel.randomWeathers.Length >= 2;
+        public override bool AddEventIfOnly() => RoundManager.Instance.currentLevel.randomWeathers != null && RoundManager.Instance.currentLevel.randomWeathers.Length >= 3;
 
         public override void Execute()
         {

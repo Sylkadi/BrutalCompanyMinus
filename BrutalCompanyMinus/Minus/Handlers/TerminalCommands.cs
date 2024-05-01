@@ -15,7 +15,6 @@ namespace BrutalCompanyMinus.Minus.Handlers
     [HarmonyPatch]
     public class TerminalCommands
     {
-
         private static string response = "";
         private static bool _clearPreviousText = true;
 
@@ -424,7 +423,7 @@ namespace BrutalCompanyMinus.Minus.Handlers
             }
         };
 
-        private static string ScaleTypePadded(MEvent.ScaleType type) => $"[{type}]:".PadRight(23);
+        public static string ScaleTypePadded(MEvent.ScaleType type) => $"[{type}]:".PadRight(23);
 
         public static void Respond(string text, bool clearPreviousText = true)
         {

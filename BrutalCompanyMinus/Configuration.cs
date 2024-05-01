@@ -12,6 +12,7 @@ using static BrutalCompanyMinus.Assets;
 using static BrutalCompanyMinus.Helper;
 using BrutalCompanyMinus.Minus.MonoBehaviours;
 using System.Diagnostics;
+using System;
 
 namespace BrutalCompanyMinus
 {
@@ -94,7 +95,6 @@ namespace BrutalCompanyMinus
             };
 
             difficultyTransitions = GetDifficultyTransitionsFromString(difficultyConfig.Bind("Difficulty Scaling", "Difficulty Transitions", "Easy,00FF00,0|Medium,008000,15|Hard,FF0000,30|Very Hard,800000,50|Insane,140000,75", "Format: NAME,HEX,ABOVE, above is the value the name will be shown at.").Value);
-
             ignoreMaxCap = difficultyConfig.Bind("Difficuly Scaling", "Ignore max cap?", false, "Will ignore max cap if true, upperlimit is dictated by difficulty max cap setting as well.");
             difficultyMaxCap = difficultyConfig.Bind("Difficuly Scaling", "Difficulty max cap", 100.0f, "The difficulty value wont go beyond this.");
             scaleByDaysPassed = difficultyConfig.Bind("Difficuly Scaling", "Scale by days passed?", true, "Will add to difficulty depending on how many days have passed.");
@@ -244,14 +244,25 @@ namespace BrutalCompanyMinus
             for (int i = 0; i < customEventCount; i++)
             {
                 MEvent e = new Minus.CustomEvents.CustomMonsterEvent();
-                e.Enabled = false;
                 e.Initalize();
                 EventManager.customEvents.Add(e);
             }
-
+            
             RegisterEvents(eventConfig, EventManager.vanillaEvents);
             RegisterEvents(moddedEventConfig, EventManager.moddedEvents);
             RegisterEvents(customEventConfig, EventManager.customEvents);
+
+            foreach(EventManager.CustomEvents customevent in EventManager.customEventsList)
+            {
+                foreach(MEvent e in customevent.events)
+                {
+                    e.Initalize();
+                }
+
+                RegisterEvents(customevent.configFile, customevent.events);
+                EventManager.customEvents.AddRange(customevent.events);
+            }
+            EventManager.customEventsList.Clear();
 
             EventManager.events.AddRange(EventManager.vanillaEvents);
             EventManager.events.AddRange(EventManager.moddedEvents);

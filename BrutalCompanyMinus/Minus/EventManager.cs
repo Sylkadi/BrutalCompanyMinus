@@ -1,9 +1,11 @@
-﻿using BrutalCompanyMinus.Minus.Handlers;
+﻿using BepInEx.Configuration;
+using BrutalCompanyMinus.Minus.Handlers;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem.Utilities;
@@ -33,7 +35,7 @@ namespace BrutalCompanyMinus.Minus
             new Events.Pickles(),
             new Events.Honk(),
             new Events.TransmuteScrapSmall(),
-            new Events.SmallDeilvery(),
+            new Events.SmallDelivery(),
             new Events.ScarceOutsideScrap(),
             new Events.FragileEnemies(),
             new Events.FullAccess(),
@@ -133,6 +135,8 @@ namespace BrutalCompanyMinus.Minus
 
         internal static List<MEvent> allVeryGood = new List<MEvent>(), allGood = new List<MEvent>(), allNeutral = new List<MEvent>(), allBad = new List<MEvent>(), allVeryBad = new List<MEvent>(), allRemove = new List<MEvent>();
 
+        internal static List<CustomEvents> customEventsList = new List<CustomEvents>();
+
         internal static List<string> currentEventDescriptions = new List<string>();
 
         internal static float eventTypeSum = 0;
@@ -140,7 +144,18 @@ namespace BrutalCompanyMinus.Minus
 
         internal static float[] eventTypeRarities = new float[] { };
 
-        public static void AddEvents(params MEvent[] _event) => events.AddRange(_event);
+        /// <summary>
+        /// This must be called before save load, will generate the config in Custom_Events.cfg
+        /// </summary>
+        /// <param name="mEvents">MEvents.</param>
+        public static void AddEvents(params MEvent[] mEvents) => customEventsList.Add(new CustomEvents(Configuration.customEventConfig, mEvents.ToList()));
+
+        /// <summary>
+        /// This must be called before save load, will generate the config in specified config file.
+        /// </summary>
+        /// <param name="toConfig">Config to generate to.</param>
+        /// <param name="mEvents">MEvents.</param>
+        public static void AddEvents(ConfigFile toConfig, params MEvent[] mEvents) => customEventsList.Add(new CustomEvents(toConfig, mEvents.ToList()));
 
         internal static MEvent RandomWeightedEvent(List<MEvent> _events, System.Random rng)
         {
@@ -362,6 +377,9 @@ namespace BrutalCompanyMinus.Minus
             }
         }
 
+        /// <summary>
+        /// This is used to describe difficulty name and color transitioning in the UI.
+        /// </summary>
         public struct DifficultyTransition : IComparable<DifficultyTransition>
         {
             internal const uint byteMask = 0b_00000000_00000000_00000000_11111111;
@@ -411,6 +429,19 @@ namespace BrutalCompanyMinus.Minus
             public int CompareTo(DifficultyTransition other)
             {
                 return above.CompareTo(other.above);
+            }
+        }
+
+        internal class CustomEvents
+        {
+            public ConfigFile configFile;
+
+            public List<MEvent> events;
+
+            public CustomEvents(ConfigFile configFile, List<MEvent> events)
+            {
+                this.configFile = configFile;
+                this.events = events;
             }
         }
 

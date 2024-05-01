@@ -16,7 +16,7 @@ using System.Collections;
 namespace BrutalCompanyMinus
 {
     [HarmonyPatch]
-    internal class UI : MonoBehaviour
+    public class UI : MonoBehaviour
     {
         public static UI Instance { get; private set; }
         public static GameObject eventUIObject { get; set; }

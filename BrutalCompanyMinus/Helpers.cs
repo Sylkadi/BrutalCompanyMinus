@@ -12,13 +12,17 @@ using static BrutalCompanyMinus.Minus.EventManager;
 
 namespace BrutalCompanyMinus
 {
-    internal static class Helper
+    public static class Helper
     {
-        public static CultureInfo en = new CultureInfo("en-US"); // This is important, no touchy
+        internal static CultureInfo en = new CultureInfo("en-US"); // This is important, no touchy
 
         public static List<Vector3> GetOutsideNodes() => GameObject.FindGameObjectsWithTag("OutsideAINode").Select(n => n.transform.position).ToList();
-
         public static List<Vector3> GetInsideAINodes() => GameObject.FindGameObjectsWithTag("AINode").Select(n => n.transform.position).ToList();
+
+        /// <summary>
+        /// Gets spawn denial Nodes.
+        /// </summary>
+        /// <returns>This returns SpawnDenialPoints, ItemShipLandingNode and EntranceTeleport positions.</returns>
         public static List<Vector3> GetSpawnDenialNodes()
         {
             List<Vector3> nodes = GameObject.FindGameObjectsWithTag("SpawnDenialPoint").Select(n => n.transform.position).ToList();
@@ -27,7 +31,7 @@ namespace BrutalCompanyMinus
             return nodes;
         }
 
-        public static int[] IntArray(this float[] Values)
+        internal static int[] IntArray(this float[] Values)
         {
             int[] newValues = new int[Values.Length];
             for (int i = 0; i < Values.Length; i++)
@@ -37,6 +41,10 @@ namespace BrutalCompanyMinus
             return newValues;
         }
 
+        /// <summary>
+        /// This is primarly used to add landmine, turret and spiketrap spawns to the array.
+        /// </summary>
+        /// <returns>New array with added object.</returns>
         public static SpawnableMapObject[] Add(this SpawnableMapObject[] toObjects, SpawnableMapObject newObject)
         {
             SpawnableMapObject[] newMapObjects = new SpawnableMapObject[toObjects.Length + 1];
@@ -48,7 +56,7 @@ namespace BrutalCompanyMinus
             return newMapObjects;
         }
 
-        public static WeatherEffect[] Add(this WeatherEffect[] toObjects, WeatherEffect newObject)
+        internal static WeatherEffect[] Add(this WeatherEffect[] toObjects, WeatherEffect newObject)
         {
             WeatherEffect[] newMapObjects = new WeatherEffect[toObjects.Length + 1];
             for (int i = 0; i < toObjects.Length; i++)
@@ -59,6 +67,10 @@ namespace BrutalCompanyMinus
             return newMapObjects;
         }
 
+        /// <summary>
+        /// This is used by primarly used to reality shift to teleport enemies away from the player.
+        /// </summary>
+        /// <returns>Returns new position from pos and inbetween minRadius and maxRadius</returns>
         public static Vector3 GetRandomNavMeshPositionInBox(Vector3 pos, float minRadius, float maxRadius)
         {
             float halfPointRadius = (maxRadius + minRadius) * 0.5f;
@@ -76,9 +88,9 @@ namespace BrutalCompanyMinus
             return pos;
         }
 
-        public static string GetPercentage(float value) => (value * 100.0f).ToString("F1") + "%";
+        internal static string GetPercentage(float value) => (value * 100.0f).ToString("F1") + "%";
 
-        public static string GetDifficultyColorHex(float difficulty, float cap)
+        internal static string GetDifficultyColorHex(float difficulty, float cap)
         {
             if (cap == 0) cap = 1.0f;
             difficulty *= Configuration.difficultyMaxCap.Value / cap;
@@ -88,12 +100,12 @@ namespace BrutalCompanyMinus
             return chosenAndNextTransitions[0].GetTransitionHex(chosenAndNextTransitions[1]);
         }
 
-        public static string GetDifficultyText()
+        internal static string GetDifficultyText()
         {
             DifficultyTransition[] chosenAndNextTransitions = GetChosenAndNextTransition(Manager.difficulty);
             return $"<color=#{chosenAndNextTransitions[0].GetTransitionHex(chosenAndNextTransitions[1])}>{chosenAndNextTransitions[0].name}</color>";
         }
-        public static DifficultyTransition[] GetChosenAndNextTransition(float difficulty)
+        internal static DifficultyTransition[] GetChosenAndNextTransition(float difficulty)
         {
             DifficultyTransition chosenTransition = Configuration.difficultyTransitions[0],
                                  nextTransition = Configuration.difficultyTransitions[0];
@@ -120,7 +132,7 @@ namespace BrutalCompanyMinus
             return new DifficultyTransition[] { chosenTransition, nextTransition };
         }
 
-        public static Vector3 GetSafePosition(List<Vector3> nodes, List<Vector3> denialNodes, float radius, int seed)
+        internal static Vector3 GetSafePosition(List<Vector3> nodes, List<Vector3> denialNodes, float radius, int seed)
         {
             System.Random rng = new System.Random(seed);
             UnityEngine.Random.InitState(seed);
@@ -198,20 +210,20 @@ namespace BrutalCompanyMinus
             return mostCommon;
         }
 
-        public static Scale getScale(string from)
+        internal static Scale getScale(string from)
         {
             float[] values = ParseValuesFromString(from);
             return new Scale(values[0], values[1], values[2], values[3]);
         }
 
-        public static string GetStringFromScale(Scale from) => $"{from.Base.ToString(en)}, {from.Increment.ToString(en)}, {from.MinCap.ToString(en)}, {from.MaxCap.ToString(en)}";
+        internal static string GetStringFromScale(Scale from) => $"{from.Base.ToString(en)}, {from.Increment.ToString(en)}, {from.MinCap.ToString(en)}, {from.MaxCap.ToString(en)}";
 
-        public static float[] ParseValuesFromString(string from)
+        internal static float[] ParseValuesFromString(string from)
         {
             return from.Split(',').Select(x => float.Parse(x, en)).ToArray();
         }
 
-        public static string StringsToList(List<string> strings, string seperator) // This is confusing naming
+        internal static string StringsToList(List<string> strings, string seperator) // This is confusing naming
         {
             string text = "";
             foreach (string s in strings)
@@ -223,20 +235,20 @@ namespace BrutalCompanyMinus
             return text;
         }
 
-        public static List<string> ListToStrings(string text)
+        internal static List<string> ListToStrings(string text)
         {
             if (text.IsNullOrWhiteSpace()) return new List<string>();
             text = text.Replace(" ", "");
             return text.Split(',').ToList();
         }
 
-        public static List<string> ListToDescriptions(string text)
+        internal static List<string> ListToDescriptions(string text)
         {
             if (text.IsNullOrWhiteSpace()) return new List<string>() { "" };
             return text.Split("|").ToList();
         }
 
-        public static DifficultyTransition[] GetDifficultyTransitionsFromString(string s)
+        internal static DifficultyTransition[] GetDifficultyTransitionsFromString(string s)
         {
             string[] strings = s.Split("|");
 
@@ -268,7 +280,7 @@ namespace BrutalCompanyMinus
         }
 
 
-        public static Dictionary<string, float> GetMoonRiskFromString(string text)
+        internal static Dictionary<string, float> GetMoonRiskFromString(string text)
         {
             Dictionary<string, float> moonRiskValues = new Dictionary<string, float>();
 
@@ -296,7 +308,7 @@ namespace BrutalCompanyMinus
             return moonRiskValues;
         }
 
-        public static IList<Vector2> ComputeConvexHull(List<Vector2> points, bool sortInPlace = false) // Taken from https://gist.github.com/dLopreiato/7fd142d0b9728518552188794b8a750c
+        internal static IList<Vector2> ComputeConvexHull(List<Vector2> points, bool sortInPlace = false) // Taken from https://gist.github.com/dLopreiato/7fd142d0b9728518552188794b8a750c
         {
             if (!sortInPlace)
                 points = new List<Vector2>(points);
@@ -340,11 +352,6 @@ namespace BrutalCompanyMinus
         private static float Cross(this Vector2 a, Vector2 b)
         {
             return a.x * b.y - a.y * b.x;
-        }
-
-        public class Generics<T>
-        {
-
         }
 
         private class CircularList<T> : List<T>

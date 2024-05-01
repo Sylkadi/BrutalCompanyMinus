@@ -15,7 +15,7 @@ using UnityEngine.Rendering.HighDefinition;
 namespace BrutalCompanyMinus
 {
     [HarmonyPatch]
-    internal class Net : NetworkBehaviour
+    public class Net : NetworkBehaviour
     {
         public static Net Instance { get; private set; }
         public static GameObject netObject { get; private set; }

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace BrutalCompanyMinus.Minus
 {
-    internal struct Weather : INetworkSerializable, IEquatable<Weather>
+    public struct Weather : INetworkSerializable, IEquatable<Weather>
     {
 
         public LevelWeatherType weatherType;
