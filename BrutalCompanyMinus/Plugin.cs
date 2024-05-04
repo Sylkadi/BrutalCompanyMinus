@@ -24,7 +24,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.13.4";
+        private const string VERSION = "0.13.5";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -59,6 +59,7 @@ namespace BrutalCompanyMinus
             moddedEventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\ModdedEvents.cfg", true);
             customEventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\CustomEvents.cfg", true);
             allEnemiesConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\AllEnemies.cfg", true);
+            levelPropertiesConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\LevelProperties.cfg", true);
 
             // Patch all
             harmony.PatchAll();

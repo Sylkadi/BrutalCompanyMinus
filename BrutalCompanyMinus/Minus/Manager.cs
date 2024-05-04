@@ -858,6 +858,10 @@ namespace BrutalCompanyMinus.Minus
             inverseTimeSpeedMultiplier = 1.0f;
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(TimeOfDay), "Start")]
+        private static void OnTimeOfDayStart() => inverseTimeSpeedMultiplier = 1.0f;
+
         [HarmonyPostfix]
         [HarmonyPriority(Priority.First)]
         [HarmonyPatch(typeof(RoundManager), "FinishGeneratingLevel")]
@@ -903,27 +907,6 @@ namespace BrutalCompanyMinus.Minus
 
             spawnedAI.AddRange(Spawn.DoSpawnInsideEnemies());
             spawnedAI.AddRange(Spawn.DoSpawnOutsideEnemies());
-
-            if(ToilHead.spawnToilHeads && Compatibility.toilheadPresent)
-            {
-                foreach(EnemyAI ai in spawnedAI) 
-                {
-                    if (ai == null || ai.enemyType.enemyName != "Spring") continue;
-                    SetToilHead(ai);
-                }
-                ToilHead.spawnToilHeads = false;
-            }
-        }
-        
-        private static void SetToilHead(EnemyAI ai) // Have to put this here otherwise this mod wont load if it dosent have toilhead downloaded... I blame harmony
-        {
-            try
-            {
-                com.github.zehsteam.ToilHead.Api.SetToilHeadOnServer(ai);
-            } catch
-            {
-                Log.LogError("Failed to set toilhead from API");
-            }
         }
         
         internal struct ObjectInfo

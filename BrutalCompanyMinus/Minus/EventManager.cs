@@ -409,8 +409,6 @@ namespace BrutalCompanyMinus.Minus
                 rgb[0] = (parsedValue >> 16) & byteMask; // r
                 rgb[1] = (parsedValue >> 8) & byteMask;  // g
                 rgb[2] = parsedValue & byteMask;         // b
-
-                Log.LogFatal($"r:{rgb[0]}, g:{rgb[1]}, b:{rgb[2]}");
             }
 
             public string GetTransitionHex(DifficultyTransition next)
@@ -470,6 +468,14 @@ namespace BrutalCompanyMinus.Minus
                     Manager.scrapValueMultiplier *= e.scrapValueMultiplier;
                     Manager.scrapAmountMultiplier *= e.scrapAmountMultiplier;
                 }
+            }
+
+            // Apply level properties
+            LevelProperties properties = Configuration.levelProperties.GetValueOrDefault(newLevel.levelID);
+            if(properties != null)
+            {
+                Manager.scrapValueMultiplier *= properties.GetScrapValueMultiplier();
+                Manager.scrapAmountMultiplier *= properties.GetScrapAmountMultiplier();
             }
 
             // Difficulty modifications

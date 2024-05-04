@@ -14,8 +14,6 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public static ToilHead Instance;
 
-        public static bool spawnToilHeads = false;
-
         public override void Initalize()
         {
             Instance = this;
@@ -49,13 +47,10 @@ namespace BrutalCompanyMinus.Minus.Events
 
         public override void Execute()
         {
+            if (!Compatibility.toilheadPresent) return;
             Assets.antiCoilHead.enemyName = "Spring";
-            spawnToilHeads = true;
             ExecuteAllMonsterEvents();
+            com.github.zehsteam.ToilHead.Api.forceSpawns = true;
         }
-
-        public override void OnGameStart() => spawnToilHeads = false;
-
-        public override void OnShipLeave() => spawnToilHeads = false;
     }
 }

@@ -58,12 +58,12 @@ namespace BrutalCompanyMinus
                         PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
                         if (localPlayer == null) continue;
 
-                        if (!localPlayer.isInsideFactory)
-                        {
-                            UpdateAtmosphere(e.name, e.state);
-                        } else if(localPlayer.isPlayerDead)
+                        if(localPlayer.isPlayerDead)
                         {
                             UpdateAtmosphere(e.name, false);
+                        } else if(!localPlayer.isInsideFactory)
+                        {
+                            UpdateAtmosphere(e.name, e.state);
                         } else
                         {
                             UpdateAtmosphere(e.name, false);

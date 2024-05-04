@@ -170,7 +170,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                     if (!Helper.IsSafe(randomNode, spawnDenialNodes, 20.0f) || !Helper.IsSafe(randomNode, bunkerSpawnPositions, 15.0f)) continue;
 
                     Physics.Raycast(new Ray(randomNode, Vector3.down), out RaycastHit hit);
-                    entranceSpawnPositon = hit.point;
+                    entranceSpawnPositon = hit.point + new Vector3(0.0f, 0.05f, 0.0f);
                     break;
                 }
 
@@ -203,7 +203,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
                             furthestIndex = k;
                         }
                     }
-
+                    
                     // Check if there is anything underneath to land on
                     if (!Physics.Raycast(new Ray(randomNode - new Vector3(0, -2.0f, 0), Vector3.down))) continue;
 
