@@ -1,5 +1,30 @@
 # ChangeLog
 <details>
+  <summary>0.13.4</summary>
+
+  - Mod now works properly as API
+  - Addes summaries to alot of methods and publicised alot.
+  - Difficuly name transitions can now be configured.
+  - Moon grades config is now expandable.
+  - +Other minor things
+
+</details>
+<details>
+  <summary>0.13.2</summary>
+
+  - Added config option to show events in UI
+  - CustomWeights config should now be working
+  - FacilityGhost not disapearing should be fixed(I hope)
+  - Nutslayer imortality config should now work
+
+</details>
+<details>
+  <summary>0.13.1</summary>
+
+  - Added 7 null checks cause other peoples mods put null objects into the game...
+
+</details>
+<details>
   <summary>0.13.0</summary>
 
   - Resacled every event to fit the 0 => 100 where as old was 0 => 60, and some other rescaling.
