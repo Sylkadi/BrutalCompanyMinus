@@ -313,10 +313,10 @@ namespace BrutalCompanyMinus
             {
                 if (level == null) continue;
 
-                Scale minScrapAmount = getScale(levelPropertiesConfig.Bind($"{level.levelID}:{level.name}", "Min scrap amount scale", "1.0, 1.0, 1.0, 1.0", scaleDescription).Value);
-                Scale maxScrapAmount = getScale(levelPropertiesConfig.Bind($"{level.levelID}:{level.name}", "Max scrap amount scale", "1.0, 1.0, 1.0, 1.0", scaleDescription).Value);
-                Scale minScrapValue = getScale(levelPropertiesConfig.Bind($"{level.levelID}:{level.name}", "Min scrap value scale", "1.0, 1.0, 1.0, 1.0", scaleDescription).Value);
-                Scale maxScrapValue = getScale(levelPropertiesConfig.Bind($"{level.levelID}:{level.name}", "Max scrap value scale", "1.0, 1.0, 1.0, 1.0", scaleDescription).Value);
+                Scale minScrapAmount = getScale(levelPropertiesConfig.Bind($"{level.levelID}:{level.name}", "Min scrap amount scale", "1.0, 0.0, 1.0, 1.0", scaleDescription).Value);
+                Scale maxScrapAmount = getScale(levelPropertiesConfig.Bind($"{level.levelID}:{level.name}", "Max scrap amount scale", "1.0, 0.0, 1.0, 1.0", scaleDescription).Value);
+                Scale minScrapValue = getScale(levelPropertiesConfig.Bind($"{level.levelID}:{level.name}", "Min scrap value scale", "1.0, 0.0, 1.0, 1.0", scaleDescription).Value);
+                Scale maxScrapValue = getScale(levelPropertiesConfig.Bind($"{level.levelID}:{level.name}", "Max scrap value scale", "1.0, 0.0, 1.0, 1.0", scaleDescription).Value);
 
                 levelProperties.TryAdd(level.levelID, new LevelProperties(level.levelID, minScrapAmount, maxScrapAmount, minScrapValue, maxScrapValue));
             }
