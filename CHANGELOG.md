@@ -1,5 +1,18 @@
 # ChangeLog
 <details>
+  <summary>0.13.5</summary>
+
+  - Fixed an issue with hell when leaving the game, caused the time to go zooooooooooooooooooooooooom
+  - Increased bunkerEntrance spawnPostion and teleportPosition to prevent falling under the map.
+  - Bonus hp will no longer scale by default
+  - Scrap value will now scale (Difficulty:0 => x1.0) to (Difficulty:100 => x1.3)
+  - Scrap amount will now scale (Difficulty:0 => x1.0) to (Difficulty:100 => x1.3)
+  - Added level properties config
+  - Toilhead event will now only allow toilheads to spawn
+  - +Other minor things I forgot about
+
+</details>
+<details>
   <summary>0.13.4</summary>
 
   - Mod now works properly as API
