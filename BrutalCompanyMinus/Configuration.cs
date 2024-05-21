@@ -13,6 +13,7 @@ using static BrutalCompanyMinus.Helper;
 using BrutalCompanyMinus.Minus.MonoBehaviours;
 using System.Diagnostics;
 using System;
+using System.Threading.Tasks;
 
 namespace BrutalCompanyMinus
 {
@@ -308,7 +309,6 @@ namespace BrutalCompanyMinus
             Minus.Handlers.Mimics.spawnRateScales[5] = getScale(moddedEventConfig.Bind(nameof(Mimics), "Maximum Mimics Scale", "10.0, 0.84, 10.0, 60.0", "Weight Scale of maximum mimics spawning   " + scaleDescription).Value);
 
             // Level properties config
-
             foreach(SelectableLevel level in StartOfRound.Instance.levels)
             {
                 if (level == null) continue;
@@ -399,6 +399,16 @@ namespace BrutalCompanyMinus
                 $"Remove:{EventManager.eventTypeCount[5]}\n");
 
             CreateAllEnemiesConfig();
+            
+            uiConfig.Save();
+            difficultyConfig.Save();
+            eventConfig.Save();
+            weatherConfig.Save();
+            customAssetsConfig.Save();
+            moddedEventConfig.Save();
+            customEventConfig.Save();
+            allEnemiesConfig.Save();
+            levelPropertiesConfig.Save();
 
             Initalized = true;
         }

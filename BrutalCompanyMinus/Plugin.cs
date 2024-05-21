@@ -3,6 +3,7 @@ using HarmonyLib;
 using BepInEx;
 using UnityEngine;
 using System.Reflection;
+using System.Collections;
 using BrutalCompanyMinus.Minus;
 using System.Collections.Generic;
 using BrutalCompanyMinus.Minus.Handlers;
@@ -24,7 +25,7 @@ namespace BrutalCompanyMinus
     {
         private const string GUID = "Drinkable.BrutalCompanyMinus";
         private const string NAME = "BrutalCompanyMinus";
-        private const string VERSION = "0.13.6";
+        private const string VERSION = "0.13.7";
         private static readonly Harmony harmony = new Harmony(GUID);
 
         void Awake()
@@ -60,6 +61,16 @@ namespace BrutalCompanyMinus
             customEventConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\CustomEvents.cfg", true);
             allEnemiesConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\AllEnemies.cfg", true);
             levelPropertiesConfig = new ConfigFile(Paths.ConfigPath + "\\BrutalCompanyMinus\\LevelProperties.cfg", true);
+            
+            uiConfig.SaveOnConfigSet = false;
+            difficultyConfig.SaveOnConfigSet = false;
+            eventConfig.SaveOnConfigSet = false;
+            weatherConfig.SaveOnConfigSet = false;
+            customAssetsConfig.SaveOnConfigSet = false;
+            moddedEventConfig.SaveOnConfigSet = false;
+            customEventConfig.SaveOnConfigSet = false;
+            allEnemiesConfig.SaveOnConfigSet = false;
+            levelPropertiesConfig.SaveOnConfigSet = false;
 
             // Patch all
             harmony.PatchAll();

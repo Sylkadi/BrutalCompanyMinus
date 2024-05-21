@@ -28,6 +28,7 @@ namespace BrutalCompanyMinus
             List<Vector3> nodes = GameObject.FindGameObjectsWithTag("SpawnDenialPoint").Select(n => n.transform.position).ToList();
             nodes.Add(GameObject.FindGameObjectWithTag("ItemShipLandingNode").transform.position);
             nodes.AddRange(GameObject.FindObjectsOfType<EntranceTeleport>().Select(i => i.gameObject.transform.position).ToList());
+            nodes.AddRange(GameObject.FindObjectsOfType<InteractTrigger>().Where(l => l.isLadder).Select(l => l.gameObject.transform.position).ToList());
             return nodes;
         }
 

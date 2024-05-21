@@ -57,6 +57,8 @@ namespace BrutalCompanyMinus.Minus.Handlers
             {
                 Log.LogError("Failed to set isOutside on EnemyAI.Start");
             }
+
+
         }
 
         private static IEnumerator UpdateHP(EnemyAI __instance)

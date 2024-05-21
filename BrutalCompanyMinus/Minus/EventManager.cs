@@ -187,27 +187,20 @@ namespace BrutalCompanyMinus.Minus
             // Decide how many events to spawn
             System.Random rng = new System.Random(StartOfRound.Instance.randomMapSeed + 32345 + Environment.TickCount);
             int eventsToSpawn = (int)MEvent.Scale.Compute(Configuration.eventsToSpawn, MEvent.EventType.Neutral) + RoundManager.Instance.GetRandomWeightedIndex(Configuration.weightsForExtraEvents.IntArray(), rng);
-                
+            
+            foreach(MEvent forcedEvent in forcedEvents)
+            {
+                eventsToChooseForm.RemoveAll(x => x.Name() == forcedEvent.Name());
+                foreach(string eventToRemove in forcedEvent.EventsToRemove)
+                {
+                    eventsToChooseForm.RemoveAll(x => x.Name() == forcedEvent.Name());
+                }
+            }
+
             // Spawn events
             for (int i = 0; i < eventsToSpawn; i++)
             {
                 MEvent newEvent = RandomWeightedEvent(eventsToChooseForm, rng);
-
-                bool foundForcedEvent = false;
-                foreach (MEvent forcedEvent in forcedEvents)
-                {
-                    if (forcedEvent.Name() == newEvent.Name())
-                    {
-                        eventsToChooseForm.RemoveAll(x => x.Name() == forcedEvent.Name());
-                        foundForcedEvent = true;
-                        break;
-                    }
-                }
-                if(foundForcedEvent)
-                {
-                    i--;
-                    continue;
-                }
 
                 if (!newEvent.AddEventIfOnly()) // If event condition is false, remove event from eventsToChoosefrom and iterate again
                 {
