@@ -123,6 +123,8 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
 
         private bool onBlowUpSequence = false;
 
+        private bool blownUp = false;
+
         public override void Start()
         {
             base.Start();
@@ -821,19 +823,15 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         public override void OnCollideWithPlayer(Collider other)
         {
             base.OnCollideWithPlayer(other);
-            Debug.Log("HA1");
             if (!inChase)
             {
                 return;
             }
-            Debug.Log("HA2");
             if (!(timeSinceHittingPlayer < 0.5f))
             {
-                Debug.Log("HA3");
                 PlayerControllerB playerControllerB = MeetsStandardPlayerCollisionConditions(other);
                 if (playerControllerB != null)
                 {
-                    Debug.Log("HA4");
                     timeSinceHittingPlayer = 0f;
                     playerControllerB.DamagePlayer(30, hasDamageSFX: true, callRPC: true, CauseOfDeath.Mauling);
                     HitPlayerServerRpc();
@@ -964,7 +962,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             yield return new WaitForSeconds(timeStamp);
             bugLight.gameObject.SetActive(false);
 
-            if (!isEnemyDead) Landmine.SpawnExplosion(mainTransform.position + Vector3.up, spawnExplosionEffect: true, 3.0f, 6.0f);
+            BlowUpServerRpc(this.NetworkObject);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -986,7 +984,26 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
             StopAllCoroutines();
         }
 
-        // Copy from zeeker's for both v49 and v50 compat
+        [ServerRpc]
+        public void BlowUpServerRpc(NetworkObjectReference self) => BlowUpClientRpc(self);
+
+        [ClientRpc]
+        public void BlowUpClientRpc(NetworkObjectReference self)
+        {
+            NetworkObject obj = null;
+            self.TryGet(out obj);
+
+            if (obj == null) return;
+
+            KamikazieBugAI ai = obj.GetComponent<KamikazieBugAI>();
+
+            if(ai != null && !blownUp)
+            {
+                Landmine.SpawnExplosion(mainTransform.position + Vector3.up, spawnExplosionEffect: true, 3.0f, 6.0f);
+                blownUp = true;
+            }
+        }
+
         public bool HasLineOfSightToPositionCopy(Vector3 pos, float width = 45f, int range = 60, float proximityAwareness = -1f)
         {
             if (eye == null)

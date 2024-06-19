@@ -92,8 +92,8 @@ namespace BrutalCompanyMinus
         internal static FloodWeather flooded;
 
         // Custom Assets
-        public static EnemyType antiCoilHead, nutSlayer, kamikazieBug;
-        public static Item slayerShotgun, grabbableTurret, grabbableLandmine;
+        public static EnemyType antiCoilHead, nutSlayer, kamikazieBug, demolitionist;
+        public static Item slayerShotgun, grabbableTurret, grabbableLandmine, greatHammer;
         public static GameObject artilleryShell, artillerySirens, bunkerEntrance, bunkerEscape, teleportAudio, bloodRain;
 
         [HarmonyPostfix]
@@ -103,10 +103,12 @@ namespace BrutalCompanyMinus
             antiCoilHead = (EnemyType)customAssetBundle.LoadAsset("AntiCoilHead");
             nutSlayer = (EnemyType)customAssetBundle.LoadAsset("NutSlayer");
             kamikazieBug = (EnemyType)customAssetBundle.LoadAsset("KamikazieBug");
+            demolitionist = (EnemyType)customAssetBundle.LoadAsset("DoorSmasher");
 
             slayerShotgun = (Item)customAssetBundle.LoadAsset("SlayerShotgun");
             grabbableTurret = (Item)customAssetBundle.LoadAsset("GrabbableTurret");
             grabbableLandmine = (Item)customAssetBundle.LoadAsset("GrabbableLandmine");
+            greatHammer = (Item)customAssetBundle.LoadAsset("GreatHammer");
 
             artilleryShell = (GameObject)customAssetBundle.LoadAsset("ArtilleryShell");
             artillerySirens = (GameObject)customAssetBundle.LoadAsset("DDay");
@@ -115,7 +117,7 @@ namespace BrutalCompanyMinus
             teleportAudio = (GameObject)customAssetBundle.LoadAsset("TeleportAudioSource");
             bloodRain = (GameObject)customAssetBundle.LoadAsset("BloodRainParticleContainer");
 
-            RegisterNetworkPrefabs(antiCoilHead.enemyPrefab, nutSlayer.enemyPrefab, kamikazieBug.enemyPrefab, slayerShotgun.spawnPrefab, grabbableTurret.spawnPrefab, grabbableLandmine.spawnPrefab, artillerySirens, bunkerEntrance, bunkerEscape);
+            RegisterNetworkPrefabs(antiCoilHead.enemyPrefab, nutSlayer.enemyPrefab, kamikazieBug.enemyPrefab, slayerShotgun.spawnPrefab, grabbableTurret.spawnPrefab, grabbableLandmine.spawnPrefab, artillerySirens, bunkerEntrance, bunkerEscape, greatHammer.spawnPrefab, demolitionist.enemyPrefab);
         }
 
         private static void RegisterNetworkPrefabs(params GameObject[] objects)
@@ -143,7 +145,7 @@ namespace BrutalCompanyMinus
         [HarmonyPatch(typeof(StartOfRound), "Start")]
         private static void OnStartOfRoundStart() // Do this or items will disapear on save reload
         {
-            StartOfRound.Instance.allItemsList.itemsList.AddRange(new List<Item>() { slayerShotgun, grabbableTurret, grabbableLandmine });
+            StartOfRound.Instance.allItemsList.itemsList.AddRange(new List<Item>() { slayerShotgun, grabbableTurret, grabbableLandmine, greatHammer });
         }
 
         internal static void Load()
@@ -234,8 +236,6 @@ namespace BrutalCompanyMinus
             }
 
             Log.LogInfo(string.Format("Finished generating 'ItemList', Count:{0}", ItemList.Count));
-
-
 
             // Generate Object List
             Log.LogInfo("Generating 'ObjectList'");

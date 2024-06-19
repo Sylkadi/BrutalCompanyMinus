@@ -23,7 +23,7 @@ namespace BrutalCompanyMinus.Minus.MonoBehaviours
         {
             if (!RoundManager.Instance.IsHost) return;
 
-            if (Events.GrabbableTurrets.Active)
+            if (Events.GrabbableTurrets.Active && __instance.tag != "PhysicsProp")
             {
                 __instance.StartCoroutine(destroySelfAndReplace(__instance));
             }

@@ -470,7 +470,7 @@ namespace BrutalCompanyMinus.Minus
                 Manager.scrapValueMultiplier *= properties.GetScrapValueMultiplier();
                 Manager.scrapAmountMultiplier *= properties.GetScrapAmountMultiplier();
             }
-
+            
             // Difficulty modifications
             Manager.AddEnemyHp((int)MEvent.Scale.Compute(Configuration.enemyBonusHpScaling));
             Manager.AddInsideSpawnChance(newLevel, MEvent.Scale.Compute(Configuration.insideSpawnChanceAdditive));
@@ -482,7 +482,7 @@ namespace BrutalCompanyMinus.Minus
             Manager.scrapValueMultiplier *= MEvent.Scale.Compute(Configuration.scrapValueMultiplier);
             Manager.scrapAmountMultiplier *= MEvent.Scale.Compute(Configuration.scrapAmountMultiplier);
 
-            // Choose any apply events
+            // Choose and apply events
             if (!Configuration.useCustomWeights.Value) UpdateAllEventWeights();
 
             List<MEvent> additionalEvents = new List<MEvent>();
